@@ -1,0 +1,31 @@
+# This file configures the analyzer, which statically analyzes Dart code to
+# check for errors, warnings, and lints.
+#
+# The very_good_analysis package provides a recommended set of lints for
+# Flutter apps, packages, and plugins designed to encourage good coding practices.
+# https://pub.dev/packages/very_good_analysis
+include: package:very_good_analysis/analysis_options.yaml
+
+analyzer:
+  errors:
+    # This is non-production code example
+    avoid_catches_without_on_clauses: ignore
+    # For clean architecture compliance 
+    one_member_abstracts: ignore
+    # For readability
+    lines_longer_than_80_chars: ignore
+  # Exclude generated files from analysis to avoid false positives
+  exclude:
+    # Generated code for JSON serialization, etc.
+    - "**/*.g.dart"
+    # Generated code from freezed package
+    - "**/*.freezed.dart"
+    # Generated code from flutter_localizations package
+    - "**/generated/**"
+
+# Dart formatter configuration
+dart_line_length: 90
+
+# Makes the formatter command exit with a non-zero exit code if any changes would be made
+# Useful in CI/CD pipelines to enforce consistent formatting
+format_exit_if_changed: true
