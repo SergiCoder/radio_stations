@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:radio_stations/core/utils/validators.dart';
-import 'package:radio_stations/features/radio/domain/enums/radio_tag.dart';
+import 'package:radio/core/utils/validators.dart';
+import 'package:radio/features/radio/domain/enums/radio_tag.dart';
 
 /// Represents a radio station in the domain layer
 ///
