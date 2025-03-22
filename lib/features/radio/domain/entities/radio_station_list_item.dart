@@ -15,7 +15,9 @@ class RadioStationListItem {
   const RadioStationListItem({
     required this.uuid,
     required this.name,
-    this.favorite = false,
+    required this.broken,
+    required this.favicon,
+    required this.favorite,
   });
 
   /// Unique identifier for the station
@@ -30,11 +32,20 @@ class RadioStationListItem {
   /// This is typically the name shown in lists and menus.
   final String name;
 
+  /// URL of the station's favicon
+  ///
+  /// The URL of the station's favicon image.
+  final String favicon;
+
   /// Whether this station is marked as a favorite
   ///
   /// Indicates if the user has marked this station as a favorite.
-  /// Defaults to false for new stations.
   final bool favorite;
+
+  /// Whether this station is broken
+  ///
+  /// Indicates if the station is broken and cannot be played.
+  final bool broken;
 
   /// Compares this radio station list item with another object for equality
   ///

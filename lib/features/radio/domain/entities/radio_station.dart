@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:radio/core/utils/validators.dart';
-import 'package:radio/features/radio/domain/enums/radio_tag.dart';
+import 'package:radio_stations/core/utils/validators.dart';
 
 /// Represents a radio station in the domain layer
 ///
@@ -24,10 +23,9 @@ class RadioStation {
     required this.url,
     required this.homepage,
     required this.favicon,
-    required this.tags,
-    required this.language,
     required this.country,
-    this.favorite = false,
+    required this.isFavorite,
+    this.broken = false,
   });
 
   /// Creates a new radio station with validation
@@ -41,20 +39,18 @@ class RadioStation {
   /// - [url]: Direct streaming URL
   /// - [homepage]: Station's website URL
   /// - [favicon]: URL to the station's icon
-  /// - [tags]: List of categorization tags
-  /// - [language]: Primary broadcast language
   /// - [country]: Country of operation
   /// - [favorite]: Whether this station is marked as a favorite
+  /// - [broken]: Whether the station is broken (stream is not working)
   static RadioStation? create({
     required String uuid,
     required String name,
     required String url,
     required String homepage,
     required String favicon,
-    required List<RadioTag> tags,
-    required String language,
     required String country,
     bool favorite = false,
+    bool broken = false,
   }) {
     final station = RadioStation._(
       uuid: uuid,
@@ -62,10 +58,9 @@ class RadioStation {
       url: url,
       homepage: homepage,
       favicon: favicon,
-      tags: tags,
-      language: language,
       country: country,
-      favorite: favorite,
+      isFavorite: favorite,
+      broken: broken,
     );
 
     return station.isValid() ? station : null;
@@ -102,18 +97,6 @@ class RadioStation {
   /// This is used for displaying the station's visual identity.
   final String favicon;
 
-  /// List of tags categorizing the station
-  ///
-  /// Used for filtering and categorization. Cannot be empty.
-  /// These tags help users find stations based on their interests.
-  final List<RadioTag> tags;
-
-  /// Primary language of the station
-  ///
-  /// The main language used for broadcasting. Cannot be empty.
-  /// This helps users find stations in their preferred language.
-  final String language;
-
   /// Country where the station is based
   ///
   /// The country of operation. Cannot be empty.
@@ -124,7 +107,10 @@ class RadioStation {
   ///
   /// Indicates if the user has marked this station as a favorite.
   /// Defaults to false for new stations.
-  final bool favorite;
+  final bool isFavorite;
+
+  /// Whether the station is broken (stream is not working)
+  final bool broken;
 
   /// Validates all fields of the radio station
   ///
@@ -178,10 +164,9 @@ class RadioStation {
         other.url == url &&
         other.homepage == homepage &&
         other.favicon == favicon &&
-        other.tags == tags &&
-        other.language == language &&
         other.country == country &&
-        other.favorite == favorite;
+        other.isFavorite == isFavorite &&
+        other.broken == broken;
   }
 
   /// Generates a hash code for this radio station
@@ -197,10 +182,9 @@ class RadioStation {
       url,
       homepage,
       favicon,
-      Object.hashAll(tags),
-      language,
       country,
-      favorite,
+      isFavorite,
+      broken,
     );
   }
 
@@ -217,9 +201,32 @@ class RadioStation {
         'url: $url, '
         'homepage: $homepage, '
         'favicon: $favicon, '
-        'tags: $tags, '
-        'language: $language, '
         'country: $country, '
-        'favorite: $favorite)';
+        'favorite: $isFavorite, '
+        'broken: $broken)';
+  }
+
+  /// Creates a copy of this [RadioStation] with the given fields replaced
+  RadioStation copyWith({
+    String? uuid,
+    String? name,
+    String? url,
+    String? homepage,
+    String? favicon,
+    String? country,
+    String? language,
+    bool? isFavorite,
+    bool? broken,
+  }) {
+    return RadioStation._(
+      uuid: uuid ?? this.uuid,
+      name: name ?? this.name,
+      url: url ?? this.url,
+      homepage: homepage ?? this.homepage,
+      favicon: favicon ?? this.favicon,
+      country: country ?? this.country,
+      isFavorite: isFavorite ?? this.isFavorite,
+      broken: broken ?? this.broken,
+    );
   }
 }
