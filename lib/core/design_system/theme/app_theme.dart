@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:radio/design_system/theme/theme.dart';
+import 'package:radio_stations/core/design_system/theme/app_colors.dart';
+import 'package:radio_stations/core/design_system/theme/app_spacing.dart';
+import 'package:radio_stations/core/design_system/theme/app_typography.dart';
 
 /// Application theme configuration
 ///
