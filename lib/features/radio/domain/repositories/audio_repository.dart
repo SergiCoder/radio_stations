@@ -21,6 +21,11 @@ abstract class AudioRepository {
   /// Returns true if audio is playing, false otherwise
   bool get isPlaying;
 
+  /// Gets a stream of playback state changes
+  ///
+  /// Returns a stream that emits the current playing state whenever it changes
+  Stream<bool> get playingStateStream;
+
   /// Sets the volume level
   ///
   /// [volume] is the volume level between 0.0 and 1.0

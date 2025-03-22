@@ -33,11 +33,8 @@ Future<void> init() async {
   getIt
     ..registerLazySingleton<http.Client>(http.Client.new)
     ..registerLazySingleton<RadioBrowserConfig>(RadioBrowserConfig.new)
-
     // Database
-
     ..registerLazySingleton<Box<RadioStationLocalDto>>(() => radioStationBox)
-
     // Data sources
     ..registerLazySingleton<RadioStationRemoteDataSource>(
       () => RadioStationRemoteDataSource(client: getIt(), config: getIt()),
@@ -45,7 +42,6 @@ Future<void> init() async {
     ..registerLazySingleton<RadioStationLocalDataSource>(
       () => RadioStationLocalDataSource(box: getIt()),
     )
-
     // Repositories
     ..registerLazySingleton<RadioStationRepository>(
       () => RadioStationRepositoryImpl(
@@ -53,14 +49,12 @@ Future<void> init() async {
         localDataSource: getIt(),
       ),
     )
-
     // Audio
     ..registerLazySingleton<AudioPlayer>(() => player)
     ..registerLazySingleton<AudioServiceImpl>(() => audioService)
     ..registerLazySingleton<AudioRepository>(
       () => AudioRepositoryImpl(audioService: getIt()),
     )
-
     // Use cases
     ..registerLazySingleton<GetAllRadioStationListItemsUseCase>(
       () => GetAllRadioStationListItemsUseCase(repository: getIt()),
@@ -77,7 +71,9 @@ Future<void> init() async {
     ..registerLazySingleton<ToggleFavoriteRadioStationUseCase>(
       () => ToggleFavoriteRadioStationUseCase(repository: getIt()),
     )
-
+    ..registerLazySingleton<GetPlaybackStateUseCase>(
+      () => GetPlaybackStateUseCase(audioRepository: getIt()),
+    )
     // Cubits
     ..registerFactory<RadioPageCubit>(
       () => RadioPageCubit(
@@ -85,6 +81,7 @@ Future<void> init() async {
         syncStationsUseCase: getIt(),
         getStationByIdUseCase: getIt(),
         toggleFavoriteUseCase: getIt(),
+        getPlaybackStateUseCase: getIt(),
       ),
     );
 }

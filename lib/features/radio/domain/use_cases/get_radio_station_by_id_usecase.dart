@@ -15,14 +15,17 @@ class GetRadioStationByIdUseCase {
   const GetRadioStationByIdUseCase({
     required RadioStationRepository repository,
     required AudioRepository audioRepository,
-  })  : _repository = repository,
-        _audioRepository = audioRepository;
+  }) : _repository = repository,
+       _audioRepository = audioRepository;
 
   /// The repository used for getting radio stations
   final RadioStationRepository _repository;
 
   /// The repository used for audio playback
   final AudioRepository _audioRepository;
+
+  /// Gets the audio repository instance
+  AudioRepository get audioRepository => _audioRepository;
 
   /// Gets whether a station is currently playing
   ///
