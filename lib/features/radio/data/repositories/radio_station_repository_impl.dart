@@ -3,6 +3,7 @@ import 'package:radio_stations/features/radio/data/datasources/radio_station_rem
 import 'package:radio_stations/features/radio/data/dto/radio_station_local_dto.dart';
 import 'package:radio_stations/features/radio/data/dto/radio_station_remote_dto.dart';
 import 'package:radio_stations/features/radio/domain/domain.dart';
+import 'package:radio_stations/features/radio/domain/extensions/radio_station_list_item_extensions.dart';
 
 /// Implementation of [RadioStationRepository]
 ///
@@ -28,9 +29,7 @@ class RadioStationRepositoryImpl implements RadioStationRepository {
   Future<void> syncStations({
     void Function(int total, int downloaded)? onProgress,
   }) async {
-    final stations = await remoteDataSource.getStations(
-      onProgress: onProgress,
-    );
+    final stations = await remoteDataSource.getStations(onProgress: onProgress);
 
     // Process stations in a single pass
     final localStations = <RadioStationLocalDto>[];
@@ -56,9 +55,10 @@ class RadioStationRepositoryImpl implements RadioStationRepository {
       // Apply toggle operations if requested
       if (toggleFavorite || toggleBroken) {
         final updatedStation = localStation.copyWith(
-          isFavorite: toggleFavorite
-              ? !localStation.isFavorite
-              : localStation.isFavorite,
+          isFavorite:
+              toggleFavorite
+                  ? !localStation.isFavorite
+                  : localStation.isFavorite,
           broken: toggleBroken ? !localStation.broken : localStation.broken,
         );
         await localDataSource.saveStation(updatedStation);
@@ -78,34 +78,39 @@ class RadioStationRepositoryImpl implements RadioStationRepository {
     final stations = localDataSource.getAllStations();
 
     if (filter == null) {
-      return stations.map(_toListItem).toList();
+      final orderedStations = stations.map(_toListItem).toList().orderByName();
+      return orderedStations;
     }
 
     // Filter stations first
-    final filteredStations = stations.where((station) {
-      if (filter.favorite && !station.isFavorite) {
-        return false;
-      }
-      if (filter.country != null && station.country != filter.country) {
-        return false;
-      }
-      return true;
-    }).toList();
+    final filteredStationsDtos =
+        stations.where((station) {
+          if (filter.favorite && !station.isFavorite) {
+            return false;
+          }
+          if (filter.country != null && station.country != filter.country) {
+            return false;
+          }
+          return true;
+        }).toList();
+    final orderedStations =
+        filteredStationsDtos.map(_toListItem).toList().orderByName();
 
     // Then convert to list items
-    return filteredStations.map(_toListItem).toList();
+    return orderedStations;
   }
 
   @override
   Future<List<String>> getAvailableCountries() async {
     try {
       final stations = localDataSource.getAllStations();
-      final countries = stations
-          .map((s) => s.country)
-          .where((c) => c.isNotEmpty)
-          .toSet()
-          .toList()
-        ..sort();
+      final countries =
+          stations
+              .map((s) => s.country)
+              .where((c) => c.isNotEmpty)
+              .toSet()
+              .toList()
+            ..sort();
       return countries;
     } catch (e) {
       throw RadioStationDataFailure('Failed to get available countries: $e');

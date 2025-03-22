@@ -14,7 +14,7 @@ class AudioRepositoryImpl implements AudioRepository {
   /// The [audioService] parameter is the audio service implementation to use
   /// for playback operations.
   AudioRepositoryImpl({required AudioServiceImpl audioService})
-      : _audioService = audioService;
+    : _audioService = audioService;
 
   /// The audio service implementation used for playback operations
   final AudioServiceImpl _audioService;
@@ -31,6 +31,10 @@ class AudioRepositoryImpl implements AudioRepository {
 
   @override
   bool get isPlaying => _audioService.isPlaying;
+
+  @override
+  Stream<bool> get playingStateStream =>
+      _audioService.playbackState.map((state) => state.playing);
 
   @override
   Future<void> setVolume(double volume) async {
