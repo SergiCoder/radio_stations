@@ -1,0 +1,91 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'radio_station_remote_dto.dart';
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+RadioStationRemoteDto _$RadioStationRemoteDtoFromJson(
+        Map<String, dynamic> json) =>
+    RadioStationRemoteDto(
+      stationuuid: json['stationuuid'] as String,
+      name: json['name'] as String,
+      url: json['url'] as String,
+      homepage: json['homepage'] as String,
+      favicon: json['favicon'] as String,
+      tags: json['tags'] as String,
+      language: json['language'] as String,
+      country: json['country'] as String,
+      changeuuid: json['changeuuid'] as String?,
+      serveruuid: json['serveruuid'] as String?,
+      urlResolved: json['url_resolved'] as String?,
+      countrycode: json['countrycode'] as String?,
+      state: json['state'] as String?,
+      languagecodes: json['languagecodes'] as String?,
+      votes: (json['votes'] as num?)?.toInt(),
+      lastchangetime: json['lastchangetime'] as String?,
+      lastchangetimeIso8601: json['lastchangetime_iso8601'] as String?,
+      codec: json['codec'] as String?,
+      bitrate: (json['bitrate'] as num?)?.toInt(),
+      hls: (json['hls'] as num?)?.toInt(),
+      lastcheckok: (json['lastcheckok'] as num?)?.toInt(),
+      lastchecktime: json['lastchecktime'] as String?,
+      lastchecktimeIso8601: json['lastchecktime_iso8601'] as String?,
+      lastcheckoktime: json['lastcheckoktime'] as String?,
+      lastcheckoktimeIso8601: json['lastcheckoktime_iso8601'] as String?,
+      lastlocalchecktime: json['lastlocalchecktime'] as String?,
+      lastlocalchecktimeIso8601: json['lastlocalchecktime_iso8601'] as String?,
+      clicktimestamp: json['clicktimestamp'] as String?,
+      clicktimestampIso8601: json['clicktimestamp_iso8601'] as String?,
+      clickcount: (json['clickcount'] as num?)?.toInt(),
+      clicktrend: (json['clicktrend'] as num?)?.toInt(),
+      sslError: (json['ssl_error'] as num?)?.toInt(),
+      hasExtendedInfo: json['has_extended_info'] as bool?,
+      geoLat: (json['geo_lat'] as num?)?.toDouble(),
+      geoLong: (json['geo_long'] as num?)?.toDouble(),
+      iso31662: json['iso31662'] as String?,
+      geoDistance: (json['geo_distance'] as num?)?.toDouble(),
+    );
+
+Map<String, dynamic> _$RadioStationRemoteDtoToJson(
+        RadioStationRemoteDto instance) =>
+    <String, dynamic>{
+      'changeuuid': instance.changeuuid,
+      'stationuuid': instance.stationuuid,
+      'serveruuid': instance.serveruuid,
+      'name': instance.name,
+      'url': instance.url,
+      'url_resolved': instance.urlResolved,
+      'homepage': instance.homepage,
+      'favicon': instance.favicon,
+      'tags': instance.tags,
+      'country': instance.country,
+      'countrycode': instance.countrycode,
+      'state': instance.state,
+      'language': instance.language,
+      'languagecodes': instance.languagecodes,
+      'votes': instance.votes,
+      'lastchangetime': instance.lastchangetime,
+      'lastchangetime_iso8601': instance.lastchangetimeIso8601,
+      'codec': instance.codec,
+      'bitrate': instance.bitrate,
+      'hls': instance.hls,
+      'lastcheckok': instance.lastcheckok,
+      'lastchecktime': instance.lastchecktime,
+      'lastchecktime_iso8601': instance.lastchecktimeIso8601,
+      'lastcheckoktime': instance.lastcheckoktime,
+      'lastcheckoktime_iso8601': instance.lastcheckoktimeIso8601,
+      'lastlocalchecktime': instance.lastlocalchecktime,
+      'lastlocalchecktime_iso8601': instance.lastlocalchecktimeIso8601,
+      'clicktimestamp': instance.clicktimestamp,
+      'clicktimestamp_iso8601': instance.clicktimestampIso8601,
+      'clickcount': instance.clickcount,
+      'clicktrend': instance.clicktrend,
+      'ssl_error': instance.sslError,
+      'geo_lat': instance.geoLat,
+      'geo_long': instance.geoLong,
+      'has_extended_info': instance.hasExtendedInfo,
+      'iso31662': instance.iso31662,
+      'geo_distance': instance.geoDistance,
+    };
