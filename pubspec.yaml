@@ -1,4 +1,4 @@
-name: radio
+name: radio_stations
 description: "A single screen app for streaming online radio stations"
 publish_to: 'none'
 

@@ -1,4 +1,4 @@
-package com.example.radios
+package com.example.radio_stations
 
 import io.flutter.embedding.android.FlutterActivity
 
