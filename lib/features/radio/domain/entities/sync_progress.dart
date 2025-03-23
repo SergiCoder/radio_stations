@@ -4,15 +4,11 @@ class SyncProgress {
   const SyncProgress({
     required this.totalStations,
     required this.downloadedStations,
-  })  : assert(totalStations >= 0, 'totalStations must be non-negative'),
-        assert(
-          downloadedStations >= 0,
-          'downloadedStations must be non-negative',
-        ),
-        assert(
-          downloadedStations <= totalStations,
-          'downloadedStations must not exceed totalStations',
-        );
+  }) : assert(totalStations >= 0, 'totalStations must be non-negative'),
+       assert(
+         downloadedStations >= 0,
+         'downloadedStations must be non-negative',
+       );
 
   /// The total number of stations to download
   final int totalStations;
