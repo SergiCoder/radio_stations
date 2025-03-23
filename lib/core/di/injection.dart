@@ -57,8 +57,8 @@ Future<void> init() async {
     ..registerLazySingleton<GetRadioStationListUseCase>(
       () => GetRadioStationListUseCase(radioStationRepository: getIt()),
     )
-    ..registerLazySingleton<GetRadioStationByIdUseCase>(
-      () => GetRadioStationByIdUseCase(
+    ..registerLazySingleton<PlayRadioStationUseCase>(
+      () => PlayRadioStationUseCase(
         radioStationRepository: getIt(),
         audioRepository: getIt(),
       ),
@@ -80,7 +80,7 @@ Future<void> init() async {
       () => RadioPageCubit(
         getRadioStationListUseCase: getIt(),
         syncStationsUseCase: getIt(),
-        getStationByIdUseCase: getIt(),
+        playRadioStationUseCase: getIt(),
         toggleFavoriteUseCase: getIt(),
         getPlaybackStateUseCase: getIt(),
         togglePlayPauseUseCase: getIt(),

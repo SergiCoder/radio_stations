@@ -14,14 +14,14 @@ class RadioPageCubit extends Cubit<RadioPageState> {
   /// [getRadioStationListUseCase] is used to fetch all radio stations
   /// [syncStationsUseCase] is used to synchronize radio stations with a remote
   /// source
-  /// [getStationByIdUseCase] is used to get a station by ID and handle its playback
+  /// [playRadioStationUseCase] is used to play a radio station
   /// [toggleFavoriteUseCase] is used to toggle the favorite status of a station
   /// [getPlaybackStateUseCase] is used to get the current playback state
   /// [togglePlayPauseUseCase] is used to toggle play/pause
   RadioPageCubit({
     required this.getRadioStationListUseCase,
     required this.syncStationsUseCase,
-    required this.getStationByIdUseCase,
+    required this.playRadioStationUseCase,
     required this.toggleFavoriteUseCase,
     required this.getPlaybackStateUseCase,
     required this.togglePlayPauseUseCase,
@@ -38,8 +38,8 @@ class RadioPageCubit extends Cubit<RadioPageState> {
   /// The use case for synchronizing radio stations with a remote source
   final SyncRadioStationsUseCase syncStationsUseCase;
 
-  /// The use case for getting a radio station by ID and handling its playback
-  final GetRadioStationByIdUseCase getStationByIdUseCase;
+  /// The use case for playing a radio station
+  final PlayRadioStationUseCase playRadioStationUseCase;
 
   /// The use case for toggling the favorite status of a station
   final ToggleFavoriteRadioStationUseCase toggleFavoriteUseCase;
@@ -159,7 +159,7 @@ class RadioPageCubit extends Cubit<RadioPageState> {
       return;
     }
     emit(loadedState.copyWith(selectedStation: station));
-    await getStationByIdUseCase.execute(station);
+    await playRadioStationUseCase.execute(station);
   }
 
   /// Handles play/pause for the current station
@@ -227,7 +227,6 @@ class RadioPageCubit extends Cubit<RadioPageState> {
   /// Handles setting the selected country
   Future<void> setSelectedCountry(String? country) async {
     if (state is! RadioPageLoadedState) return;
-    if (country == null) return;
     _selectedCountry = country;
     final stations = await getRadioStationListUseCase.execute(_createFilter());
     final loadedState = state as RadioPageLoadedState;

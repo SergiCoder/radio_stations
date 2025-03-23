@@ -5,22 +5,22 @@ import 'package:radio_stations/features/radio/domain/failures/radio_station_fail
 import 'package:radio_stations/features/radio/domain/repositories/audio_repository.dart';
 import 'package:radio_stations/features/radio/domain/repositories/radio_station_repository.dart';
 
-/// Use case for getting a radio station by ID and playing it
+/// Use case for playing a radio station
 ///
-/// This use case retrieves a radio station by its ID and handles its playback
-/// through the audio repository.
-class GetRadioStationByIdUseCase {
-  /// Creates a new instance of [GetRadioStationByIdUseCase]
+/// This use case handles the playback of a radio station through the audio
+/// repository and manages its broken state in the radio station repository.
+class PlayRadioStationUseCase {
+  /// Creates a new instance of [PlayRadioStationUseCase]
   ///
-  /// [radioStationRepository] is the repository used for getting radio stations
+  /// [radioStationRepository] is the repository used for managing radio stations
   /// [audioRepository] is the repository used for audio playback
-  const GetRadioStationByIdUseCase({
+  const PlayRadioStationUseCase({
     required RadioStationRepository radioStationRepository,
     required AudioRepository audioRepository,
   }) : _radioStationRepository = radioStationRepository,
        _audioRepository = audioRepository;
 
-  /// The repository used for getting radio stations
+  /// The repository used for managing radio stations
   final RadioStationRepository _radioStationRepository;
 
   /// The repository used for audio playback
@@ -35,13 +35,11 @@ class GetRadioStationByIdUseCase {
   /// This is determined by checking the audio repository's playing state.
   bool get isPlaying => _audioRepository.isPlaying;
 
-  /// Gets a radio station by ID and plays it
+  /// Plays a radio station
   ///
   /// [station] is the station to play
   ///
-  /// Returns the [RadioStation] that was played.
-  ///
-  /// Throws a [RadioStationDataFailure] if station retrieval fails.
+  /// Throws a [RadioStationDataFailure] if playback fails.
   Future<void> execute(RadioStation station) async {
     try {
       await _audioRepository.play(station);
