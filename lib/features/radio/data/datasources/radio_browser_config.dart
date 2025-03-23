@@ -2,11 +2,17 @@
 class RadioBrowserConfig {
   /// Creates a new [RadioBrowserConfig]
   ///
-  /// [baseUrl] is the base URL for the API
+  /// [baseUrls] is the list of base URLs for the API
   /// [timeout] is the timeout for requests in seconds
+  /// [maxPageSize] is the maximum number of items to fetch per page
+  /// [minPageSize] is the minimum number of items to fetch per page
+  /// [targetPages] is the target number of pages to split the data into
   const RadioBrowserConfig({
-    this.baseUrl = 'https://de1.api.radio-browser.info/json',
-    this.secondaryBaseUrl = 'https://nl1.api.radio-browser.info/json',
+    this.baseUrls = const [
+      'https://de1.api.radio-browser.info/json',
+      'https://nl1.api.radio-browser.info/json',
+      'https://de2.api.radio-browser.info/json',
+    ],
     this.timeout = 30,
     this.maxPageSize = 10000,
     this.minPageSize = 1,
@@ -14,10 +20,7 @@ class RadioBrowserConfig {
   });
 
   /// The base URL for the API
-  final String baseUrl;
-
-  /// The secondary base URL for the API
-  final String secondaryBaseUrl;
+  final List<String> baseUrls;
 
   /// The timeout for requests in seconds
   final int timeout;

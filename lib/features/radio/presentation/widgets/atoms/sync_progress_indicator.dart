@@ -4,40 +4,40 @@ import 'package:radio_stations/features/radio/presentation/models/sync_progress_
 /// A widget that displays the progress of a synchronization operation
 class SyncProgressIndicator extends StatelessWidget {
   /// Creates a new instance of [SyncProgressIndicator]
-  const SyncProgressIndicator({
-    required this.progress,
-    super.key,
-  });
+  const SyncProgressIndicator({required this.progress, super.key});
 
   /// The sync progress model
   final SyncProgressModel progress;
 
   @override
   Widget build(BuildContext context) {
+    final halfWidth = MediaQuery.of(context).size.width / 2;
     return Center(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
+          const Spacer(flex: 20),
           Text(
             'Syncing stations...',
-            style: Theme.of(context).textTheme.titleMedium,
+            style: Theme.of(context).textTheme.headlineLarge,
           ),
-          const SizedBox(height: 8),
+          const Spacer(flex: 2),
           Text(
             progress.progressMessage,
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: Theme.of(context).textTheme.headlineMedium,
           ),
-          const SizedBox(height: 16),
+          const Spacer(flex: 3),
           SizedBox(
-            width: 200,
+            width: halfWidth,
             child: LinearProgressIndicator(
               value: progress.progressValue,
-              backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+              backgroundColor: Theme.of(context).colorScheme.surface,
               valueColor: AlwaysStoppedAnimation<Color>(
                 Theme.of(context).colorScheme.primary,
               ),
             ),
           ),
+          const Spacer(flex: 20),
         ],
       ),
     );

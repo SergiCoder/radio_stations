@@ -21,13 +21,13 @@ class AppColors {
   ///
   /// This color is used for surfaces that appear above the background,
   /// such as cards, dialogs, and modals.
-  static const Color surface = Color(0xFF1A1A1A);
+  static const Color surface = Color.fromARGB(255, 39, 39, 39);
 
   /// Background color used for the main app background
   ///
   /// This color serves as the base color for the application's
   /// background and main surface.
-  static const Color background = Colors.black;
+  static const Color background = Color.fromARGB(255, 27, 27, 27);
 
   /// Error color used for error states and messages
   ///

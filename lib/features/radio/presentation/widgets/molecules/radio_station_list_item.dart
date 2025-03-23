@@ -23,6 +23,7 @@ class RadioStationListItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      contentPadding: const EdgeInsets.fromLTRB(15, 0, 5, 0),
       leading: SizedBox(
         width: 24,
         height: 24,
@@ -44,8 +45,14 @@ class RadioStationListItemWidget extends StatelessWidget {
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (station.broken)
-            const Icon(Icons.error_outline, color: Colors.orange),
+          SizedBox(
+            width: 24,
+            height: 24,
+            child:
+                station.broken
+                    ? const Icon(Icons.error_outline, color: Colors.orange)
+                    : null,
+          ),
           IconButton(
             icon:
                 (station.isFavorite)

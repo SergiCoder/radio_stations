@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'package:radio_stations/features/radio/data/datasources/datasources.dart';
 import 'package:radio_stations/features/radio/data/dto/radio_station_remote_dto.dart';
@@ -62,20 +63,16 @@ class RadioStationRemoteDataSource {
 
   /// Gets the total number of stations from the API
   Future<int> _getTotalStationCount() async {
-    try {
-      final body = await _makeRequest(_config.baseUrl, '/stats');
-      final stats = json.decode(body) as Map<String, dynamic>;
-      return stats['stations'] as int;
-    } catch (e) {
-      // Try secondary URL if primary fails
+    for (final baseUrl in _config.baseUrls) {
       try {
-        final body = await _makeRequest(_config.secondaryBaseUrl, '/stats');
+        final body = await _makeRequest(baseUrl, '/stats');
         final stats = json.decode(body) as Map<String, dynamic>;
         return stats['stations'] as int;
       } catch (e) {
-        throw Exception('Failed to get station count: $e');
+        log('Failed to get station count from $baseUrl: $e, trying next...');
       }
     }
+    throw Exception('Failed to get station count');
   }
 
   /// Fetches all radio stations from the remote source
@@ -131,26 +128,19 @@ class RadioStationRemoteDataSource {
       // Only get working stations
       'lastcheckok': 'true',
     };
-    try {
-      final body = await _makeRequest(
-        _config.baseUrl,
-        '/stations',
-        queryParams: queryParams,
-      );
-      return _parseResponse(body);
-    } catch (e) {
-      // Try secondary URL if primary fails
+    for (final baseUrl in _config.baseUrls) {
       try {
         final body = await _makeRequest(
-          _config.secondaryBaseUrl,
+          baseUrl,
           '/stations',
           queryParams: queryParams,
         );
         return _parseResponse(body);
       } catch (e) {
-        throw Exception('Failed to fetch radio stations: $e');
+        log('Failed to fetch page from $baseUrl: $e, trying next...');
       }
     }
+    throw Exception('Failed to fetch radio stations');
   }
 
   /// Parses the response body into a list of [RadioStationRemoteDto]
