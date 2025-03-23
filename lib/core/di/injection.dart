@@ -3,11 +3,7 @@ import 'package:hive_ce/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart';
 import 'package:radio_stations/core/database/hive_database.dart';
-import 'package:radio_stations/features/radio/data/datasources/datasources.dart';
-import 'package:radio_stations/features/radio/data/dto/radio_station_local_dto.dart';
-import 'package:radio_stations/features/radio/data/repositories/audio_repository_impl.dart';
-import 'package:radio_stations/features/radio/data/repositories/radio_station_repository_impl.dart';
-import 'package:radio_stations/features/radio/data/services/audio_service_impl.dart';
+import 'package:radio_stations/features/radio/data/data.dart';
 import 'package:radio_stations/features/radio/domain/domain.dart';
 import 'package:radio_stations/features/radio/domain/repositories/audio_repository.dart';
 import 'package:radio_stations/features/radio/domain/use_cases/toggle_favorite_radio_station_use_case.dart';
@@ -42,11 +38,13 @@ Future<void> init() async {
     ..registerLazySingleton<RadioStationLocalDataSource>(
       () => RadioStationLocalDataSource(box: getIt()),
     )
+    ..registerLazySingleton<RadioStationMapper>(RadioStationMapper.new)
     // Repositories
     ..registerLazySingleton<RadioStationRepository>(
       () => RadioStationRepositoryImpl(
         remoteDataSource: getIt(),
         localDataSource: getIt(),
+        mapper: getIt(),
       ),
     )
     // Audio
@@ -56,8 +54,8 @@ Future<void> init() async {
       () => AudioRepositoryImpl(audioService: getIt()),
     )
     // Use cases
-    ..registerLazySingleton<GetAllRadioStationListItemsUseCase>(
-      () => GetAllRadioStationListItemsUseCase(repository: getIt()),
+    ..registerLazySingleton<GetRadioStationListUseCase>(
+      () => GetRadioStationListUseCase(repository: getIt()),
     )
     ..registerLazySingleton<GetRadioStationByIdUseCase>(
       () => GetRadioStationByIdUseCase(
@@ -77,7 +75,7 @@ Future<void> init() async {
     // Cubits
     ..registerFactory<RadioPageCubit>(
       () => RadioPageCubit(
-        getAllStationsUseCase: getIt(),
+        getRadioStationListUseCase: getIt(),
         syncStationsUseCase: getIt(),
         getStationByIdUseCase: getIt(),
         toggleFavoriteUseCase: getIt(),

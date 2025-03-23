@@ -1,8 +1,6 @@
-import 'dart:developer';
-
 import 'package:radio_stations/features/radio/data/datasources/radio_station_local_data_source.dart';
 import 'package:radio_stations/features/radio/data/datasources/radio_station_remote_data_source.dart';
-import 'package:radio_stations/features/radio/data/dto/radio_station_local_dto.dart';
+import 'package:radio_stations/features/radio/data/extensions/radio_station_remote_dto_extensions.dart';
 import 'package:radio_stations/features/radio/data/mappers/radio_station_mapper.dart';
 import 'package:radio_stations/features/radio/domain/domain.dart';
 import 'package:radio_stations/features/radio/domain/extensions/radio_station_list_item_extensions.dart';
@@ -19,6 +17,7 @@ class RadioStationRepositoryImpl implements RadioStationRepository {
   RadioStationRepositoryImpl({
     required this.remoteDataSource,
     required this.localDataSource,
+    required this.mapper,
   });
 
   /// The remote data source for radio stations
@@ -27,78 +26,42 @@ class RadioStationRepositoryImpl implements RadioStationRepository {
   /// The local data source for radio stations
   final RadioStationLocalDataSource localDataSource;
 
+  /// The mapper for radio stations
+  final RadioStationMapper mapper;
+
   @override
   Future<void> syncStations({
     void Function(int total, int downloaded)? onProgress,
   }) async {
     final stations = await remoteDataSource.getStations(onProgress: onProgress);
-
-    var counter = 0;
-
-    // Process stations in a single pass
-    final localStations = <RadioStationLocalDto>[];
-
-    for (final station in stations) {
-      // Remove video stations
-      if (station.hls == 0) {
-        // Get existing station to preserve state
-        final existingStation = localDataSource.getStationById(
-          station.stationuuid,
-        );
-
-        // Convert to local DTO
-        final localDto = RadioStationMapper.toLocalDto(
-          station,
-          existingLocalDto: existingStation,
-        );
-        localStations.add(localDto);
-      } else {
-        counter++;
-      }
-    }
-    log('Discarded $counter radio stations because HLS content');
+    // Remove HLS stations due to video content
+    final nonHlsStations = stations.removeHlsStations();
+    // Convert to local DTOs
+    final localStations = mapper.toLocalDtos(nonHlsStations);
+    // Delete all existing stations
     await localDataSource.deleteAllStations();
+    // Save new stations
     await localDataSource.saveStations(localStations);
   }
 
   @override
-  Future<RadioStation?> getStationById(
-    String changeuuid, {
-    bool toggleFavorite = false,
-    bool toggleBroken = false,
-  }) async {
+  Future<RadioStation?> getStationById(String changeuuid) async {
     try {
       final localStation = localDataSource.getStationById(changeuuid);
       if (localStation == null) return null;
-
-      // Apply toggle operations if requested
-      if (toggleFavorite || toggleBroken) {
-        final updatedStation = localStation.copyWith(
-          isFavorite:
-              toggleFavorite
-                  ? !localStation.isFavorite
-                  : localStation.isFavorite,
-          broken: toggleBroken ? !localStation.broken : localStation.broken,
-        );
-        await localDataSource.saveStation(updatedStation);
-        return RadioStationMapper.toEntity(updatedStation);
-      }
-
-      return RadioStationMapper.toEntity(localStation);
+      return mapper.toEntity(localStation);
     } catch (e) {
       throw RadioStationDataFailure('Failed to get station: $e');
     }
   }
 
   @override
-  Future<List<RadioStationListItem>> getAllListItems([
-    RadioStationListItemsFilter? filter,
-  ]) async {
+  Future<List<RadioStation>> getAllStations(RadioStationFilter? filter) async {
     final stations = localDataSource.getAllStations();
 
     if (filter == null) {
-      final listItems = RadioStationMapper.toListItems(stations);
-      return listItems.orderByName();
+      final listItems = mapper.toEntities(stations);
+      return listItems;
     }
 
     // Filter stations first
@@ -113,8 +76,8 @@ class RadioStationRepositoryImpl implements RadioStationRepository {
           return true;
         }).toList();
 
-    final listItems = RadioStationMapper.toListItems(filteredStationsDtos);
-    return listItems.orderByName();
+    final listItems = mapper.toEntities(filteredStationsDtos).orderByName();
+    return listItems;
   }
 
   @override
