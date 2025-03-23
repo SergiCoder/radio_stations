@@ -19,7 +19,7 @@ class SyncProgressIndicator extends StatelessWidget {
           const Spacer(flex: 20),
           Text(
             'Syncing stations...',
-            style: Theme.of(context).textTheme.headlineLarge,
+            style: Theme.of(context).textTheme.headlineMedium,
           ),
           const Spacer(flex: 2),
           Text(

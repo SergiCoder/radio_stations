@@ -9,18 +9,17 @@ class FavoriteFilterButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cubit = context.read<RadioPageCubit>();
+    final showFavorites = context.read<RadioPageCubit>().showFavorites;
     return IconButton(
       icon: Icon(
-        cubit.showFavorites ? Icons.favorite : Icons.favorite_border,
-        color:
-            cubit.showFavorites ? Theme.of(context).colorScheme.primary : null,
+        showFavorites ? Icons.favorite : Icons.favorite_border,
+        color: showFavorites ? Theme.of(context).colorScheme.primary : null,
       ),
-      onPressed: cubit.toggleFavorites,
+      onPressed: () {
+        context.read<RadioPageCubit>().toggleFavorites();
+      },
       tooltip:
-          cubit.showFavorites
-              ? 'Show Non-Favorites Only'
-              : 'Show Favorites Only',
+          showFavorites ? 'Show Non-Favorites Only' : 'Show Favorites Only',
     );
   }
 }

@@ -260,11 +260,13 @@ class RadioPageCubit extends Cubit<RadioPageState> {
     _showFavorites = !_showFavorites;
     final stations = await _getRadioStationListUseCase.execute(_createFilter());
     final loadedState = state as RadioPageLoadedState;
+    final newFilter = _createFilter();
 
     emit(
       loadedState.copyWith(
         stations: stations,
         selectedStation: loadedState.selectedStation,
+        selectedFilter: newFilter,
       ),
     );
   }

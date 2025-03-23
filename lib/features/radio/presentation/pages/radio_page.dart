@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:radio_stations/features/radio/domain/entities/sync_progress.dart';
 import 'package:radio_stations/features/radio/presentation/cubit/radio_page_cubit.dart';
-import 'package:radio_stations/features/radio/presentation/models/sync_progress_model.dart';
 import 'package:radio_stations/features/radio/presentation/state/radio_page_state.dart';
-import 'package:radio_stations/features/radio/presentation/widgets/atoms/sync_progress_indicator.dart';
+import 'package:radio_stations/features/radio/presentation/widgets/templates/radio_error_template.dart';
 import 'package:radio_stations/features/radio/presentation/widgets/templates/radio_loaded_template.dart';
+import 'package:radio_stations/features/radio/presentation/widgets/templates/radio_sync_progress_template.dart';
 
 /// The main page for the radio application
 ///
@@ -42,34 +41,11 @@ class _RadioPageView extends StatelessWidget {
     return BlocBuilder<RadioPageCubit, RadioPageState>(
       builder: (context, state) {
         if (state is RadioPageSyncProgressState) {
-          final syncProgress = SyncProgress(
-            totalStations: state.totalStations,
-            downloadedStations: state.downloadedStations,
-          );
-          return SyncProgressIndicator(
-            progress: SyncProgressModel.fromEntity(syncProgress),
-          );
+          return RadioSyncProgressTemplate(syncProgress: state.syncProgress);
         }
 
         if (state is RadioPageErrorState) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Error: ${state.errorMessage}',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () {
-                    context.read<RadioPageCubit>().loadStations();
-                  },
-                  child: const Text('Retry'),
-                ),
-              ],
-            ),
-          );
+          return RadioErrorTemplate(errorMessage: state.errorMessage);
         }
 
         if (state is RadioPageLoadedState) {

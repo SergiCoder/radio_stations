@@ -1,11 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:radio_stations/features/radio/domain/domain.dart';
+import 'package:radio_stations/features/radio/domain/entities/sync_progress.dart';
 
 /// Base class for the radio page state
 ///
 /// This is the parent class for all states of the radio page.
 @immutable
-abstract class RadioPageState {
+sealed class RadioPageState {
   /// Creates a new instance of [RadioPageState]
   const RadioPageState();
 
@@ -29,6 +30,7 @@ abstract class RadioPageState {
 /// Error state for the radio page
 ///
 /// This state is active when an error occurs while loading stations.
+@immutable
 class RadioPageErrorState extends RadioPageState {
   /// Creates a new instance of [RadioPageErrorState]
   ///
@@ -45,6 +47,7 @@ class RadioPageErrorState extends RadioPageState {
 /// Loaded state for the radio page
 ///
 /// This state is active when stations are successfully loaded.
+@immutable
 class RadioPageLoadedState extends RadioPageState {
   /// Creates a new instance of [RadioPageLoadedState]
   ///
@@ -89,7 +92,8 @@ class RadioPageLoadedState extends RadioPageState {
 /// Sync progress state for the radio page
 ///
 /// This state is active when stations are being synchronized from the remote source.
-class RadioPageSyncProgressState extends RadioPageState {
+@immutable
+final class RadioPageSyncProgressState extends RadioPageState {
   /// Creates a new instance of [RadioPageSyncProgressState]
   ///
   /// [totalStations] is the total number of stations to sync
@@ -97,7 +101,11 @@ class RadioPageSyncProgressState extends RadioPageState {
   const RadioPageSyncProgressState({
     required this.totalStations,
     required this.downloadedStations,
-  });
+  }) : assert(totalStations >= 0, 'Total stations must be non-negative'),
+       assert(
+         downloadedStations >= 0,
+         'Downloaded stations must be non-negative',
+       );
 
   /// The total number of stations to sync
   final int totalStations;
@@ -108,6 +116,12 @@ class RadioPageSyncProgressState extends RadioPageState {
   /// The current progress percentage (0-100)
   double get progressPercentage =>
       totalStations > 0 ? (downloadedStations / totalStations) * 100 : 0;
+
+  /// The sync progress
+  SyncProgress get syncProgress => SyncProgress(
+    totalStations: totalStations,
+    downloadedStations: downloadedStations,
+  );
 
   @override
   List<Object?> get props => [totalStations, downloadedStations];
