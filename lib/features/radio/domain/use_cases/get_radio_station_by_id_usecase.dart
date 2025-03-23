@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:radio_stations/features/radio/domain/entities/radio_station.dart';
 import 'package:radio_stations/features/radio/domain/failures/radio_station_failure.dart';
 import 'package:radio_stations/features/radio/domain/repositories/audio_repository.dart';
@@ -10,16 +12,16 @@ import 'package:radio_stations/features/radio/domain/repositories/radio_station_
 class GetRadioStationByIdUseCase {
   /// Creates a new instance of [GetRadioStationByIdUseCase]
   ///
-  /// [repository] is the repository used for getting radio stations
+  /// [radioStationRepository] is the repository used for getting radio stations
   /// [audioRepository] is the repository used for audio playback
   const GetRadioStationByIdUseCase({
-    required RadioStationRepository repository,
+    required RadioStationRepository radioStationRepository,
     required AudioRepository audioRepository,
-  }) : _repository = repository,
+  }) : _radioStationRepository = radioStationRepository,
        _audioRepository = audioRepository;
 
   /// The repository used for getting radio stations
-  final RadioStationRepository _repository;
+  final RadioStationRepository _radioStationRepository;
 
   /// The repository used for audio playback
   final AudioRepository _audioRepository;
@@ -40,14 +42,17 @@ class GetRadioStationByIdUseCase {
   /// Returns the [RadioStation] that was played.
   ///
   /// Throws a [RadioStationDataFailure] if station retrieval fails.
-  Future<RadioStation?> execute(RadioStation station) async {
+  Future<void> execute(RadioStation station) async {
     try {
       await _audioRepository.play(station);
-      await _repository.toggleStationBroken(station);
-      return station;
+      if (station.broken) {
+        await _radioStationRepository.toggleStationBroken(station);
+      }
     } catch (e) {
-      await _repository.toggleStationBroken(station);
-      return null;
+      log('Error playing station: $e');
+      if (!station.broken) {
+        await _radioStationRepository.toggleStationBroken(station);
+      }
     }
   }
 }

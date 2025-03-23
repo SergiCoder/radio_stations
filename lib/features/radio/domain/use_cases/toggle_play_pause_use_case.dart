@@ -3,7 +3,8 @@ import 'package:radio_stations/features/radio/domain/repositories/audio_reposito
 /// Use case for toggling play/pause state of the audio player
 class TogglePlayPauseUseCase {
   /// Creates a new instance of [TogglePlayPauseUseCase]
-  const TogglePlayPauseUseCase(this._audioRepository);
+  const TogglePlayPauseUseCase({required AudioRepository audioRepository})
+    : _audioRepository = audioRepository;
 
   /// The audio repository to use for playback control
   final AudioRepository _audioRepository;

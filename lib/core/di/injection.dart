@@ -55,22 +55,25 @@ Future<void> init() async {
     )
     // Use cases
     ..registerLazySingleton<GetRadioStationListUseCase>(
-      () => GetRadioStationListUseCase(repository: getIt()),
+      () => GetRadioStationListUseCase(radioStationRepository: getIt()),
     )
     ..registerLazySingleton<GetRadioStationByIdUseCase>(
       () => GetRadioStationByIdUseCase(
-        repository: getIt(),
+        radioStationRepository: getIt(),
         audioRepository: getIt(),
       ),
     )
     ..registerLazySingleton<SyncRadioStationsUseCase>(
-      () => SyncRadioStationsUseCase(repository: getIt()),
+      () => SyncRadioStationsUseCase(radioStationRepository: getIt()),
     )
     ..registerLazySingleton<ToggleFavoriteRadioStationUseCase>(
-      () => ToggleFavoriteRadioStationUseCase(repository: getIt()),
+      () => ToggleFavoriteRadioStationUseCase(radioStationRepository: getIt()),
     )
     ..registerLazySingleton<GetPlaybackStateUseCase>(
       () => GetPlaybackStateUseCase(audioRepository: getIt()),
+    )
+    ..registerLazySingleton<TogglePlayPauseUseCase>(
+      () => TogglePlayPauseUseCase(audioRepository: getIt()),
     )
     // Cubits
     ..registerFactory<RadioPageCubit>(

@@ -11,12 +11,14 @@ import 'package:radio_stations/features/radio/domain/repositories/radio_station_
 class SyncRadioStationsUseCase {
   /// Creates a new instance of [SyncRadioStationsUseCase]
   ///
-  /// [repository] is the repository used for synchronizing radio stations
-  const SyncRadioStationsUseCase({required RadioStationRepository repository})
-      : _repository = repository;
+  /// [radioStationRepository] is the repository used for synchronizing radio
+  /// stations
+  const SyncRadioStationsUseCase({
+    required RadioStationRepository radioStationRepository,
+  }) : _radioStationRepository = radioStationRepository;
 
   /// The repository used for synchronizing radio stations
-  final RadioStationRepository _repository;
+  final RadioStationRepository _radioStationRepository;
 
   /// Synchronizes radio stations from the remote source to the local cache
   ///
@@ -31,7 +33,7 @@ class SyncRadioStationsUseCase {
     void Function(int total, int downloaded)? onProgress,
   }) async {
     try {
-      await _repository.syncStations(onProgress: onProgress);
+      await _radioStationRepository.syncStations(onProgress: onProgress);
     } catch (e) {
       log('Failed to sync radio stations: $e');
       throw RadioStationSyncFailure('Failed to sync radio stations: $e');

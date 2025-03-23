@@ -8,13 +8,14 @@ import 'package:radio_stations/features/radio/domain/domain.dart';
 class GetRadioStationListUseCase {
   /// Creates a new instance of [GetRadioStationListUseCase]
   ///
-  /// [repository] is the repository used for retrieving radio station list
-  /// items
-  const GetRadioStationListUseCase({required RadioStationRepository repository})
-    : _repository = repository;
+  /// [radioStationRepository] is the repository used for retrieving radio
+  /// station list items
+  const GetRadioStationListUseCase({
+    required RadioStationRepository radioStationRepository,
+  }) : _radioStationRepository = radioStationRepository;
 
   /// The repository used for retrieving radio station list items
-  final RadioStationRepository _repository;
+  final RadioStationRepository _radioStationRepository;
 
   /// Retrieves all radio station list items
   ///
@@ -25,7 +26,7 @@ class GetRadioStationListUseCase {
   /// Throws a [RadioStationDataFailure] if station retrieval fails
   Future<List<RadioStation>> execute([RadioStationFilter? filter]) async {
     try {
-      return await _repository.getAllStations(filter);
+      return await _radioStationRepository.getAllStations(filter);
     } catch (e) {
       throw RadioStationDataFailure('Failed to get radio stations: $e');
     }
@@ -37,7 +38,7 @@ class GetRadioStationListUseCase {
   /// Throws a [RadioStationDataFailure] if retrieval fails.
   Future<List<String>> getAvailableCountries() async {
     try {
-      return await _repository.getAvailableCountries();
+      return await _radioStationRepository.getAvailableCountries();
     } catch (e) {
       throw RadioStationDataFailure('Failed to get available countries: $e');
     }
