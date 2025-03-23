@@ -75,29 +75,9 @@ class _RadioPageView extends StatelessWidget {
         if (state is RadioPageLoadedState) {
           return RadioPageTemplate(
             stations: state.stations,
-            selectedStation: state.selectedStation,
-            isPlaying: context.read<RadioPageCubit>().isPlaying,
-            showFavorites: context.read<RadioPageCubit>().showFavorites,
             onStationSelected: (station) {
               context.read<RadioPageCubit>().selectStation(station);
             },
-            onPlayPause: () {
-              context.read<RadioPageCubit>().togglePlayPause();
-            },
-            onPrevious: () {
-              context.read<RadioPageCubit>().previousStation();
-            },
-            onNext: () {
-              context.read<RadioPageCubit>().nextStation();
-            },
-            onToggleFavorites: () {
-              context.read<RadioPageCubit>().toggleFavorites();
-            },
-            onCountryChanged: (country) {
-              context.read<RadioPageCubit>().setSelectedCountry(country);
-            },
-            availableCountries: context.read<RadioPageCubit>().countries,
-            selectedCountry: context.read<RadioPageCubit>().selectedCountry,
           );
         }
 

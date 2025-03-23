@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 /// A simple widget that displays the number of radio stations
 class RadioStationCount extends StatelessWidget {
   /// Creates a new instance of [RadioStationCount]
-  const RadioStationCount({
-    required this.count,
-    super.key,
-  });
+  const RadioStationCount({required this.count, super.key});
 
   /// The number of stations to display
   final int count;
