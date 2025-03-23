@@ -8,6 +8,7 @@ import 'package:radio_stations/features/audio/data/services/audio_service_impl.d
 import 'package:radio_stations/features/audio/domain/repositories/audio_repository.dart';
 import 'package:radio_stations/features/radio/data/data.dart';
 import 'package:radio_stations/features/radio/domain/domain.dart';
+import 'package:radio_stations/features/radio/domain/use_cases/set_volume_use_case.dart';
 import 'package:radio_stations/features/radio/domain/use_cases/toggle_favorite_radio_station_use_case.dart';
 import 'package:radio_stations/features/radio/presentation/cubit/radio_page_cubit.dart';
 import 'package:radio_stations/features/shared/domain/events/error_event_bus.dart';
@@ -88,6 +89,9 @@ Future<void> init() async {
     ..registerLazySingleton<SetBrokenRadioStationUseCase>(
       () => SetBrokenRadioStationUseCase(radioStationRepository: getIt()),
     )
+    ..registerLazySingleton<SetVolumeUseCase>(
+      () => SetVolumeUseCase(audioRepository: getIt()),
+    )
     // Cubits
     ..registerFactory<RadioPageCubit>(
       () => RadioPageCubit(
@@ -98,6 +102,7 @@ Future<void> init() async {
         getPlaybackStateUseCase: getIt(),
         togglePlayPauseUseCase: getIt(),
         setBrokenRadioStationUseCase: getIt(),
+        setVolumeUseCase: getIt(),
         errorEventBus: getIt(),
       ),
     );
