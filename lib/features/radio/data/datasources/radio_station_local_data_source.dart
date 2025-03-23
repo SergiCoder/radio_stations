@@ -1,6 +1,6 @@
 import 'package:hive_ce/hive.dart';
 import 'package:radio_stations/features/radio/data/dto/radio_station_local_dto.dart';
-import 'package:radio_stations/features/radio/domain/entities/radio_station.dart';
+import 'package:radio_stations/features/shared/domain/entitites/radio_station.dart';
 
 /// Local data source for radio stations
 ///

@@ -1,9 +1,9 @@
 import 'dart:developer';
 
 import 'package:radio_stations/features/audio/domain/repositories/audio_repository.dart';
-import 'package:radio_stations/features/radio/domain/entities/radio_station.dart';
 import 'package:radio_stations/features/radio/domain/failures/radio_station_failure.dart';
 import 'package:radio_stations/features/radio/domain/repositories/radio_station_repository.dart';
+import 'package:radio_stations/features/shared/domain/entitites/radio_station.dart';
 
 /// Use case for playing a radio station
 ///

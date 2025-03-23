@@ -3,7 +3,7 @@
 /// cases, failures, and enums.
 library;
 
-export 'entities/radio_station.dart';
+export '../../shared/domain/entitites/radio_station.dart';
 export 'entities/radio_station_filter.dart';
 export 'failures/radio_station_failure.dart';
 export 'repositories/radio_station_repository.dart';

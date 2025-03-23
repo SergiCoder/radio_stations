@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:radio_stations/features/radio/domain/entities/radio_station.dart';
 import 'package:radio_stations/features/radio/presentation/widgets/molecules/radio_station_list_item.dart';
+import 'package:radio_stations/features/shared/domain/entitites/radio_station.dart';
 
 /// A widget that displays a list of radio stations
 class RadioStationList extends StatelessWidget {

@@ -1,4 +1,4 @@
-import 'package:radio_stations/features/radio/domain/entities/radio_station.dart';
+import 'package:radio_stations/features/shared/domain/entitites/radio_station.dart';
 
 /// Repository interface for audio playback functionality
 ///

@@ -26,7 +26,10 @@ Future<void> init() async {
   final radioStationBox = await HiveDatabase.init();
   final player = AudioPlayer();
 
-  final audioService = await AudioServiceImpl.initAudioService(player: player);
+  final audioService = await AudioServiceImpl.initAudioService(
+    player: player,
+    errorEventBus: getIt(),
+  );
 
   // Core
   getIt

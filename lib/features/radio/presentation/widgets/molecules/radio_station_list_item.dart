@@ -2,8 +2,8 @@ import 'dart:developer' as dev;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:radio_stations/features/radio/domain/entities/radio_station.dart';
 import 'package:radio_stations/features/radio/presentation/cubit/radio_page_cubit.dart';
+import 'package:radio_stations/features/shared/domain/entitites/radio_station.dart';
 
 /// A widget that displays a radio station in a list
 class RadioStationListItemWidget extends StatelessWidget {

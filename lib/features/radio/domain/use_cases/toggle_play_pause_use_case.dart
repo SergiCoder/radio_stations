@@ -1,4 +1,4 @@
-import 'package:radio_stations/features/radio/domain/repositories/audio_repository.dart';
+import 'package:radio_stations/features/audio/domain/repositories/audio_repository.dart';
 
 /// Use case for toggling play/pause state of the audio player
 class TogglePlayPauseUseCase {
