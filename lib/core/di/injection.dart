@@ -10,6 +10,7 @@ import 'package:radio_stations/features/radio/data/data.dart';
 import 'package:radio_stations/features/radio/domain/domain.dart';
 import 'package:radio_stations/features/radio/domain/use_cases/toggle_favorite_radio_station_use_case.dart';
 import 'package:radio_stations/features/radio/presentation/cubit/radio_page_cubit.dart';
+import 'package:radio_stations/features/shared/domain/events/error_event_bus.dart';
 
 /// Global service locator instance
 ///
@@ -24,6 +25,9 @@ final getIt = GetIt.instance;
 /// repositories, and other dependencies with the service locator.
 Future<void> init() async {
   final radioStationBox = await HiveDatabase.init();
+
+  getIt.registerLazySingleton<ErrorEventBus>(ErrorEventBus.new);
+
   final player = AudioPlayer();
 
   final audioService = await AudioServiceImpl.initAudioService(
@@ -81,6 +85,9 @@ Future<void> init() async {
     ..registerLazySingleton<TogglePlayPauseUseCase>(
       () => TogglePlayPauseUseCase(audioRepository: getIt()),
     )
+    ..registerLazySingleton<SetBrokenRadioStationUseCase>(
+      () => SetBrokenRadioStationUseCase(radioStationRepository: getIt()),
+    )
     // Cubits
     ..registerFactory<RadioPageCubit>(
       () => RadioPageCubit(
@@ -90,6 +97,8 @@ Future<void> init() async {
         toggleFavoriteUseCase: getIt(),
         getPlaybackStateUseCase: getIt(),
         togglePlayPauseUseCase: getIt(),
+        setBrokenRadioStationUseCase: getIt(),
+        errorEventBus: getIt(),
       ),
     );
 }

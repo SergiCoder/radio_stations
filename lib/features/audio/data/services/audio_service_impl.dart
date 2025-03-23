@@ -4,8 +4,8 @@ import 'dart:developer';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:radio_stations/features/audio/domain/events/error_event_bus.dart';
 import 'package:radio_stations/features/shared/domain/entitites/radio_station.dart';
+import 'package:radio_stations/features/shared/domain/events/error_event_bus.dart';
 
 // Following the example of:
 // https://github.com/suragch/audio_playlist_flutter_demo

@@ -49,7 +49,7 @@ class RadioStationMapper {
           });
 
       return remoteDtos.map((dto) {
-        final existingDto = existingLocalDtosMap?[dto.stationuuid];
+        final existingDto = existingLocalDtosMap?[dto.changeuuid];
         return toLocalDto(dto, existingLocalDto: existingDto);
       }).toList();
     } catch (e) {

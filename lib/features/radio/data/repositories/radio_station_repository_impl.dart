@@ -33,15 +33,24 @@ class RadioStationRepositoryImpl implements RadioStationRepository {
   Future<void> syncStations({
     void Function(int total, int downloaded)? onProgress,
   }) async {
-    final stations = await remoteDataSource.getStations(onProgress: onProgress);
+    final remoteStations = await remoteDataSource.getStations(
+      onProgress: onProgress,
+    );
     // Remove HLS stations due to video content
-    final nonHlsStations = stations.removeHlsStations();
-    // Convert to local DTOs
-    final localStations = mapper.toLocalDtos(nonHlsStations);
+    final nonHlsStations = remoteStations.removeHlsStations();
+
+    // Fetch all stations from local data source
+    final localStations = localDataSource.getAllStations();
+    // Convert to local DTOs and preserve existing stations favorites and
+    // broken status
+    final updatedStations = mapper.toLocalDtos(
+      nonHlsStations,
+      existingLocalDtos: localStations,
+    );
     // Delete all existing stations
     await localDataSource.deleteAllStations();
     // Save new stations
-    await localDataSource.saveStations(localStations);
+    await localDataSource.saveStations(updatedStations);
   }
 
   @override

@@ -3,6 +3,7 @@ import 'package:radio_stations/features/radio/domain/domain.dart';
 import 'package:radio_stations/features/radio/domain/use_cases/toggle_favorite_radio_station_use_case.dart';
 import 'package:radio_stations/features/radio/presentation/pages/radio_page.dart';
 import 'package:radio_stations/features/radio/presentation/state/radio_page_state.dart';
+import 'package:radio_stations/features/shared/domain/events/error_event_bus.dart';
 
 /// Cubit that manages the state of the [RadioPage]
 ///
@@ -19,36 +20,51 @@ class RadioPageCubit extends Cubit<RadioPageState> {
   /// [getPlaybackStateUseCase] is used to get the current playback state
   /// [togglePlayPauseUseCase] is used to toggle play/pause
   RadioPageCubit({
-    required this.getRadioStationListUseCase,
-    required this.syncStationsUseCase,
-    required this.playRadioStationUseCase,
-    required this.toggleFavoriteUseCase,
-    required this.getPlaybackStateUseCase,
-    required this.togglePlayPauseUseCase,
-  }) : super(
+    required GetRadioStationListUseCase getRadioStationListUseCase,
+    required SyncRadioStationsUseCase syncStationsUseCase,
+    required PlayRadioStationUseCase playRadioStationUseCase,
+    required ToggleFavoriteRadioStationUseCase toggleFavoriteUseCase,
+    required GetPlaybackStateUseCase getPlaybackStateUseCase,
+    required TogglePlayPauseUseCase togglePlayPauseUseCase,
+    required SetBrokenRadioStationUseCase setBrokenRadioStationUseCase,
+    required ErrorEventBus errorEventBus,
+  }) : _getRadioStationListUseCase = getRadioStationListUseCase,
+       _syncStationsUseCase = syncStationsUseCase,
+       _playRadioStationUseCase = playRadioStationUseCase,
+       _toggleFavoriteUseCase = toggleFavoriteUseCase,
+       _getPlaybackStateUseCase = getPlaybackStateUseCase,
+       _togglePlayPauseUseCase = togglePlayPauseUseCase,
+       _setBrokenRadioStationUseCase = setBrokenRadioStationUseCase,
+       _errorEventBus = errorEventBus,
+       super(
          const RadioPageSyncProgressState(
            totalStations: 0,
            downloadedStations: 0,
          ),
        );
 
+  final ErrorEventBus _errorEventBus;
+
   /// The use case for getting all radio stations
-  final GetRadioStationListUseCase getRadioStationListUseCase;
+  final GetRadioStationListUseCase _getRadioStationListUseCase;
 
   /// The use case for synchronizing radio stations with a remote source
-  final SyncRadioStationsUseCase syncStationsUseCase;
+  final SyncRadioStationsUseCase _syncStationsUseCase;
 
   /// The use case for playing a radio station
-  final PlayRadioStationUseCase playRadioStationUseCase;
+  final PlayRadioStationUseCase _playRadioStationUseCase;
 
   /// The use case for toggling the favorite status of a station
-  final ToggleFavoriteRadioStationUseCase toggleFavoriteUseCase;
+  final ToggleFavoriteRadioStationUseCase _toggleFavoriteUseCase;
 
   /// The use case for getting the current playback state
-  final GetPlaybackStateUseCase getPlaybackStateUseCase;
+  final GetPlaybackStateUseCase _getPlaybackStateUseCase;
 
   /// The use case for toggling play/pause
-  final TogglePlayPauseUseCase togglePlayPauseUseCase;
+  final TogglePlayPauseUseCase _togglePlayPauseUseCase;
+
+  /// The use case for setting a radio station as broken
+  final SetBrokenRadioStationUseCase _setBrokenRadioStationUseCase;
 
   /// The list of available countries
   List<String> _countries = [];
@@ -74,11 +90,31 @@ class RadioPageCubit extends Cubit<RadioPageState> {
   Future<void> init() async {
     await loadStations();
     _listenToPlaybackState();
+    _listenToErrorEvents();
+  }
+
+  void _listenToErrorEvents() {
+    _errorEventBus.stream.listen((station) {
+      if (state is RadioPageLoadedState) {
+        final loadedState = state as RadioPageLoadedState;
+        final stations =
+            loadedState.stations
+                .map(
+                  (s) =>
+                      s.uuid == station.uuid
+                          ? station.copyWith(broken: true)
+                          : s,
+                )
+                .toList();
+        emit(loadedState.copyWith(stations: stations));
+        _setBrokenRadioStationUseCase.execute(station);
+      }
+    });
   }
 
   /// Listens to playback state changes and updates the UI accordingly
   void _listenToPlaybackState() {
-    getPlaybackStateUseCase.playingStateStream.listen((isPlaying) {
+    _getPlaybackStateUseCase.playingStateStream.listen((isPlaying) {
       if (state is RadioPageLoadedState) {
         final loadedState = state as RadioPageLoadedState;
         emit(loadedState.copyWith());
@@ -90,7 +126,7 @@ class RadioPageCubit extends Cubit<RadioPageState> {
     emit(
       const RadioPageSyncProgressState(totalStations: 0, downloadedStations: 0),
     );
-    await syncStationsUseCase.execute(
+    await _syncStationsUseCase.execute(
       onProgress: (total, downloaded) {
         emit(
           RadioPageSyncProgressState(
@@ -113,14 +149,14 @@ class RadioPageCubit extends Cubit<RadioPageState> {
       }
 
       // First try to get stations from local cache
-      final stations = await getRadioStationListUseCase.execute(
+      final stations = await _getRadioStationListUseCase.execute(
         _createFilter(),
       );
 
       // If we have stations and forceSync is false, just use them
       if (stations.isNotEmpty) {
         // Update available countries and languages
-        _countries = await getRadioStationListUseCase.getAvailableCountries();
+        _countries = await _getRadioStationListUseCase.getAvailableCountries();
         emit(RadioPageLoadedState(stations: stations));
         return;
       }
@@ -159,7 +195,7 @@ class RadioPageCubit extends Cubit<RadioPageState> {
       return;
     }
     emit(loadedState.copyWith(selectedStation: station));
-    await playRadioStationUseCase.execute(station);
+    await _playRadioStationUseCase.execute(station);
   }
 
   /// Handles play/pause for the current station
@@ -168,7 +204,7 @@ class RadioPageCubit extends Cubit<RadioPageState> {
     final loadedState = state as RadioPageLoadedState;
     if (loadedState.selectedStation == null) return;
 
-    await togglePlayPauseUseCase.execute();
+    await _togglePlayPauseUseCase.execute();
   }
 
   /// Handles skipping to the next station
@@ -213,7 +249,7 @@ class RadioPageCubit extends Cubit<RadioPageState> {
     if (state is! RadioPageLoadedState) return;
 
     _showFavorites = !_showFavorites;
-    final stations = await getRadioStationListUseCase.execute(_createFilter());
+    final stations = await _getRadioStationListUseCase.execute(_createFilter());
     final loadedState = state as RadioPageLoadedState;
 
     emit(
@@ -228,7 +264,7 @@ class RadioPageCubit extends Cubit<RadioPageState> {
   Future<void> setSelectedCountry(String? country) async {
     if (state is! RadioPageLoadedState) return;
     _selectedCountry = country;
-    final stations = await getRadioStationListUseCase.execute(_createFilter());
+    final stations = await _getRadioStationListUseCase.execute(_createFilter());
     final loadedState = state as RadioPageLoadedState;
 
     emit(
@@ -246,7 +282,7 @@ class RadioPageCubit extends Cubit<RadioPageState> {
     if (state is! RadioPageLoadedState) return;
 
     try {
-      await toggleFavoriteUseCase.execute(station);
+      await _toggleFavoriteUseCase.execute(station);
       await _updateFilteredStations();
     } catch (e) {
       final String errorMessage;
@@ -266,7 +302,7 @@ class RadioPageCubit extends Cubit<RadioPageState> {
 
     try {
       final loadedState = state as RadioPageLoadedState;
-      final stations = await getRadioStationListUseCase.execute(
+      final stations = await _getRadioStationListUseCase.execute(
         _createFilter(),
       );
       emit(loadedState.copyWith(stations: stations));
@@ -291,6 +327,6 @@ class RadioPageCubit extends Cubit<RadioPageState> {
     if (state is! RadioPageLoadedState) return false;
     final loadedState = state as RadioPageLoadedState;
     return loadedState.selectedStation != null &&
-        getPlaybackStateUseCase.isPlaying;
+        _getPlaybackStateUseCase.isPlaying;
   }
 }
