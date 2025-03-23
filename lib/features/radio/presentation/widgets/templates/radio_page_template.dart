@@ -149,100 +149,86 @@ class RadioPageTemplate extends StatelessWidget {
           ),
           if (selectedStation != null) ...[
             const SizedBox(height: 8),
-            FutureBuilder<RadioStation?>(
-              future: context
-                  .read<RadioPageCubit>()
-                  .getStationByIdUseCase
-                  .execute(selectedStation!),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return const SizedBox.shrink();
-                }
-
-                final station = snapshot.data!;
-                return Row(
-                  children: [
-                    SizedBox(
-                      width: 48,
-                      height: 48,
-                      child:
-                          station.favicon.isNotEmpty
-                              ? Image.network(
-                                station.favicon,
-                                errorBuilder:
-                                    (context, error, stackTrace) =>
-                                        const Icon(Icons.radio, size: 48),
-                              )
-                              : const Icon(Icons.radio, size: 48),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            station.name,
-                            style: Theme.of(context).textTheme.titleMedium,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          Text(
-                            isPlaying ? 'Now Playing' : 'Paused',
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                          if (station.homepage.isNotEmpty) ...[
-                            const SizedBox(height: 4),
-                            Row(
-                              children: [
-                                const Icon(Icons.language, size: 16),
-                                const SizedBox(width: 4),
-                                Expanded(
-                                  child: Text(
-                                    station.homepage,
-                                    style:
-                                        Theme.of(context).textTheme.bodySmall,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                          if (station.country.isNotEmpty) ...[
-                            const SizedBox(height: 4),
-                            Row(
-                              children: [
-                                const Icon(Icons.location_on, size: 16),
-                                const SizedBox(width: 4),
-                                Text(
-                                  station.country,
-                                  style: Theme.of(context).textTheme.bodySmall,
-                                ),
-                              ],
-                            ),
-                          ],
-                          if (station.broken) ...[
-                            const SizedBox(height: 4),
-                            Row(
-                              children: [
-                                const Icon(Icons.error_outline, size: 16),
-                                const SizedBox(width: 4),
-                                Text(
-                                  'Station is broken',
-                                  style: Theme.of(
-                                    context,
-                                  ).textTheme.bodySmall?.copyWith(
-                                    color: Theme.of(context).colorScheme.error,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ],
+            Row(
+              children: [
+                SizedBox(
+                  width: 48,
+                  height: 48,
+                  child:
+                      selectedStation!.favicon.isNotEmpty
+                          ? Image.network(
+                            selectedStation!.favicon,
+                            errorBuilder:
+                                (context, error, stackTrace) =>
+                                    const Icon(Icons.radio, size: 48),
+                          )
+                          : const Icon(Icons.radio, size: 48),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        selectedStation!.name,
+                        style: Theme.of(context).textTheme.titleMedium,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                  ],
-                );
-              },
+                      Text(
+                        isPlaying ? 'Now Playing' : 'Paused',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                      if (selectedStation!.homepage.isNotEmpty) ...[
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            const Icon(Icons.language, size: 16),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                selectedStation!.homepage,
+                                style: Theme.of(context).textTheme.bodySmall,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                      if (selectedStation!.country.isNotEmpty) ...[
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            const Icon(Icons.location_on, size: 16),
+                            const SizedBox(width: 4),
+                            Text(
+                              selectedStation!.country,
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                          ],
+                        ),
+                      ],
+                      if (selectedStation!.broken) ...[
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            const Icon(Icons.error_outline, size: 16),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Station is broken',
+                              style: Theme.of(
+                                context,
+                              ).textTheme.bodySmall?.copyWith(
+                                color: Theme.of(context).colorScheme.error,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 8),
             RadioPlayerControls(
