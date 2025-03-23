@@ -1,6 +1,6 @@
 import 'package:radio_stations/features/audio/data/services/audio_service_impl.dart';
 import 'package:radio_stations/features/audio/domain/repositories/audio_repository.dart';
-import 'package:radio_stations/features/radio/domain/entities/radio_station.dart';
+import 'package:radio_stations/features/shared/domain/entitites/radio_station.dart';
 
 /// Implementation of the [AudioRepository] interface using [AudioServiceImpl]
 ///
@@ -21,7 +21,7 @@ class AudioRepositoryImpl implements AudioRepository {
 
   @override
   Future<void> play(RadioStation station) async {
-    await _audioService.playRadioStation(station);
+    await _audioService.playRadioStation(station: station);
   }
 
   @override
