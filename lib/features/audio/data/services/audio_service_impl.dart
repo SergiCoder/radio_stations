@@ -2,9 +2,10 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:radio_stations/features/audio/domain/use_cases/mark_radio_station_broken_usecase.dart';
-import 'package:radio_stations/features/radio/domain/entities/radio_station.dart';
+import 'package:radio_stations/features/audio/domain/events/error_event_bus.dart';
+import 'package:radio_stations/features/shared/domain/entitites/radio_station.dart';
 
 // Following the example of:
 // https://github.com/suragch/audio_playlist_flutter_demo
@@ -14,16 +15,16 @@ import 'package:radio_stations/features/radio/domain/entities/radio_station.dart
 class AudioServiceImpl extends BaseAudioHandler {
   AudioServiceImpl._({
     required AudioPlayer player,
-    required this.markStationBrokenUseCase,
-  }) : _player = player {
+    required ErrorEventBus errorEventBus,
+  }) : _player = player,
+       _errorEventBus = errorEventBus {
     _notifyAudioHandlerAboutPlaybackEvents();
     _setupErrorHandling();
   }
 
   final AudioPlayer _player;
 
-  /// Use case for marking radio stations as broken
-  final MarkRadioStationBrokenUseCase markStationBrokenUseCase;
+  final ErrorEventBus _errorEventBus;
 
   /// Flag to prevent concurrent preparation of songs and control operations
   bool _isPreparing = false;
@@ -36,8 +37,8 @@ class AudioServiceImpl extends BaseAudioHandler {
       (event) {},
       onError: (Object e, StackTrace stackTrace) {
         log('A stream error occurred: $e');
-        if (_currentStation != null) {
-          markStationBrokenUseCase.execute(_currentStation!);
+        if ((e is PlatformException) && (_currentStation != null)) {
+          _errorEventBus.addError(_currentStation!);
         }
       },
       onDone: () {
@@ -50,14 +51,12 @@ class AudioServiceImpl extends BaseAudioHandler {
   /// Async constructor for the audioService
   static Future<AudioServiceImpl> initAudioService({
     required AudioPlayer player,
-    required MarkRadioStationBrokenUseCase markStationBrokenUseCase,
+    required ErrorEventBus errorEventBus,
   }) async {
     final instance = await AudioService.init(
       builder:
-          () => AudioServiceImpl._(
-            player: player,
-            markStationBrokenUseCase: markStationBrokenUseCase,
-          ),
+          () =>
+              AudioServiceImpl._(player: player, errorEventBus: errorEventBus),
       config: const AudioServiceConfig(
         androidNotificationChannelId: 'radio_stations',
         androidNotificationChannelName: 'Radio Stations',
@@ -125,7 +124,7 @@ class AudioServiceImpl extends BaseAudioHandler {
       return;
     }
     if (_currentStation != null) {
-      await playRadioStation(_currentStation!);
+      await playRadioStation(station: _currentStation!);
     }
   }
 
@@ -188,7 +187,7 @@ class AudioServiceImpl extends BaseAudioHandler {
   /// Play a radio station
   ///
   /// [station] is the radio station to play
-  Future<void> playRadioStation(RadioStation station) async {
+  Future<void> playRadioStation({required RadioStation station}) async {
     if (_isPreparing) {
       return;
     }
@@ -197,7 +196,11 @@ class AudioServiceImpl extends BaseAudioHandler {
       await _player.stop();
       await _player.setAudioSource(AudioSource.uri(Uri.parse(station.url)));
       unawaited(_player.play());
-      notifyStation(station);
+      notifyStation(
+        stationUrl: station.url,
+        stationName: station.name,
+        stationCountry: station.country,
+      );
       _isPreparing = false;
       _currentStation = station;
     } catch (e) {
@@ -209,9 +212,13 @@ class AudioServiceImpl extends BaseAudioHandler {
   }
 
   /// Notify the system the current station
-  void notifyStation(RadioStation station) {
+  void notifyStation({
+    required String stationUrl,
+    required String stationName,
+    String? stationCountry,
+  }) {
     mediaItem.add(
-      MediaItem(id: station.uuid, title: station.name, artist: station.country),
+      MediaItem(id: stationUrl, title: stationName, artist: stationCountry),
     );
   }
 }
