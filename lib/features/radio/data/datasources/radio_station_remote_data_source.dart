@@ -15,8 +15,8 @@ class RadioStationRemoteDataSource {
   RadioStationRemoteDataSource({
     http.Client? client,
     RadioBrowserConfig? config,
-  })  : _client = client ?? http.Client(),
-        _config = config ?? const RadioBrowserConfig();
+  }) : _client = client ?? http.Client(),
+       _config = config ?? const RadioBrowserConfig();
 
   /// The HTTP client used for making requests
   final http.Client _client;
@@ -35,22 +35,46 @@ class RadioStationRemoteDataSource {
     return idealPageSize.clamp(_config.minPageSize, _config.maxPageSize);
   }
 
+  /// Makes a request to the API with the specified base URL
+  ///
+  /// [baseUrl] is the base URL to use for the request
+  /// [path] is the path to append to the base URL
+  /// [queryParams] are the query parameters to include in the request
+  ///
+  /// Returns the response body as a string
+  Future<String> _makeRequest(
+    String baseUrl,
+    String path, {
+    Map<String, String>? queryParams,
+  }) async {
+    final uri = Uri.parse(baseUrl + path).replace(queryParameters: queryParams);
+
+    final response = await _client
+        .get(uri)
+        .timeout(Duration(seconds: _config.timeout));
+
+    if (response.statusCode == 200) {
+      return utf8.decode(response.bodyBytes);
+    } else {
+      throw Exception('Unexpected error: ${response.statusCode}');
+    }
+  }
+
   /// Gets the total number of stations from the API
   Future<int> _getTotalStationCount() async {
     try {
-      final response = await _client
-          .get(Uri.parse('${_config.baseUrl}/stats'))
-          .timeout(Duration(seconds: _config.timeout));
-
-      if (response.statusCode == 200) {
-        final stats = json.decode(response.body) as Map<String, dynamic>;
-        // The API returns the count in the 'stations' field
-        return stats['stations'] as int;
-      } else {
-        throw Exception('Failed to get station count: ${response.statusCode}');
-      }
+      final body = await _makeRequest(_config.baseUrl, '/stats');
+      final stats = json.decode(body) as Map<String, dynamic>;
+      return stats['stations'] as int;
     } catch (e) {
-      throw Exception('Failed to get station count: $e');
+      // Try secondary URL if primary fails
+      try {
+        final body = await _makeRequest(_config.secondaryBaseUrl, '/stats');
+        final stats = json.decode(body) as Map<String, dynamic>;
+        return stats['stations'] as int;
+      } catch (e) {
+        throw Exception('Failed to get station count: $e');
+      }
     }
   }
 
@@ -97,24 +121,35 @@ class RadioStationRemoteDataSource {
   Future<List<RadioStationRemoteDto>> _fetchPage(int page, int pageSize) async {
     final offset = (page - 1) * pageSize;
 
+    // Build query parameters to filter out video content
+    final queryParams = {
+      'limit': pageSize.toString(),
+      'offset': offset.toString(),
+      'hidebroken': 'true',
+      // Order by reliability
+      'order': 'name',
+      // Only get working stations
+      'lastcheckok': 'true',
+    };
     try {
-      final response = await _client
-          .get(
-            Uri.parse(
-              '${_config.baseUrl}/stations?limit=$pageSize&offset=$offset&hidebroken=true',
-            ),
-          )
-          .timeout(Duration(seconds: _config.timeout));
-
-      if (response.statusCode == 200) {
-        // Decode the response body as UTF-8
-        final decodedBody = utf8.decode(response.bodyBytes);
-        return _parseResponse(decodedBody);
-      } else {
-        throw Exception('Unexpected error: ${response.statusCode}');
-      }
+      final body = await _makeRequest(
+        _config.baseUrl,
+        '/stations',
+        queryParams: queryParams,
+      );
+      return _parseResponse(body);
     } catch (e) {
-      throw Exception('Failed to fetch radio stations: $e');
+      // Try secondary URL if primary fails
+      try {
+        final body = await _makeRequest(
+          _config.secondaryBaseUrl,
+          '/stations',
+          queryParams: queryParams,
+        );
+        return _parseResponse(body);
+      } catch (e) {
+        throw Exception('Failed to fetch radio stations: $e');
+      }
     }
   }
 

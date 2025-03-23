@@ -6,6 +6,7 @@ class RadioBrowserConfig {
   /// [timeout] is the timeout for requests in seconds
   const RadioBrowserConfig({
     this.baseUrl = 'https://de1.api.radio-browser.info/json',
+    this.secondaryBaseUrl = 'https://nl1.api.radio-browser.info/json',
     this.timeout = 30,
     this.maxPageSize = 10000,
     this.minPageSize = 1,
@@ -14,6 +15,9 @@ class RadioBrowserConfig {
 
   /// The base URL for the API
   final String baseUrl;
+
+  /// The secondary base URL for the API
+  final String secondaryBaseUrl;
 
   /// The timeout for requests in seconds
   final int timeout;

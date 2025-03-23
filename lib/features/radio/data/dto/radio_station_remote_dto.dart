@@ -60,7 +60,6 @@ class RadioStationRemoteDto {
       final dto = _$RadioStationRemoteDtoFromJson(json);
       return dto.copyWith(name: dto.name.trim());
     } catch (e) {
-      log('Failed to parse radio station: $e json:\n$json');
       throw Exception('Failed to parse radio station: $e');
     }
   }
@@ -262,5 +261,29 @@ class RadioStationRemoteDto {
       iso31662: iso31662 ?? this.iso31662,
       geoDistance: geoDistance ?? this.geoDistance,
     );
+  }
+
+  @override
+  String toString() {
+    return 'RadioStationRemoteDto('
+        'stationuuid: $stationuuid, '
+        'name: $name, '
+        'url: $url, '
+        'homepage: $homepage, '
+        'favicon: $favicon, '
+        'tags: $tags, '
+        'language: $language, '
+        'country: $country, '
+        'codec: $codec, '
+        'bitrate: $bitrate, '
+        'hls: $hls, '
+        'lastcheckok: $lastcheckok, '
+        'lastchecktime: $lastchecktime, '
+        'lastlocalchecktime: $lastlocalchecktime, '
+        'clicktimestamp: $clicktimestamp, '
+        'clickcount: $clickcount, '
+        'clicktrend: $clicktrend, '
+        'sslError: $sslError, '
+        'hasExtendedInfo: $hasExtendedInfo)';
   }
 }
