@@ -11,9 +11,7 @@ import 'package:radio_stations/features/radio/domain/entities/radio_station.dart
 /// Represents an audio service available across navigation to different
 /// screens.
 class AudioServiceImpl extends BaseAudioHandler {
-  AudioServiceImpl._({
-    required AudioPlayer player,
-  }) : _player = player {
+  AudioServiceImpl._({required AudioPlayer player}) : _player = player {
     _notifyAudioHandlerAboutPlaybackEvents();
   }
 
@@ -21,6 +19,8 @@ class AudioServiceImpl extends BaseAudioHandler {
 
   /// Flag to prevent concurrent preparation of songs and control operations
   bool _isPreparing = false;
+
+  RadioStation? _currentStation;
 
   /// Async constructor for the audioService
   static Future<AudioServiceImpl> initAudioService({
@@ -37,12 +37,10 @@ class AudioServiceImpl extends BaseAudioHandler {
       cancelOnError: false,
     );
     final instance = await AudioService.init(
-      builder: () => AudioServiceImpl._(
-        player: player,
-      ),
+      builder: () => AudioServiceImpl._(player: player),
       config: const AudioServiceConfig(
-        androidNotificationChannelId: 'fm.brandtrack.player.audio',
-        androidNotificationChannelName: 'Brandtrack Player',
+        androidNotificationChannelId: 'radio_stations',
+        androidNotificationChannelName: 'Radio Stations',
         androidStopForegroundOnPause: false,
       ),
     );
@@ -52,9 +50,7 @@ class AudioServiceImpl extends BaseAudioHandler {
 
   List<MediaControl> _createMediaControls() {
     final mediaControls = <MediaControl>[
-      MediaControl.skipToPrevious,
       if (_player.playing) MediaControl.pause else MediaControl.play,
-      MediaControl.skipToNext,
     ];
     return mediaControls;
   }
@@ -64,25 +60,26 @@ class AudioServiceImpl extends BaseAudioHandler {
       playbackState.add(
         playbackState.value.copyWith(
           controls: _createMediaControls(),
-          systemActions: const {
-            MediaAction.seek,
-          },
+          systemActions: const {MediaAction.seek},
           androidCompactActionIndices: [0, 1, 2],
-          processingState: const {
-            ProcessingState.idle: AudioProcessingState.idle,
-            ProcessingState.loading: AudioProcessingState.loading,
-            ProcessingState.buffering: AudioProcessingState.buffering,
-            ProcessingState.ready: AudioProcessingState.ready,
-            ProcessingState.completed: AudioProcessingState.completed,
-          }[_player.processingState]!,
-          repeatMode: const {
-            LoopMode.off: AudioServiceRepeatMode.none,
-            LoopMode.one: AudioServiceRepeatMode.one,
-            LoopMode.all: AudioServiceRepeatMode.all,
-          }[_player.loopMode]!,
-          shuffleMode: (_player.shuffleModeEnabled)
-              ? AudioServiceShuffleMode.all
-              : AudioServiceShuffleMode.none,
+          processingState:
+              const {
+                ProcessingState.idle: AudioProcessingState.idle,
+                ProcessingState.loading: AudioProcessingState.loading,
+                ProcessingState.buffering: AudioProcessingState.buffering,
+                ProcessingState.ready: AudioProcessingState.ready,
+                ProcessingState.completed: AudioProcessingState.completed,
+              }[_player.processingState]!,
+          repeatMode:
+              const {
+                LoopMode.off: AudioServiceRepeatMode.none,
+                LoopMode.one: AudioServiceRepeatMode.one,
+                LoopMode.all: AudioServiceRepeatMode.all,
+              }[_player.loopMode]!,
+          shuffleMode:
+              (_player.shuffleModeEnabled)
+                  ? AudioServiceShuffleMode.all
+                  : AudioServiceShuffleMode.none,
           playing: _player.playing,
           updatePosition: _player.position,
           bufferedPosition: _player.bufferedPosition,
@@ -107,8 +104,9 @@ class AudioServiceImpl extends BaseAudioHandler {
     if (_isPreparing) {
       return;
     }
-    _isPreparing = true;
-    await _player.play();
+    if (_currentStation != null) {
+      await playRadioStation(_currentStation!);
+    }
   }
 
   @override
@@ -116,7 +114,6 @@ class AudioServiceImpl extends BaseAudioHandler {
     if (_isPreparing) {
       return;
     }
-    _isPreparing = true;
     await _player.pause();
   }
 
@@ -127,7 +124,6 @@ class AudioServiceImpl extends BaseAudioHandler {
   Future<void> skipToQueueItem(int index) async {}
 
   @override
-
   /// Skip to the next song. It should be called in case of error for trying to
   /// recover the playback.
   Future<void> skipToNext() async {}
@@ -179,6 +175,7 @@ class AudioServiceImpl extends BaseAudioHandler {
       unawaited(_player.play());
       notifyStation(station);
       _isPreparing = false;
+      _currentStation = station;
     } catch (e) {
       _isPreparing = false;
       rethrow;
@@ -190,11 +187,7 @@ class AudioServiceImpl extends BaseAudioHandler {
   /// Notify the system the current station
   void notifyStation(RadioStation station) {
     mediaItem.add(
-      MediaItem(
-        id: station.uuid,
-        title: station.name,
-        artist: station.country,
-      ),
+      MediaItem(id: station.uuid, title: station.name, artist: station.country),
     );
   }
 }
