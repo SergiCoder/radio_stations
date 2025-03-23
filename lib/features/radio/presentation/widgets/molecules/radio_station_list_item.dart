@@ -22,56 +22,58 @@ class RadioStationListItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      contentPadding: const EdgeInsets.fromLTRB(15, 0, 5, 0),
-      leading: SizedBox(
-        width: 24,
-        height: 24,
-        child:
-            station.favicon.isNotEmpty
-                ? Image.network(
-                  station.favicon,
-                  errorBuilder:
-                      (context, error, stackTrace) => const Icon(Icons.radio),
-                )
-                : const Icon(Icons.radio),
+    return Card(
+      child: ListTile(
+        contentPadding: const EdgeInsets.fromLTRB(15, 0, 5, 0),
+        leading: SizedBox(
+          width: 24,
+          height: 24,
+          child:
+              station.favicon.isNotEmpty
+                  ? Image.network(
+                    station.favicon,
+                    errorBuilder:
+                        (context, error, stackTrace) => const Icon(Icons.radio),
+                  )
+                  : const Icon(Icons.radio),
+        ),
+        title: Text(
+          station.name,
+          style: Theme.of(context).textTheme.titleMedium,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: 24,
+              height: 24,
+              child:
+                  station.broken
+                      ? const Icon(Icons.error_outline, color: Colors.orange)
+                      : null,
+            ),
+            IconButton(
+              icon:
+                  (station.isFavorite)
+                      ? Icon(
+                        Icons.favorite,
+                        color: Theme.of(context).colorScheme.primary,
+                      )
+                      : const Icon(Icons.favorite_border),
+              onPressed:
+                  () => context.read<RadioPageCubit>().toggleStationFavorite(
+                    station,
+                  ),
+            ),
+          ],
+        ),
+        onTap: () {
+          dev.log('Selected station: $station');
+          onTap();
+        },
       ),
-      title: Text(
-        station.name,
-        style: Theme.of(context).textTheme.titleMedium,
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
-      ),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(
-            width: 24,
-            height: 24,
-            child:
-                station.broken
-                    ? const Icon(Icons.error_outline, color: Colors.orange)
-                    : null,
-          ),
-          IconButton(
-            icon:
-                (station.isFavorite)
-                    ? Icon(
-                      Icons.favorite,
-                      color: Theme.of(context).colorScheme.primary,
-                    )
-                    : const Icon(Icons.favorite_border),
-            onPressed:
-                () => context.read<RadioPageCubit>().toggleStationFavorite(
-                  station,
-                ),
-          ),
-        ],
-      ),
-      onTap: () {
-        dev.log('Selected station: $station');
-        onTap();
-      },
     );
   }
 }

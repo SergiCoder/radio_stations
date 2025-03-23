@@ -1,8 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:radio_stations/features/radio/domain/domain.dart';
 import 'package:radio_stations/features/radio/domain/use_cases/toggle_favorite_radio_station_use_case.dart';
-import 'package:radio_stations/features/radio/presentation/pages/radio_page.dart';
 import 'package:radio_stations/features/radio/presentation/state/radio_page_state.dart';
+import 'package:radio_stations/features/radio/presentation/widgets/pages/radio_page.dart';
 import 'package:radio_stations/features/shared/domain/events/error_event_bus.dart';
 
 /// Cubit that manages the state of the [RadioPage]

@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:radio_stations/core/design_system/theme/app_theme.dart';
 import 'package:radio_stations/core/di/injection.dart';
-import 'package:radio_stations/features/radio/presentation/pages/radio_page.dart';
+import 'package:radio_stations/features/radio/presentation/widgets/pages/radio_page.dart';
 
 /// The main entry point of the application
 void main() async {

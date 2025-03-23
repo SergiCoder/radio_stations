@@ -62,21 +62,14 @@ class RadioControlBar extends StatelessWidget {
                           ),
                         ),
                       ],
-                      onChanged: (country) {
-                        cubit.setSelectedCountry(country);
-                      },
+                      onChanged: cubit.setSelectedCountry,
                     ),
                   ),
                   Row(
                     children: [
                       RadioStationCount(count: state.stations.length),
                       const SizedBox(width: 8),
-                      FavoriteFilterButton(
-                        showFavorites: cubit.showFavorites,
-                        onPressed: () {
-                          cubit.toggleFavorites();
-                        },
-                      ),
+                      const FavoriteFilterButton(),
                     ],
                   ),
                 ],
