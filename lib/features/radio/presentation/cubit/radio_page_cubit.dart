@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:radio_stations/features/radio/domain/domain.dart';
+import 'package:radio_stations/features/radio/domain/use_cases/set_volume_use_case.dart';
 import 'package:radio_stations/features/radio/domain/use_cases/toggle_favorite_radio_station_use_case.dart';
 import 'package:radio_stations/features/radio/presentation/state/radio_page_state.dart';
 import 'package:radio_stations/features/radio/presentation/widgets/pages/radio_page.dart';
@@ -19,6 +22,7 @@ class RadioPageCubit extends Cubit<RadioPageState> {
   /// [toggleFavoriteUseCase] is used to toggle the favorite status of a station
   /// [getPlaybackStateUseCase] is used to get the current playback state
   /// [togglePlayPauseUseCase] is used to toggle play/pause
+  /// [setVolumeUseCase] is used to control the audio volume
   RadioPageCubit({
     required GetRadioStationListUseCase getRadioStationListUseCase,
     required SyncRadioStationsUseCase syncStationsUseCase,
@@ -27,6 +31,7 @@ class RadioPageCubit extends Cubit<RadioPageState> {
     required GetPlaybackStateUseCase getPlaybackStateUseCase,
     required TogglePlayPauseUseCase togglePlayPauseUseCase,
     required SetBrokenRadioStationUseCase setBrokenRadioStationUseCase,
+    required SetVolumeUseCase setVolumeUseCase,
     required ErrorEventBus errorEventBus,
   }) : _getRadioStationListUseCase = getRadioStationListUseCase,
        _syncStationsUseCase = syncStationsUseCase,
@@ -35,6 +40,7 @@ class RadioPageCubit extends Cubit<RadioPageState> {
        _getPlaybackStateUseCase = getPlaybackStateUseCase,
        _togglePlayPauseUseCase = togglePlayPauseUseCase,
        _setBrokenRadioStationUseCase = setBrokenRadioStationUseCase,
+       _setVolumeUseCase = setVolumeUseCase,
        _errorEventBus = errorEventBus,
        super(
          const RadioPageSyncProgressState(
@@ -65,6 +71,9 @@ class RadioPageCubit extends Cubit<RadioPageState> {
 
   /// The use case for setting a radio station as broken
   final SetBrokenRadioStationUseCase _setBrokenRadioStationUseCase;
+
+  /// The use case for controlling audio volume
+  final SetVolumeUseCase _setVolumeUseCase;
 
   /// The list of available countries
   List<String> _countries = [];
@@ -203,6 +212,9 @@ class RadioPageCubit extends Cubit<RadioPageState> {
       return;
     }
     emit(loadedState.copyWith(selectedStation: station));
+    log(
+      'hash old state: ${loadedState.hashCode} new state: ${station.hashCode}',
+    );
     _selectedStation = station;
     await _playRadioStationUseCase.execute(station);
   }
@@ -340,5 +352,17 @@ class RadioPageCubit extends Cubit<RadioPageState> {
     final loadedState = state as RadioPageLoadedState;
     return loadedState.selectedStation != null &&
         _getPlaybackStateUseCase.isPlaying;
+  }
+
+  /// Gets the current volume level
+  ///
+  /// Returns the volume level between 0.0 and 1.0
+  double get volume => _setVolumeUseCase.volume;
+
+  /// Sets the volume level
+  ///
+  /// [volume] is the volume level between 0.0 and 1.0
+  Future<void> setVolume(double volume) async {
+    await _setVolumeUseCase.execute(volume);
   }
 }

@@ -7,32 +7,17 @@ import 'package:radio_stations/features/radio/presentation/widgets/organisms/rad
 /// A template widget for displaying the loaded state
 class RadioLoadedTemplate extends StatelessWidget {
   /// Creates a new instance of [RadioLoadedTemplate]
-  const RadioLoadedTemplate({
-    required this.stations,
-    required this.onStationSelected,
-    super.key,
-  });
+  const RadioLoadedTemplate({required this.stations, super.key});
 
   /// The list of radio stations to display
   final List<RadioStation> stations;
 
-  /// Callback when a station is selected
-  final void Function(RadioStation) onStationSelected;
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: const RadioPageAppBar(),
+    return const Scaffold(
+      appBar: RadioPageAppBar(),
       body: Column(
-        children: [
-          Expanded(
-            child: RadioStationList(
-              stations: stations,
-              onStationSelected: onStationSelected,
-            ),
-          ),
-          const RadioControlBar(),
-        ],
+        children: [Expanded(child: RadioStationList()), RadioControlBar()],
       ),
     );
   }

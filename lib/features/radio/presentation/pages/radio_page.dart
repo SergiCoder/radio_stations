@@ -49,12 +49,7 @@ class _RadioPageView extends StatelessWidget {
         }
 
         if (state is RadioPageLoadedState) {
-          return RadioLoadedTemplate(
-            stations: state.stations,
-            onStationSelected: (station) {
-              context.read<RadioPageCubit>().selectStation(station);
-            },
-          );
+          return RadioLoadedTemplate(stations: state.stations);
         }
 
         return const SizedBox.shrink();

@@ -1,35 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:radio_stations/features/radio/presentation/cubit/radio_page_cubit.dart';
+import 'package:radio_stations/features/radio/presentation/state/radio_page_state.dart';
 import 'package:radio_stations/features/radio/presentation/widgets/molecules/radio_station_list_item.dart';
-import 'package:radio_stations/features/shared/domain/entitites/radio_station.dart';
 
 /// A widget that displays a list of radio stations
 class RadioStationList extends StatelessWidget {
   /// Creates a new instance of [RadioStationList]
-  const RadioStationList({
-    required this.stations,
-    required this.onStationSelected,
-    super.key,
-  });
-
-  /// The list of radio stations to display
-  final List<RadioStation> stations;
-
-  /// Callback when a station is selected
-  final void Function(RadioStation) onStationSelected;
+  const RadioStationList({super.key});
 
   @override
   Widget build(BuildContext context) {
-    if (stations.isEmpty) {
+    final cubit = context.watch<RadioPageCubit>();
+    final state = cubit.state as RadioPageLoadedState;
+
+    if (state.stations.isEmpty) {
       return const Center(child: Text('No stations found, try to sync again'));
     }
 
     return ListView.builder(
-      itemCount: stations.length,
+      itemCount: state.stations.length,
       itemBuilder: (context, index) {
-        final station = stations[index];
+        final station = state.stations[index];
         return RadioStationListItemWidget(
           station: station,
-          onTap: () => onStationSelected(station),
+          onTap: () => cubit.selectStation(station),
         );
       },
     );

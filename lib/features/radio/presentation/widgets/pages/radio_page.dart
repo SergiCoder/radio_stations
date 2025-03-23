@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:radio_stations/features/radio/domain/entities/sync_progress.dart';
 import 'package:radio_stations/features/radio/presentation/cubit/radio_page_cubit.dart';
-import 'package:radio_stations/features/radio/presentation/models/sync_progress_model.dart';
 import 'package:radio_stations/features/radio/presentation/state/radio_page_state.dart';
-import 'package:radio_stations/features/radio/presentation/widgets/atoms/sync_progress_indicator.dart';
+import 'package:radio_stations/features/radio/presentation/widgets/templates/radio_error_template.dart';
 import 'package:radio_stations/features/radio/presentation/widgets/templates/radio_loaded_template.dart';
+import 'package:radio_stations/features/radio/presentation/widgets/templates/radio_sync_progress_template.dart';
 
 /// The main page for the radio application
 ///
@@ -25,64 +24,19 @@ class RadioPage extends StatelessWidget {
     _cubit.init();
     return BlocProvider(
       create: (context) => _cubit,
-      child: const _RadioPageView(),
-    );
-  }
-}
+      child: BlocBuilder<RadioPageCubit, RadioPageState>(
+        builder: (context, state) {
+          if (state is RadioPageSyncProgressState) {
+            return RadioSyncProgressTemplate(syncProgress: state.syncProgress);
+          } else if (state is RadioPageErrorState) {
+            return RadioErrorTemplate(errorMessage: state.errorMessage);
+          } else if (state is RadioPageLoadedState) {
+            return RadioLoadedTemplate(stations: state.stations);
+          }
 
-/// The view component of the RadioPage
-///
-/// This widget is responsible for displaying the UI based on the current state.
-class _RadioPageView extends StatelessWidget {
-  /// Creates a new instance of [_RadioPageView]
-  const _RadioPageView();
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<RadioPageCubit, RadioPageState>(
-      builder: (context, state) {
-        if (state is RadioPageSyncProgressState) {
-          final syncProgress = SyncProgress(
-            totalStations: state.totalStations,
-            downloadedStations: state.downloadedStations,
-          );
-          return SyncProgressIndicator(
-            progress: SyncProgressModel.fromEntity(syncProgress),
-          );
-        }
-
-        if (state is RadioPageErrorState) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Error: ${state.errorMessage}',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () {
-                    context.read<RadioPageCubit>().loadStations();
-                  },
-                  child: const Text('Retry'),
-                ),
-              ],
-            ),
-          );
-        }
-
-        if (state is RadioPageLoadedState) {
-          return RadioLoadedTemplate(
-            stations: state.stations,
-            onStationSelected: (station) {
-              context.read<RadioPageCubit>().selectStation(station);
-            },
-          );
-        }
-
-        return const SizedBox.shrink();
-      },
+          return const Center(child: Text('Unknown state'));
+        },
+      ),
     );
   }
 }
