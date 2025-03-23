@@ -1,10 +1,7 @@
 /// Filter parameters for radio station list items
-class RadioStationListItemsFilter {
-  /// Creates a new instance of [RadioStationListItemsFilter]
-  const RadioStationListItemsFilter({
-    required this.favorite,
-    this.country,
-  });
+class RadioStationFilter {
+  /// Creates a new instance of [RadioStationFilter]
+  const RadioStationFilter({required this.favorite, this.country});
 
   /// Whether to show only favorite stations
   final bool favorite;
@@ -13,11 +10,8 @@ class RadioStationListItemsFilter {
   final String? country;
 
   /// Creates a copy of this filter with the given fields replaced with new values
-  RadioStationListItemsFilter copyWith({
-    bool? favorite,
-    String? country,
-  }) {
-    return RadioStationListItemsFilter(
+  RadioStationFilter copyWith({bool? favorite, String? country}) {
+    return RadioStationFilter(
       favorite: favorite ?? this.favorite,
       country: country ?? this.country,
     );

@@ -66,20 +66,20 @@ class RadioPageLoadedState extends RadioPageState {
   });
 
   /// The list of loaded stations
-  final List<RadioStationListItem> stations;
+  final List<RadioStation> stations;
 
   /// The currently selected station, if any
-  final RadioStationListItem? selectedStation;
+  final RadioStation? selectedStation;
 
   /// The currently selected filter, if any
-  final RadioStationListItemsFilter? selectedFilter;
+  final RadioStationFilter? selectedFilter;
 
   /// Creates a copy of this state with the given fields replaced with new
   /// values
   RadioPageLoadedState copyWith({
-    List<RadioStationListItem>? stations,
-    RadioStationListItem? selectedStation,
-    RadioStationListItemsFilter? selectedFilter,
+    List<RadioStation>? stations,
+    RadioStation? selectedStation,
+    RadioStationFilter? selectedFilter,
     bool clearSelectedStation = false,
   }) {
     return RadioPageLoadedState(

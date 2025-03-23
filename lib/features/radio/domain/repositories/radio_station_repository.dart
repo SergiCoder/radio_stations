@@ -21,29 +21,19 @@ abstract class RadioStationRepository {
   /// Retrieves a radio station by its unique identifier
   ///
   /// [changeuuid] is the unique identifier for the station.
-  /// [toggleFavorite] if true, toggles the favorite status of the station.
-  /// [toggleBroken] if true, toggles the broken status of the station.
   ///
   /// Returns the [RadioStation] with the given [changeuuid], or null if no
   /// station is found.
-  ///
-  /// Throws a [RadioStationDataFailure] if station retrieval fails.
-  Future<RadioStation?> getStationById(
-    String changeuuid, {
-    bool toggleFavorite = false,
-    bool toggleBroken = false,
-  });
+  Future<RadioStation?> getStationById(String changeuuid);
 
   /// Retrieves all radio stations as list items
   ///
   /// [filter] is an optional filter to apply to the results.
-  /// Returns a list of [RadioStationListItem] objects representing all
-  /// stations in the local cache that match the filter criteria.
+  /// Returns a list of [RadioStation] objects representing all stations in the
+  /// local cache that match the filter criteria.
   ///
   /// Throws a [RadioStationDataFailure] if station retrieval fails.
-  Future<List<RadioStationListItem>> getAllListItems([
-    RadioStationListItemsFilter? filter,
-  ]);
+  Future<List<RadioStation>> getAllStations(RadioStationFilter? filter);
 
   /// Gets the list of available countries
   ///

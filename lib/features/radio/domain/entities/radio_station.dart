@@ -52,12 +52,15 @@ class RadioStation {
     bool favorite = false,
     bool broken = false,
   }) {
+    final revisedHomepage = Validators.isValidUrl(homepage) ? homepage : '';
+    final revisedFavicon = Validators.isValidUrl(favicon) ? favicon : '';
+
     final station = RadioStation._(
       uuid: uuid,
       name: name,
       url: url,
-      homepage: homepage,
-      favicon: favicon,
+      homepage: revisedHomepage,
+      favicon: revisedFavicon,
       country: country,
       isFavorite: favorite,
       broken: broken,
@@ -128,16 +131,6 @@ class RadioStation {
 
     // Validate stream URL
     if (!Validators.isValidUrl(url)) {
-      return false;
-    }
-
-    // Validate homepage URL if not empty
-    if (homepage.isNotEmpty && !Validators.isValidUrl(homepage)) {
-      return false;
-    }
-
-    // Validate favicon URL if not empty
-    if (favicon.isNotEmpty && !Validators.isValidUrl(favicon)) {
       return false;
     }
 

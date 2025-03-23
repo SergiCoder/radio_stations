@@ -2,7 +2,7 @@ import 'dart:developer' as dev;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:radio_stations/features/radio/domain/entities/radio_station_list_item.dart';
+import 'package:radio_stations/features/radio/domain/entities/radio_station.dart';
 import 'package:radio_stations/features/radio/presentation/cubit/radio_page_cubit.dart';
 
 /// A widget that displays a radio station in a list
@@ -15,7 +15,7 @@ class RadioStationListItemWidget extends StatelessWidget {
   });
 
   /// The radio station to display
-  final RadioStationListItem station;
+  final RadioStation station;
 
   /// Callback when the item is tapped
   final VoidCallback onTap;
@@ -48,7 +48,7 @@ class RadioStationListItemWidget extends StatelessWidget {
             const Icon(Icons.error_outline, color: Colors.orange),
           IconButton(
             icon:
-                (station.favorite)
+                (station.isFavorite)
                     ? Icon(
                       Icons.favorite,
                       color: Theme.of(context).colorScheme.primary,

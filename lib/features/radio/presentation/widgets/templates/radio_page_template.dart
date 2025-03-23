@@ -27,10 +27,10 @@ class RadioPageTemplate extends StatelessWidget {
   });
 
   /// The list of radio stations to display
-  final List<RadioStationListItem> stations;
+  final List<RadioStation> stations;
 
   /// The currently selected station
-  final RadioStationListItem? selectedStation;
+  final RadioStation? selectedStation;
 
   /// Whether the radio is currently playing
   final bool isPlaying;
@@ -39,7 +39,7 @@ class RadioPageTemplate extends StatelessWidget {
   final bool? showFavorites;
 
   /// Callback when a station is selected
-  final void Function(RadioStationListItem) onStationSelected;
+  final void Function(RadioStation) onStationSelected;
 
   /// Callback when play/pause is pressed
   final VoidCallback onPlayPause;

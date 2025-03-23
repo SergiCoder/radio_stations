@@ -11,14 +11,14 @@ import 'package:radio_stations/features/radio/presentation/state/radio_page_stat
 class RadioPageCubit extends Cubit<RadioPageState> {
   /// Creates a new instance of [RadioPageCubit]
   ///
-  /// [getAllStationsUseCase] is used to fetch all radio stations
+  /// [getRadioStationListUseCase] is used to fetch all radio stations
   /// [syncStationsUseCase] is used to synchronize radio stations with a remote
   /// source
   /// [getStationByIdUseCase] is used to get a station by ID and handle its playback
   /// [toggleFavoriteUseCase] is used to toggle the favorite status of a station
   /// [getPlaybackStateUseCase] is used to get the current playback state
   RadioPageCubit({
-    required this.getAllStationsUseCase,
+    required this.getRadioStationListUseCase,
     required this.syncStationsUseCase,
     required this.getStationByIdUseCase,
     required this.toggleFavoriteUseCase,
@@ -31,7 +31,7 @@ class RadioPageCubit extends Cubit<RadioPageState> {
        );
 
   /// The use case for getting all radio stations
-  final GetAllRadioStationListItemsUseCase getAllStationsUseCase;
+  final GetRadioStationListUseCase getRadioStationListUseCase;
 
   /// The use case for synchronizing radio stations with a remote source
   final SyncRadioStationsUseCase syncStationsUseCase;
@@ -104,12 +104,14 @@ class RadioPageCubit extends Cubit<RadioPageState> {
 
     try {
       // First try to get stations from local cache
-      final stations = await getAllStationsUseCase.execute(_createFilter());
+      final stations = await getRadioStationListUseCase.execute(
+        _createFilter(),
+      );
 
       // If we have stations and forceSync is false, just use them
       if (stations.isNotEmpty && !forceSync) {
         // Update available countries and languages
-        _countries = await getAllStationsUseCase.getAvailableCountries();
+        _countries = await getRadioStationListUseCase.getAvailableCountries();
         emit(RadioPageLoadedState(stations: stations));
         return;
       }
@@ -127,18 +129,18 @@ class RadioPageCubit extends Cubit<RadioPageState> {
       );
 
       // Get the updated stations
-      final updatedStations = await getAllStationsUseCase.execute();
+      final updatedStations = await getRadioStationListUseCase.execute();
 
       if (updatedStations.isEmpty) {
         emit(const RadioPageEmptyState());
       } else {
         // Apply filters
-        final filteredStations = await getAllStationsUseCase.execute(
+        final filteredStations = await getRadioStationListUseCase.execute(
           _createFilter(),
         );
 
         // Update available countries and tags
-        _countries = await getAllStationsUseCase.getAvailableCountries();
+        _countries = await getRadioStationListUseCase.getAvailableCountries();
 
         emit(RadioPageLoadedState(stations: filteredStations));
       }
@@ -155,8 +157,8 @@ class RadioPageCubit extends Cubit<RadioPageState> {
   }
 
   /// Creates a filter based on current selection
-  RadioStationListItemsFilter _createFilter() {
-    return RadioStationListItemsFilter(
+  RadioStationFilter _createFilter() {
+    return RadioStationFilter(
       country: _selectedCountry,
       favorite: _showFavorites,
     );
@@ -165,7 +167,7 @@ class RadioPageCubit extends Cubit<RadioPageState> {
   /// Handles the selection of a radio station
   ///
   /// [station] is the station that was selected
-  Future<void> selectStation(RadioStationListItem station) async {
+  Future<void> selectStation(RadioStation station) async {
     if (state is! RadioPageLoadedState) return;
 
     try {
@@ -185,7 +187,7 @@ class RadioPageCubit extends Cubit<RadioPageState> {
       final fullStation = await getStationByIdUseCase.execute(station.uuid);
       if (fullStation == null) {
         // If station is not found, refresh the stations list
-        final stations = await getAllStationsUseCase.execute();
+        final stations = await getRadioStationListUseCase.execute();
         emit(loadedState.copyWith(stations: stations));
       }
     } catch (e) {
@@ -255,7 +257,7 @@ class RadioPageCubit extends Cubit<RadioPageState> {
     if (state is! RadioPageLoadedState) return;
 
     _showFavorites = !_showFavorites;
-    final stations = await getAllStationsUseCase.execute(_createFilter());
+    final stations = await getRadioStationListUseCase.execute(_createFilter());
     final loadedState = state as RadioPageLoadedState;
 
     emit(
@@ -271,7 +273,7 @@ class RadioPageCubit extends Cubit<RadioPageState> {
     if (state is! RadioPageLoadedState) return;
 
     _selectedCountry = country;
-    final stations = await getAllStationsUseCase.execute(_createFilter());
+    final stations = await getRadioStationListUseCase.execute(_createFilter());
     final loadedState = state as RadioPageLoadedState;
 
     emit(
@@ -309,7 +311,9 @@ class RadioPageCubit extends Cubit<RadioPageState> {
 
     try {
       final loadedState = state as RadioPageLoadedState;
-      final stations = await getAllStationsUseCase.execute(_createFilter());
+      final stations = await getRadioStationListUseCase.execute(
+        _createFilter(),
+      );
       emit(loadedState.copyWith(stations: stations));
     } catch (e) {
       final String errorMessage;

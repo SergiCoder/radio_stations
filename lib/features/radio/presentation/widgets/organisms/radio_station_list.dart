@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:radio_stations/features/radio/domain/entities/radio_station_list_item.dart';
+import 'package:radio_stations/features/radio/domain/entities/radio_station.dart';
 import 'package:radio_stations/features/radio/presentation/widgets/molecules/radio_station_list_item.dart';
 
 /// A widget that displays a list of radio stations
@@ -12,10 +12,10 @@ class RadioStationList extends StatelessWidget {
   });
 
   /// The list of radio stations to display
-  final List<RadioStationListItem> stations;
+  final List<RadioStation> stations;
 
   /// Callback when a station is selected
-  final void Function(RadioStationListItem) onStationSelected;
+  final void Function(RadioStation) onStationSelected;
 
   @override
   Widget build(BuildContext context) {
