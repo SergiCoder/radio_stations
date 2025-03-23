@@ -6,6 +6,7 @@ import 'package:radio_stations/features/radio/presentation/widgets/atoms/favorit
 import 'package:radio_stations/features/radio/presentation/widgets/atoms/radio_station_count.dart';
 import 'package:radio_stations/features/radio/presentation/widgets/organisms/radio_player_controls.dart';
 import 'package:radio_stations/features/radio/presentation/widgets/organisms/radio_station_list.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// A template widget for the radio page layout
 class RadioPageTemplate extends StatelessWidget {
@@ -175,24 +176,26 @@ class RadioPageTemplate extends StatelessWidget {
                         style: Theme.of(context).textTheme.titleMedium,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      Text(
-                        isPlaying ? 'Now Playing' : 'Paused',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
                       if (selectedStation!.homepage.isNotEmpty) ...[
                         const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            const Icon(Icons.language, size: 16),
-                            const SizedBox(width: 4),
-                            Expanded(
-                              child: Text(
-                                selectedStation!.homepage,
-                                style: Theme.of(context).textTheme.bodySmall,
-                                overflow: TextOverflow.ellipsis,
+                        GestureDetector(
+                          onTap:
+                              () => launchUrl(
+                                Uri.parse(selectedStation!.homepage),
                               ),
-                            ),
-                          ],
+                          child: Row(
+                            children: [
+                              const Icon(Icons.language, size: 16),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: Text(
+                                  selectedStation!.homepage,
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                       if (selectedStation!.country.isNotEmpty) ...[
