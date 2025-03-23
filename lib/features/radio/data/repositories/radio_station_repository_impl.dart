@@ -31,7 +31,7 @@ class RadioStationRepositoryImpl implements RadioStationRepository {
 
   @override
   Future<void> syncStations({
-    void Function(int total, int downloaded)? onProgress,
+    required void Function(int total, int downloaded) onProgress,
   }) async {
     final remoteStations = await remoteDataSource.getStations(
       onProgress: onProgress,

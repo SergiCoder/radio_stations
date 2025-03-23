@@ -75,6 +75,9 @@ class RadioPageCubit extends Cubit<RadioPageState> {
   /// The favorite filter state: null = disabled, true = favorites only, false = non-favorites only
   bool _showFavorites = false;
 
+  /// The currently selected station
+  RadioStation? _selectedStation;
+
   /// Gets the list of available countries
   List<String> get countries => _countries;
 
@@ -148,20 +151,25 @@ class RadioPageCubit extends Cubit<RadioPageState> {
         await _syncStations();
       }
 
-      // First try to get stations from local cache
-      final stations = await _getRadioStationListUseCase.execute(
-        _createFilter(),
-      );
+      final filter = _createFilter();
 
-      // If we have stations and forceSync is false, just use them
-      if (stations.isNotEmpty) {
-        // Update available countries and languages
-        _countries = await _getRadioStationListUseCase.getAvailableCountries();
-        emit(RadioPageLoadedState(stations: stations));
-        return;
+      // First try to get stations from local cache
+      final stations = await _getRadioStationListUseCase.execute(filter);
+
+      // If we have no stations and forceSync is false
+      if (stations.isEmpty && !forceSync) {
+        await _syncStations();
+        stations.addAll(await _getRadioStationListUseCase.execute(filter));
       }
 
-      emit(const RadioPageEmptyState());
+      // Update available countries and languages
+      _countries = await _getRadioStationListUseCase.getAvailableCountries();
+      emit(
+        RadioPageLoadedState(
+          stations: stations,
+          selectedStation: _selectedStation,
+        ),
+      );
     } catch (e) {
       final String errorMessage;
       if (e is RadioStationFailure) {
@@ -195,6 +203,7 @@ class RadioPageCubit extends Cubit<RadioPageState> {
       return;
     }
     emit(loadedState.copyWith(selectedStation: station));
+    _selectedStation = station;
     await _playRadioStationUseCase.execute(station);
   }
 
@@ -270,7 +279,8 @@ class RadioPageCubit extends Cubit<RadioPageState> {
     emit(
       loadedState.copyWith(
         stations: stations,
-        selectedStation: loadedState.selectedStation,
+        selectedStation: _selectedStation,
+        selectedFilter: _createFilter(),
       ),
     );
   }

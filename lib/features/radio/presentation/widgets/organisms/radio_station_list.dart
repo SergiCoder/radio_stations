@@ -19,6 +19,10 @@ class RadioStationList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (stations.isEmpty) {
+      return const Center(child: Text('No stations found, try to sync again'));
+    }
+
     return ListView.builder(
       itemCount: stations.length,
       itemBuilder: (context, index) {

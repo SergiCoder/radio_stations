@@ -30,7 +30,7 @@ class SyncRadioStationsUseCase {
   ///
   /// Throws a [RadioStationSyncFailure] if synchronization fails
   Future<void> execute({
-    void Function(int total, int downloaded)? onProgress,
+    required void Function(int total, int downloaded) onProgress,
   }) async {
     try {
       await _radioStationRepository.syncStations(onProgress: onProgress);

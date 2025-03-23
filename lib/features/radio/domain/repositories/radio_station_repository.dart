@@ -10,12 +10,12 @@ abstract class RadioStationRepository {
   /// Fetches stations from the remote source, stores them in the local cache,
   /// and converts them to domain entities.
   ///
-  /// [onProgress] is an optional callback that will be called with the total
-  /// number of stations and the number of stations downloaded so far.
+  /// [onProgress] is callback that will be called with the total number of
+  /// stations and the number of stations downloaded so far.
   ///
   /// Throws a [RadioStationSyncFailure] if synchronization fails.
   Future<void> syncStations({
-    void Function(int total, int downloaded)? onProgress,
+    required void Function(int total, int downloaded) onProgress,
   });
 
   /// Retrieves all radio stations as list items

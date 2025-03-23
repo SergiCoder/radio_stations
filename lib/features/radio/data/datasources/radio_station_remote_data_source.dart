@@ -84,7 +84,7 @@ class RadioStationRemoteDataSource {
   /// [onProgress] is an optional callback that will be called with the total
   /// number of stations and the number of stations downloaded so far.
   Future<List<RadioStationRemoteDto>> getStations({
-    void Function(int total, int downloaded)? onProgress,
+    required void Function(int total, int downloaded) onProgress,
   }) async {
     final stations = <RadioStationRemoteDto>[];
     var currentPage = 1;
@@ -92,7 +92,7 @@ class RadioStationRemoteDataSource {
 
     // Get total station count first
     final totalStations = await _getTotalStationCount();
-    onProgress?.call(totalStations, 0);
+    onProgress.call(totalStations, 0);
 
     // Calculate the optimal page size
     final pageSize = _calculatePageSize(totalStations);
@@ -102,7 +102,7 @@ class RadioStationRemoteDataSource {
       stations.addAll(pageStations);
 
       // Notify progress
-      onProgress?.call(totalStations, stations.length);
+      onProgress.call(totalStations, stations.length);
 
       // If we got fewer stations than the page size, we've reached the end
       hasMore = pageStations.length == pageSize;

@@ -42,14 +42,6 @@ class RadioPageErrorState extends RadioPageState {
   List<Object?> get props => [errorMessage];
 }
 
-/// Empty state for the radio page
-///
-/// This state is active when no stations are found.
-class RadioPageEmptyState extends RadioPageState {
-  /// Creates a new instance of [RadioPageEmptyState]
-  const RadioPageEmptyState();
-}
-
 /// Loaded state for the radio page
 ///
 /// This state is active when stations are successfully loaded.

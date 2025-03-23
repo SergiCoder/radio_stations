@@ -193,7 +193,9 @@ class AudioServiceImpl extends BaseAudioHandler {
     }
     try {
       _isPreparing = true;
+
       await _player.stop();
+      _currentStation = station;
       await _player.setAudioSource(AudioSource.uri(Uri.parse(station.url)));
       unawaited(_player.play());
       notifyStation(
@@ -202,7 +204,6 @@ class AudioServiceImpl extends BaseAudioHandler {
         stationCountry: station.country,
       );
       _isPreparing = false;
-      _currentStation = station;
     } catch (e) {
       _isPreparing = false;
       rethrow;
