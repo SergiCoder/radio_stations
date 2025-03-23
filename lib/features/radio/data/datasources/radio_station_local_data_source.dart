@@ -1,5 +1,6 @@
 import 'package:hive_ce/hive.dart';
 import 'package:radio_stations/features/radio/data/dto/radio_station_local_dto.dart';
+import 'package:radio_stations/features/radio/domain/entities/radio_station.dart';
 
 /// Local data source for radio stations
 ///
@@ -18,14 +19,6 @@ class RadioStationLocalDataSource {
   /// Returns a list of [RadioStationLocalDto] objects.
   List<RadioStationLocalDto> getAllStations() {
     return box.values.toList();
-  }
-
-  /// Gets a radio station by its change UUID from local storage
-  ///
-  /// The [changeuuid] parameter is the unique identifier for changes.
-  /// Returns the [RadioStationLocalDto] if found, null otherwise.
-  RadioStationLocalDto? getStationById(String changeuuid) {
-    return box.get(changeuuid);
   }
 
   /// Saves a radio station to local storage
@@ -52,23 +45,21 @@ class RadioStationLocalDataSource {
 
   /// Toggles the favorite status of a station
   ///
-  /// [stationId] is the ID of the station to toggle the favorite status for
-  Future<void> toggleStationFavorite(String stationId) async {
-    final station = getStationById(stationId);
-    if (station != null) {
-      final updatedStation = station.copyWith(isFavorite: !station.isFavorite);
-      await box.put(stationId, updatedStation);
-    }
+  /// [station] is the station to toggle the favorite status for
+  Future<void> toggleStationFavorite(RadioStation station) async {
+    final stationDto = box.get(station.uuid);
+    final updatedStation = stationDto!.copyWith(
+      isFavorite: !station.isFavorite,
+    );
+    await box.put(station.uuid, updatedStation);
   }
 
   /// Toggles the broken status of a station
   ///
-  /// [stationId] is the ID of the station to toggle the broken status for
-  Future<void> toggleStationBroken(String stationId) async {
-    final station = getStationById(stationId);
-    if (station != null) {
-      final updatedStation = station.copyWith(broken: !station.broken);
-      await box.put(stationId, updatedStation);
-    }
+  /// [station] is the station to toggle the broken status for
+  Future<void> toggleStationBroken(RadioStation station) async {
+    final stationDto = box.get(station.uuid);
+    final updatedStation = stationDto!.copyWith(broken: !station.broken);
+    await box.put(station.uuid, updatedStation);
   }
 }

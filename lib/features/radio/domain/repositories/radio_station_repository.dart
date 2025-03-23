@@ -18,14 +18,6 @@ abstract class RadioStationRepository {
     void Function(int total, int downloaded)? onProgress,
   });
 
-  /// Retrieves a radio station by its unique identifier
-  ///
-  /// [changeuuid] is the unique identifier for the station.
-  ///
-  /// Returns the [RadioStation] with the given [changeuuid], or null if no
-  /// station is found.
-  Future<RadioStation?> getStationById(String changeuuid);
-
   /// Retrieves all radio stations as list items
   ///
   /// [filter] is an optional filter to apply to the results.
@@ -43,11 +35,11 @@ abstract class RadioStationRepository {
 
   /// Toggles the favorite status of a station
   ///
-  /// [stationId] is the ID of the station to toggle the favorite status for
-  Future<void> toggleStationFavorite(String stationId);
+  /// [station] is the station to toggle the favorite status for
+  Future<void> toggleStationFavorite(RadioStation station);
 
   /// Toggles the broken status of a station
   ///
-  /// [stationId] is the ID of the station to toggle the broken status for
-  Future<void> toggleStationBroken(String stationId);
+  /// [station] is the station to toggle the broken status for
+  Future<void> toggleStationBroken(RadioStation station);
 }

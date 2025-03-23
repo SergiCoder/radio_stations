@@ -114,7 +114,11 @@ class AudioServiceImpl extends BaseAudioHandler {
     if (_isPreparing) {
       return;
     }
-    await _player.pause();
+    if (_player.playing) {
+      await _player.pause();
+    } else {
+      await _player.play();
+    }
   }
 
   @override

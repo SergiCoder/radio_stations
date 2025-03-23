@@ -45,17 +45,6 @@ class RadioStationRepositoryImpl implements RadioStationRepository {
   }
 
   @override
-  Future<RadioStation?> getStationById(String changeuuid) async {
-    try {
-      final localStation = localDataSource.getStationById(changeuuid);
-      if (localStation == null) return null;
-      return mapper.toEntity(localStation);
-    } catch (e) {
-      throw RadioStationDataFailure('Failed to get station: $e');
-    }
-  }
-
-  @override
   Future<List<RadioStation>> getAllStations(RadioStationFilter? filter) async {
     final stations = localDataSource.getAllStations();
 
@@ -98,18 +87,18 @@ class RadioStationRepositoryImpl implements RadioStationRepository {
   }
 
   @override
-  Future<void> toggleStationFavorite(String stationId) async {
+  Future<void> toggleStationFavorite(RadioStation station) async {
     try {
-      await localDataSource.toggleStationFavorite(stationId);
+      await localDataSource.toggleStationFavorite(station);
     } catch (e) {
       throw RadioStationDataFailure('Failed to toggle favorite status: $e');
     }
   }
 
   @override
-  Future<void> toggleStationBroken(String stationId) async {
+  Future<void> toggleStationBroken(RadioStation station) async {
     try {
-      await localDataSource.toggleStationBroken(stationId);
+      await localDataSource.toggleStationBroken(station);
     } catch (e) {
       throw RadioStationDataFailure('Failed to toggle broken status: $e');
     }

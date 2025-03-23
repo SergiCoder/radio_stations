@@ -56,7 +56,7 @@ class RadioStationListItemWidget extends StatelessWidget {
                     : const Icon(Icons.favorite_border),
             onPressed:
                 () => context.read<RadioPageCubit>().toggleStationFavorite(
-                  station.uuid,
+                  station,
                 ),
           ),
         ],

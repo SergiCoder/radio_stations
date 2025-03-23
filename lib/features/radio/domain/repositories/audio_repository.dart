@@ -11,10 +11,10 @@ abstract class AudioRepository {
   /// Returns a [Future] that completes when playback starts
   Future<void> play(RadioStation station);
 
-  /// Stops the current playback
+  /// Toggles the play/pause state of the audio player
   ///
-  /// Returns a [Future] that completes when playback is stopped
-  Future<void> stop();
+  /// Returns a [Future] that completes when playback is toggled
+  Future<void> togglePlayPause();
 
   /// Gets whether the audio is currently playing
   ///

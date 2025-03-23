@@ -17,12 +17,14 @@ class RadioPageCubit extends Cubit<RadioPageState> {
   /// [getStationByIdUseCase] is used to get a station by ID and handle its playback
   /// [toggleFavoriteUseCase] is used to toggle the favorite status of a station
   /// [getPlaybackStateUseCase] is used to get the current playback state
+  /// [togglePlayPauseUseCase] is used to toggle play/pause
   RadioPageCubit({
     required this.getRadioStationListUseCase,
     required this.syncStationsUseCase,
     required this.getStationByIdUseCase,
     required this.toggleFavoriteUseCase,
     required this.getPlaybackStateUseCase,
+    required this.togglePlayPauseUseCase,
   }) : super(
          const RadioPageSyncProgressState(
            totalStations: 0,
@@ -45,6 +47,9 @@ class RadioPageCubit extends Cubit<RadioPageState> {
   /// The use case for getting the current playback state
   final GetPlaybackStateUseCase getPlaybackStateUseCase;
 
+  /// The use case for toggling play/pause
+  final TogglePlayPauseUseCase togglePlayPauseUseCase;
+
   /// The list of available countries
   List<String> _countries = [];
 
@@ -62,18 +67,6 @@ class RadioPageCubit extends Cubit<RadioPageState> {
 
   /// Gets whether to show only favorite stations
   bool get showFavorites => _showFavorites;
-
-  /// Gets whether a station is currently playing
-  ///
-  /// Returns true if a station is currently playing, false otherwise.
-  /// This is determined by checking the current state and the audio repository's
-  /// playing state.
-  bool get isPlaying {
-    if (state is! RadioPageLoadedState) return false;
-    final loadedState = state as RadioPageLoadedState;
-    return loadedState.selectedStation != null &&
-        getPlaybackStateUseCase.isPlaying;
-  }
 
   /// Initializes the cubit and loads the stations
   ///
@@ -93,57 +86,46 @@ class RadioPageCubit extends Cubit<RadioPageState> {
     });
   }
 
+  Future<void> _syncStations() async {
+    emit(
+      const RadioPageSyncProgressState(totalStations: 0, downloadedStations: 0),
+    );
+    await syncStationsUseCase.execute(
+      onProgress: (total, downloaded) {
+        emit(
+          RadioPageSyncProgressState(
+            totalStations: total,
+            downloadedStations: downloaded,
+          ),
+        );
+      },
+    );
+  }
+
   /// Loads radio stations from the local data source
   ///
   /// If [forceSync] is true, it will synchronize with the remote source first.
   /// Otherwise, it will only sync if there are no stations locally.
   Future<void> loadStations({bool forceSync = false}) async {
-    emit(
-      const RadioPageSyncProgressState(totalStations: 0, downloadedStations: 0),
-    );
-
     try {
+      if (forceSync) {
+        await _syncStations();
+      }
+
       // First try to get stations from local cache
       final stations = await getRadioStationListUseCase.execute(
         _createFilter(),
       );
 
       // If we have stations and forceSync is false, just use them
-      if (stations.isNotEmpty && !forceSync) {
+      if (stations.isNotEmpty) {
         // Update available countries and languages
         _countries = await getRadioStationListUseCase.getAvailableCountries();
         emit(RadioPageLoadedState(stations: stations));
         return;
       }
 
-      // If we don't have stations or forceSync is true, sync from remote
-      await syncStationsUseCase.execute(
-        onProgress: (total, downloaded) {
-          emit(
-            RadioPageSyncProgressState(
-              totalStations: total,
-              downloadedStations: downloaded,
-            ),
-          );
-        },
-      );
-
-      // Get the updated stations
-      final updatedStations = await getRadioStationListUseCase.execute();
-
-      if (updatedStations.isEmpty) {
-        emit(const RadioPageEmptyState());
-      } else {
-        // Apply filters
-        final filteredStations = await getRadioStationListUseCase.execute(
-          _createFilter(),
-        );
-
-        // Update available countries and tags
-        _countries = await getRadioStationListUseCase.getAvailableCountries();
-
-        emit(RadioPageLoadedState(stations: filteredStations));
-      }
+      emit(const RadioPageEmptyState());
     } catch (e) {
       final String errorMessage;
       if (e is RadioStationFailure) {
@@ -170,49 +152,23 @@ class RadioPageCubit extends Cubit<RadioPageState> {
   Future<void> selectStation(RadioStation station) async {
     if (state is! RadioPageLoadedState) return;
 
-    try {
-      final loadedState = state as RadioPageLoadedState;
-      final currentStation = loadedState.selectedStation;
+    final loadedState = state as RadioPageLoadedState;
 
-      // If the same station is selected, toggle play/pause
-      if (currentStation?.uuid == station.uuid) {
-        await togglePlayPause();
-        return;
-      }
-
-      // Update the state with the selected station first
-      emit(loadedState.copyWith(selectedStation: station));
-
-      // Get the full station details and play it
-      final fullStation = await getStationByIdUseCase.execute(station.uuid);
-      if (fullStation == null) {
-        // If station is not found, refresh the stations list
-        final stations = await getRadioStationListUseCase.execute();
-        emit(loadedState.copyWith(stations: stations));
-      }
-    } catch (e) {
-      final String errorMessage;
-      if (e is RadioStationFailure) {
-        errorMessage = e.message;
-      } else {
-        errorMessage = 'Failed to select station: $e';
-      }
-
-      emit(RadioPageErrorState(errorMessage: errorMessage));
+    // If the same station is selected, toggle play/pause
+    if (loadedState.selectedStation?.uuid == station.uuid) {
+      return;
     }
+    emit(loadedState.copyWith(selectedStation: station));
+    await getStationByIdUseCase.execute(station);
   }
 
   /// Handles play/pause for the current station
   Future<void> togglePlayPause() async {
     if (state is! RadioPageLoadedState) return;
-
     final loadedState = state as RadioPageLoadedState;
-    final currentStation = loadedState.selectedStation;
+    if (loadedState.selectedStation == null) return;
 
-    if (currentStation == null) return;
-
-    // Re-fetch and play the station to toggle play/pause
-    await getStationByIdUseCase.execute(currentStation.uuid);
+    await togglePlayPauseUseCase.execute();
   }
 
   /// Handles skipping to the next station
@@ -271,7 +227,7 @@ class RadioPageCubit extends Cubit<RadioPageState> {
   /// Handles setting the selected country
   Future<void> setSelectedCountry(String? country) async {
     if (state is! RadioPageLoadedState) return;
-
+    if (country == null) return;
     _selectedCountry = country;
     final stations = await getRadioStationListUseCase.execute(_createFilter());
     final loadedState = state as RadioPageLoadedState;
@@ -286,12 +242,12 @@ class RadioPageCubit extends Cubit<RadioPageState> {
 
   /// Toggles the favorite status of a station
   ///
-  /// [stationId] is the ID of the station to toggle
-  Future<void> toggleStationFavorite(String stationId) async {
+  /// [station] is the station to toggle
+  Future<void> toggleStationFavorite(RadioStation station) async {
     if (state is! RadioPageLoadedState) return;
 
     try {
-      await toggleFavoriteUseCase.execute(stationId);
+      await toggleFavoriteUseCase.execute(station);
       await _updateFilteredStations();
     } catch (e) {
       final String errorMessage;
@@ -325,5 +281,17 @@ class RadioPageCubit extends Cubit<RadioPageState> {
 
       emit(RadioPageErrorState(errorMessage: errorMessage));
     }
+  }
+
+  /// Gets whether a station is currently playing
+  ///
+  /// Returns true if a station is currently playing, false otherwise.
+  /// This is determined by checking the current state and the audio repository's
+  /// playing state.
+  bool get isPlaying {
+    if (state is! RadioPageLoadedState) return false;
+    final loadedState = state as RadioPageLoadedState;
+    return loadedState.selectedStation != null &&
+        getPlaybackStateUseCase.isPlaying;
   }
 }

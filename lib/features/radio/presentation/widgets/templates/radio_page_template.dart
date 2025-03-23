@@ -153,7 +153,7 @@ class RadioPageTemplate extends StatelessWidget {
               future: context
                   .read<RadioPageCubit>()
                   .getStationByIdUseCase
-                  .execute(selectedStation!.uuid),
+                  .execute(selectedStation!),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
                   return const SizedBox.shrink();

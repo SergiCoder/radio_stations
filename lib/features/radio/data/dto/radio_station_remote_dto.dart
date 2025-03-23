@@ -53,14 +53,8 @@ class RadioStationRemoteDto {
   });
 
   /// Creates a [RadioStationRemoteDto] from a JSON map
-  factory RadioStationRemoteDto.fromJson(Map<String, dynamic> json) {
-    try {
-      final dto = _$RadioStationRemoteDtoFromJson(json);
-      return dto.copyWith(name: dto.name.trim());
-    } catch (e) {
-      throw Exception('Failed to parse radio station: $e');
-    }
-  }
+  factory RadioStationRemoteDto.fromJson(Map<String, dynamic> json) =>
+      _$RadioStationRemoteDtoFromJson(json);
 
   /// The unique identifier for changes
   final String? changeuuid;
@@ -172,94 +166,6 @@ class RadioStationRemoteDto {
 
   /// The geographic distance
   final double? geoDistance;
-
-  /// Converts this [RadioStationRemoteDto] to a JSON map
-  Map<String, dynamic> toJson() => _$RadioStationRemoteDtoToJson(this);
-
-  /// Creates a copy of this [RadioStationRemoteDto] with the given fields replaced
-  RadioStationRemoteDto copyWith({
-    String? changeuuid,
-    String? stationuuid,
-    String? serveruuid,
-    String? name,
-    String? url,
-    String? urlResolved,
-    String? homepage,
-    String? favicon,
-    String? tags,
-    String? country,
-    String? countrycode,
-    String? state,
-    String? language,
-    String? languagecodes,
-    int? votes,
-    String? lastchangetime,
-    String? lastchangetimeIso8601,
-    String? codec,
-    int? bitrate,
-    int? hls,
-    int? lastcheckok,
-    String? lastchecktime,
-    String? lastchecktimeIso8601,
-    String? lastcheckoktime,
-    String? lastcheckoktimeIso8601,
-    String? lastlocalchecktime,
-    String? lastlocalchecktimeIso8601,
-    String? clicktimestamp,
-    String? clicktimestampIso8601,
-    int? clickcount,
-    int? clicktrend,
-    int? sslError,
-    double? geoLat,
-    double? geoLong,
-    bool? hasExtendedInfo,
-    String? iso31662,
-    double? geoDistance,
-  }) {
-    return RadioStationRemoteDto(
-      changeuuid: changeuuid ?? this.changeuuid,
-      stationuuid: stationuuid ?? this.stationuuid,
-      serveruuid: serveruuid ?? this.serveruuid,
-      name: name ?? this.name,
-      url: url ?? this.url,
-      urlResolved: urlResolved ?? this.urlResolved,
-      homepage: homepage ?? this.homepage,
-      favicon: favicon ?? this.favicon,
-      tags: tags ?? this.tags,
-      country: country ?? this.country,
-      countrycode: countrycode ?? this.countrycode,
-      state: state ?? this.state,
-      language: language ?? this.language,
-      languagecodes: languagecodes ?? this.languagecodes,
-      votes: votes ?? this.votes,
-      lastchangetime: lastchangetime ?? this.lastchangetime,
-      lastchangetimeIso8601:
-          lastchangetimeIso8601 ?? this.lastchangetimeIso8601,
-      codec: codec ?? this.codec,
-      bitrate: bitrate ?? this.bitrate,
-      hls: hls ?? this.hls,
-      lastcheckok: lastcheckok ?? this.lastcheckok,
-      lastchecktime: lastchecktime ?? this.lastchecktime,
-      lastchecktimeIso8601: lastchecktimeIso8601 ?? this.lastchecktimeIso8601,
-      lastcheckoktime: lastcheckoktime ?? this.lastcheckoktime,
-      lastcheckoktimeIso8601:
-          lastcheckoktimeIso8601 ?? this.lastcheckoktimeIso8601,
-      lastlocalchecktime: lastlocalchecktime ?? this.lastlocalchecktime,
-      lastlocalchecktimeIso8601:
-          lastlocalchecktimeIso8601 ?? this.lastlocalchecktimeIso8601,
-      clicktimestamp: clicktimestamp ?? this.clicktimestamp,
-      clicktimestampIso8601:
-          clicktimestampIso8601 ?? this.clicktimestampIso8601,
-      clickcount: clickcount ?? this.clickcount,
-      clicktrend: clicktrend ?? this.clicktrend,
-      sslError: sslError ?? this.sslError,
-      geoLat: geoLat ?? this.geoLat,
-      geoLong: geoLong ?? this.geoLong,
-      hasExtendedInfo: hasExtendedInfo ?? this.hasExtendedInfo,
-      iso31662: iso31662 ?? this.iso31662,
-      geoDistance: geoDistance ?? this.geoDistance,
-    );
-  }
 
   @override
   String toString() {

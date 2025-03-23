@@ -25,8 +25,8 @@ class AudioRepositoryImpl implements AudioRepository {
   }
 
   @override
-  Future<void> stop() async {
-    await _audioService.stop();
+  Future<void> togglePlayPause() async {
+    await _audioService.pause();
   }
 
   @override

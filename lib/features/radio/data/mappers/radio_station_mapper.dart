@@ -87,21 +87,4 @@ class RadioStationMapper {
   List<RadioStation> toEntities(List<RadioStationLocalDto> localDtos) {
     return localDtos.map(toEntity).toList();
   }
-
-  /// Converts a [RadioStationLocalDto] to a [RadioStation] domain entity
-  ///
-  /// The [localDto] parameter is the local DTO to convert.
-  /// Returns a new [RadioStation] instance.
-  RadioStation toListItem(RadioStationLocalDto localDto) {
-    return RadioStation.create(
-      uuid: localDto.changeuuid,
-      name: localDto.name,
-      url: localDto.url,
-      homepage: localDto.homepage,
-      country: localDto.country,
-      favorite: localDto.isFavorite,
-      broken: localDto.broken,
-      favicon: localDto.favicon,
-    )!;
-  }
 }

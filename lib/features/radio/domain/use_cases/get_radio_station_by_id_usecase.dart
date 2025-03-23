@@ -35,22 +35,18 @@ class GetRadioStationByIdUseCase {
 
   /// Gets a radio station by ID and plays it
   ///
-  /// [stationuuid] is the unique identifier of the station
+  /// [station] is the station to play
   ///
-  /// Returns the [RadioStation] with the given [stationuuid], or null if no
-  /// station is found.
+  /// Returns the [RadioStation] that was played.
   ///
   /// Throws a [RadioStationDataFailure] if station retrieval fails.
-  Future<RadioStation?> execute(String stationuuid) async {
+  Future<RadioStation?> execute(RadioStation station) async {
     try {
-      final station = await _repository.getStationById(stationuuid);
-      if (station != null) {
-        await _audioRepository.play(station);
-        await _repository.toggleStationBroken(stationuuid);
-      }
+      await _audioRepository.play(station);
+      await _repository.toggleStationBroken(station);
       return station;
     } catch (e) {
-      await _repository.toggleStationBroken(stationuuid);
+      await _repository.toggleStationBroken(station);
       return null;
     }
   }

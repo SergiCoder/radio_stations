@@ -1,5 +1,7 @@
 import 'package:hive_ce/hive.dart';
 
+part 'radio_station_local_dto_adapter.dart';
+
 /// Data transfer object for radio stations stored locally
 ///
 /// This class represents a radio station as it is stored in the local database.
@@ -16,20 +18,6 @@ class RadioStationLocalDto extends HiveObject {
     this.isFavorite = false,
     this.broken = false,
   });
-
-  /// Creates a [RadioStationLocalDto] from a JSON map
-  factory RadioStationLocalDto.fromJson(Map<String, dynamic> json) {
-    return RadioStationLocalDto(
-      changeuuid: json['changeuuid'] as String,
-      name: json['name'] as String,
-      url: json['url'] as String,
-      homepage: json['homepage'] as String,
-      favicon: json['favicon'] as String,
-      country: json['country'] as String,
-      isFavorite: json['isFavorite'] as bool? ?? false,
-      broken: json['broken'] as bool? ?? false,
-    );
-  }
 
   /// The unique identifier for changes
   final String changeuuid;
@@ -55,20 +43,6 @@ class RadioStationLocalDto extends HiveObject {
   /// Whether the station is broken (stream is not working)
   final bool broken;
 
-  /// Converts this [RadioStationLocalDto] to a JSON map
-  Map<String, dynamic> toJson() {
-    return {
-      'changeuuid': changeuuid,
-      'name': name,
-      'url': url,
-      'homepage': homepage,
-      'favicon': favicon,
-      'country': country,
-      'isFavorite': isFavorite,
-      'broken': broken,
-    };
-  }
-
   /// Creates a copy of this [RadioStationLocalDto] with the given fields replaced
   RadioStationLocalDto copyWith({
     String? changeuuid,
@@ -91,47 +65,4 @@ class RadioStationLocalDto extends HiveObject {
       broken: broken ?? this.broken,
     );
   }
-}
-
-/// Type adapter for [RadioStationLocalDto]
-class RadioStationLocalDtoAdapter extends TypeAdapter<RadioStationLocalDto> {
-  @override
-  final int typeId = 0;
-
-  @override
-  RadioStationLocalDto read(BinaryReader reader) {
-    return RadioStationLocalDto(
-      changeuuid: reader.readString(),
-      name: reader.readString(),
-      url: reader.readString(),
-      homepage: reader.readString(),
-      favicon: reader.readString(),
-      country: reader.readString(),
-      isFavorite: reader.readBool(),
-      broken: reader.readBool(),
-    );
-  }
-
-  @override
-  void write(BinaryWriter writer, RadioStationLocalDto obj) {
-    writer
-      ..writeString(obj.changeuuid)
-      ..writeString(obj.name)
-      ..writeString(obj.url)
-      ..writeString(obj.homepage)
-      ..writeString(obj.favicon)
-      ..writeString(obj.country)
-      ..writeBool(obj.isFavorite)
-      ..writeBool(obj.broken);
-  }
-
-  @override
-  int get hashCode => typeId.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is RadioStationLocalDtoAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
 }

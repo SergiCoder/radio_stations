@@ -80,6 +80,7 @@ Future<void> init() async {
         getStationByIdUseCase: getIt(),
         toggleFavoriteUseCase: getIt(),
         getPlaybackStateUseCase: getIt(),
+        togglePlayPauseUseCase: getIt(),
       ),
     );
 }
