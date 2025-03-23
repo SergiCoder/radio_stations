@@ -28,6 +28,10 @@
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
+		<key>NSAllowsArbitraryLoadsForMedia</key>
+		<true/>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
 	</dict>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>This app needs microphone access to play radio stations and audio content.</string>
