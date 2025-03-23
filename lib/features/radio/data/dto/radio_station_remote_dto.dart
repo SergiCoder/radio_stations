@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:json_annotation/json_annotation.dart';
 
 part 'radio_station_remote_dto.g.dart';

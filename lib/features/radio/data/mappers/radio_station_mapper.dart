@@ -1,46 +1,74 @@
-import 'dart:developer';
-
 import 'package:radio_stations/features/radio/data/dto/radio_station_local_dto.dart';
-import 'package:radio_stations/features/radio/domain/entities/radio_station.dart';
+import 'package:radio_stations/features/radio/data/dto/radio_station_remote_dto.dart';
+import 'package:radio_stations/features/radio/domain/domain.dart';
 
-/// Mapper for converting between RadioStationLocalDto and RadioStation entity
+/// Mapper class for converting between different radio station data types
 ///
-/// This class handles the conversion of radio station data from the local
-/// storage format to domain entities. It includes validation to ensure data
-/// integrity and proper formatting.
+/// This class handles all conversions between:
+/// - Remote DTOs (from API)
+/// - Local DTOs (from database)
+/// - Domain entities
+/// - List items (for UI)
 class RadioStationMapper {
-  /// Creates a new instance of [RadioStationMapper]
-  RadioStationMapper();
-
-  /// Converts a list of RadioStationLocalDto to a list of RadioStation entities
+  /// Converts a [RadioStationRemoteDto] to a [RadioStationLocalDto]
   ///
-  /// Returns a list containing only the valid stations.
-  /// Logs the number of stations that were discarded due to invalid data.
-  List<RadioStation> toEntities(List<RadioStationLocalDto> dtos) {
-    final totalStations = dtos.length;
-    final validStations =
-        dtos.map(toEntityFromLocal).whereType<RadioStation>().toList();
-    final discardedStations = totalStations - validStations.length;
-
-    log(
-      '''Discarded $discardedStations out of $totalStations stations due to invalid data''',
+  /// The [remoteDto] parameter is the remote DTO to convert.
+  /// The [existingLocalDto] parameter is an optional existing local DTO to preserve state.
+  /// Returns a new [RadioStationLocalDto] instance.
+  static RadioStationLocalDto toLocalDto(
+    RadioStationRemoteDto remoteDto, {
+    RadioStationLocalDto? existingLocalDto,
+  }) {
+    return RadioStationLocalDto(
+      changeuuid: remoteDto.changeuuid ?? remoteDto.stationuuid,
+      name: remoteDto.name,
+      url: remoteDto.url,
+      homepage: remoteDto.homepage,
+      favicon: remoteDto.favicon,
+      country: remoteDto.country,
+      isFavorite: existingLocalDto?.isFavorite ?? false,
+      broken: existingLocalDto?.broken ?? false,
     );
-
-    return validStations;
   }
 
-  /// Converts a RadioStationLocalDto to a RadioStation entity
+  /// Converts a [RadioStationLocalDto] to a [RadioStation] domain entity
   ///
-  /// Returns null if the conversion fails or the station is invalid.
-  /// The validation includes checking UUID format and URL validity.
-  RadioStation? toEntityFromLocal(RadioStationLocalDto dto) {
+  /// The [localDto] parameter is the local DTO to convert.
+  /// Returns a new [RadioStation] instance.
+  static RadioStation toEntity(RadioStationLocalDto localDto) {
     return RadioStation.create(
-      uuid: dto.changeuuid,
-      name: dto.name,
-      url: dto.url,
-      homepage: dto.homepage,
-      favicon: dto.favicon,
-      country: dto.country,
+      uuid: localDto.changeuuid,
+      name: localDto.name,
+      url: localDto.url,
+      homepage: localDto.homepage,
+      favicon: localDto.favicon,
+      country: localDto.country,
+      favorite: localDto.isFavorite,
+      broken: localDto.broken,
+    )!;
+  }
+
+  /// Converts a [RadioStationLocalDto] to a [RadioStationListItem]
+  ///
+  /// The [localDto] parameter is the local DTO to convert.
+  /// Returns a new [RadioStationListItem] instance.
+  static RadioStationListItem toListItem(RadioStationLocalDto localDto) {
+    return RadioStationListItem(
+      uuid: localDto.changeuuid,
+      name: localDto.name,
+      favorite: localDto.isFavorite,
+      broken: localDto.broken,
+      favicon: localDto.favicon,
     );
+  }
+
+  /// Converts a list of [RadioStationLocalDto] to a list of [RadioStationListItem]
+  ///
+  /// The [localDtos] parameter is the list of local DTOs to convert.
+  /// Returns a new list of [RadioStationListItem] instances.
+  static List<RadioStationListItem> toListItems(
+    List<RadioStationLocalDto> localDtos,
+  ) {
+    return localDtos.map(toListItem).toList();
   }
 }

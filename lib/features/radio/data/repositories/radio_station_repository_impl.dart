@@ -1,7 +1,9 @@
+import 'dart:developer';
+
 import 'package:radio_stations/features/radio/data/datasources/radio_station_local_data_source.dart';
 import 'package:radio_stations/features/radio/data/datasources/radio_station_remote_data_source.dart';
 import 'package:radio_stations/features/radio/data/dto/radio_station_local_dto.dart';
-import 'package:radio_stations/features/radio/data/dto/radio_station_remote_dto.dart';
+import 'package:radio_stations/features/radio/data/mappers/radio_station_mapper.dart';
 import 'package:radio_stations/features/radio/domain/domain.dart';
 import 'package:radio_stations/features/radio/domain/extensions/radio_station_list_item_extensions.dart';
 
@@ -31,14 +33,31 @@ class RadioStationRepositoryImpl implements RadioStationRepository {
   }) async {
     final stations = await remoteDataSource.getStations(onProgress: onProgress);
 
+    var counter = 0;
+
     // Process stations in a single pass
     final localStations = <RadioStationLocalDto>[];
 
     for (final station in stations) {
-      // Convert to local DTO
-      localStations.add(_toLocalDto(station));
-    }
+      // Remove video stations
+      if (station.hls == 0) {
+        // Get existing station to preserve state
+        final existingStation = localDataSource.getStationById(
+          station.stationuuid,
+        );
 
+        // Convert to local DTO
+        final localDto = RadioStationMapper.toLocalDto(
+          station,
+          existingLocalDto: existingStation,
+        );
+        localStations.add(localDto);
+      } else {
+        counter++;
+      }
+    }
+    log('Discarded $counter radio stations because HLS content');
+    await localDataSource.deleteAllStations();
     await localDataSource.saveStations(localStations);
   }
 
@@ -62,10 +81,10 @@ class RadioStationRepositoryImpl implements RadioStationRepository {
           broken: toggleBroken ? !localStation.broken : localStation.broken,
         );
         await localDataSource.saveStation(updatedStation);
-        return _toEntity(updatedStation);
+        return RadioStationMapper.toEntity(updatedStation);
       }
 
-      return _toEntity(localStation);
+      return RadioStationMapper.toEntity(localStation);
     } catch (e) {
       throw RadioStationDataFailure('Failed to get station: $e');
     }
@@ -78,8 +97,8 @@ class RadioStationRepositoryImpl implements RadioStationRepository {
     final stations = localDataSource.getAllStations();
 
     if (filter == null) {
-      final orderedStations = stations.map(_toListItem).toList().orderByName();
-      return orderedStations;
+      final listItems = RadioStationMapper.toListItems(stations);
+      return listItems.orderByName();
     }
 
     // Filter stations first
@@ -93,11 +112,9 @@ class RadioStationRepositoryImpl implements RadioStationRepository {
           }
           return true;
         }).toList();
-    final orderedStations =
-        filteredStationsDtos.map(_toListItem).toList().orderByName();
 
-    // Then convert to list items
-    return orderedStations;
+    final listItems = RadioStationMapper.toListItems(filteredStationsDtos);
+    return listItems.orderByName();
   }
 
   @override
@@ -133,56 +150,5 @@ class RadioStationRepositoryImpl implements RadioStationRepository {
     } catch (e) {
       throw RadioStationDataFailure('Failed to toggle broken status: $e');
     }
-  }
-
-  /// Converts a [RadioStationRemoteDto] to a [RadioStationLocalDto]
-  ///
-  /// The [dto] parameter is the remote DTO to convert.
-  /// Returns a new [RadioStationLocalDto] instance.
-  RadioStationLocalDto _toLocalDto(RadioStationRemoteDto dto) {
-    // Get existing station to preserve favorite and broken status
-    final existingStation = localDataSource.getStationById(dto.stationuuid);
-
-    return RadioStationLocalDto(
-      changeuuid: dto.stationuuid,
-      name: dto.name,
-      url: dto.url,
-      homepage: dto.homepage,
-      favicon: dto.favicon,
-      country: dto.country,
-      isFavorite: existingStation?.isFavorite ?? false,
-      broken: existingStation?.broken ?? false,
-    );
-  }
-
-  /// Converts a [RadioStationLocalDto] to a [RadioStation] domain entity
-  ///
-  /// The [dto] parameter is the local DTO to convert.
-  /// Returns a new [RadioStation] instance.
-  RadioStation _toEntity(RadioStationLocalDto dto) {
-    return RadioStation.create(
-      uuid: dto.changeuuid,
-      name: dto.name,
-      url: dto.url,
-      homepage: dto.homepage,
-      favicon: dto.favicon,
-      country: dto.country,
-      favorite: dto.isFavorite,
-      broken: dto.broken,
-    )!;
-  }
-
-  /// Converts a [RadioStationLocalDto] to a [RadioStationListItem]
-  ///
-  /// The [dto] parameter is the local DTO to convert.
-  /// Returns a new [RadioStationListItem] instance.
-  RadioStationListItem _toListItem(RadioStationLocalDto dto) {
-    return RadioStationListItem(
-      uuid: dto.changeuuid,
-      name: dto.name,
-      favorite: dto.isFavorite,
-      broken: dto.broken,
-      favicon: dto.favicon,
-    );
   }
 }
