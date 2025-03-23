@@ -22,7 +22,7 @@ class RadioStationMapper {
   }) {
     return RadioStationLocalDto(
       changeuuid: remoteDto.changeuuid ?? remoteDto.stationuuid,
-      name: remoteDto.name,
+      name: remoteDto.name.trim(),
       url: remoteDto.url,
       homepage: remoteDto.homepage,
       favicon: remoteDto.favicon,

@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:radio_stations/features/audio/domain/use_cases/mark_radio_station_broken_usecase.dart';
 import 'package:radio_stations/features/radio/domain/entities/radio_station.dart';
 
 // Following the example of:
@@ -11,33 +12,52 @@ import 'package:radio_stations/features/radio/domain/entities/radio_station.dart
 /// Represents an audio service available across navigation to different
 /// screens.
 class AudioServiceImpl extends BaseAudioHandler {
-  AudioServiceImpl._({required AudioPlayer player}) : _player = player {
+  AudioServiceImpl._({
+    required AudioPlayer player,
+    required this.markStationBrokenUseCase,
+  }) : _player = player {
     _notifyAudioHandlerAboutPlaybackEvents();
+    _setupErrorHandling();
   }
 
   final AudioPlayer _player;
+
+  /// Use case for marking radio stations as broken
+  final MarkRadioStationBrokenUseCase markStationBrokenUseCase;
 
   /// Flag to prevent concurrent preparation of songs and control operations
   bool _isPreparing = false;
 
   RadioStation? _currentStation;
 
-  /// Async constructor for the audioService
-  static Future<AudioServiceImpl> initAudioService({
-    required AudioPlayer player,
-  }) async {
-    player.playbackEventStream.listen(
+  /// Sets up error handling for the audio player
+  void _setupErrorHandling() {
+    _player.playbackEventStream.listen(
       (event) {},
       onError: (Object e, StackTrace stackTrace) {
         log('A stream error occurred: $e');
+        if (_currentStation != null) {
+          markStationBrokenUseCase.execute(_currentStation!);
+        }
       },
       onDone: () {
         log('The stream is done');
       },
       cancelOnError: false,
     );
+  }
+
+  /// Async constructor for the audioService
+  static Future<AudioServiceImpl> initAudioService({
+    required AudioPlayer player,
+    required MarkRadioStationBrokenUseCase markStationBrokenUseCase,
+  }) async {
     final instance = await AudioService.init(
-      builder: () => AudioServiceImpl._(player: player),
+      builder:
+          () => AudioServiceImpl._(
+            player: player,
+            markStationBrokenUseCase: markStationBrokenUseCase,
+          ),
       config: const AudioServiceConfig(
         androidNotificationChannelId: 'radio_stations',
         androidNotificationChannelName: 'Radio Stations',

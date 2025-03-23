@@ -3,9 +3,11 @@ import 'package:hive_ce/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart';
 import 'package:radio_stations/core/database/hive_database.dart';
+import 'package:radio_stations/features/audio/data/repositories/audio_repository_impl.dart';
+import 'package:radio_stations/features/audio/data/services/audio_service_impl.dart';
+import 'package:radio_stations/features/audio/domain/repositories/audio_repository.dart';
 import 'package:radio_stations/features/radio/data/data.dart';
 import 'package:radio_stations/features/radio/domain/domain.dart';
-import 'package:radio_stations/features/radio/domain/repositories/audio_repository.dart';
 import 'package:radio_stations/features/radio/domain/use_cases/toggle_favorite_radio_station_use_case.dart';
 import 'package:radio_stations/features/radio/presentation/cubit/radio_page_cubit.dart';
 
@@ -23,6 +25,7 @@ final getIt = GetIt.instance;
 Future<void> init() async {
   final radioStationBox = await HiveDatabase.init();
   final player = AudioPlayer();
+
   final audioService = await AudioServiceImpl.initAudioService(player: player);
 
   // Core
@@ -40,31 +43,31 @@ Future<void> init() async {
     )
     ..registerLazySingleton<RadioStationMapper>(RadioStationMapper.new)
     // Repositories
+    ..registerLazySingleton<AudioRepository>(
+      () => AudioRepositoryImpl(audioService: getIt()),
+    )
     ..registerLazySingleton<RadioStationRepository>(
       () => RadioStationRepositoryImpl(
-        remoteDataSource: getIt(),
         localDataSource: getIt(),
+        remoteDataSource: getIt(),
         mapper: getIt(),
       ),
     )
     // Audio
     ..registerLazySingleton<AudioPlayer>(() => player)
     ..registerLazySingleton<AudioServiceImpl>(() => audioService)
-    ..registerLazySingleton<AudioRepository>(
-      () => AudioRepositoryImpl(audioService: getIt()),
-    )
     // Use cases
     ..registerLazySingleton<GetRadioStationListUseCase>(
       () => GetRadioStationListUseCase(radioStationRepository: getIt()),
+    )
+    ..registerLazySingleton<SyncRadioStationsUseCase>(
+      () => SyncRadioStationsUseCase(radioStationRepository: getIt()),
     )
     ..registerLazySingleton<PlayRadioStationUseCase>(
       () => PlayRadioStationUseCase(
         radioStationRepository: getIt(),
         audioRepository: getIt(),
       ),
-    )
-    ..registerLazySingleton<SyncRadioStationsUseCase>(
-      () => SyncRadioStationsUseCase(radioStationRepository: getIt()),
     )
     ..registerLazySingleton<ToggleFavoriteRadioStationUseCase>(
       () => ToggleFavoriteRadioStationUseCase(radioStationRepository: getIt()),

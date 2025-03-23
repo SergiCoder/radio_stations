@@ -1,6 +1,6 @@
-import 'package:radio_stations/features/radio/data/services/audio_service_impl.dart';
+import 'package:radio_stations/features/audio/data/services/audio_service_impl.dart';
+import 'package:radio_stations/features/audio/domain/repositories/audio_repository.dart';
 import 'package:radio_stations/features/radio/domain/entities/radio_station.dart';
-import 'package:radio_stations/features/radio/domain/repositories/audio_repository.dart';
 
 /// Implementation of the [AudioRepository] interface using [AudioServiceImpl]
 ///
