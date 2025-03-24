@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:radio_stations/core/constants/app_constants.dart';
 import 'package:radio_stations/core/utils/input_utils.dart';
 
 /// A widget that displays a dropdown menu for selecting a country
@@ -31,15 +32,14 @@ class FilterCountrySelector extends StatelessWidget {
       hint: const Text('All Countries'),
       isExpanded: true,
       items: [
-        const DropdownMenuItem<String?>(
-          value: null,
-          child: Text('All Countries'),
-        ),
+        const DropdownMenuItem<String?>(child: Text('All Countries')),
         ...countries.map(
           (country) => DropdownMenuItem<String>(
             value: country,
             child: Text(
-              country.length > 20 ? '${country.substring(0, 20)}...' : country,
+              country.length > AppConstants.maxDropdownItemLength
+                  ? '${country.substring(0, AppConstants.maxDropdownItemLength)}...'
+                  : country,
               overflow: TextOverflow.fade,
             ),
           ),

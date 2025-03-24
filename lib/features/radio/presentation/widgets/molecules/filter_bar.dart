@@ -53,7 +53,7 @@ class FilterBar extends StatelessWidget {
             onChanged: onSearchTermChanged,
           ),
         ),
-        SizedBox(width: AppSpacing.sm),
+        const SizedBox(width: AppSpacing.sm),
         // Country selector
         Expanded(
           flex: 2,
@@ -63,7 +63,7 @@ class FilterBar extends StatelessWidget {
             onChanged: onCountryChanged,
           ),
         ),
-        SizedBox(width: AppSpacing.sm),
+        const SizedBox(width: AppSpacing.sm),
         // Favorite filter
         FilterFavoriteButton(
           showFavorites: showFavorites,

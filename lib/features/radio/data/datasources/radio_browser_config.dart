@@ -9,9 +9,9 @@ class RadioBrowserConfig {
   /// [targetPages] is the target number of pages to split the data into
   const RadioBrowserConfig({
     this.baseUrls = const [
+      'https://de2.api.radio-browser.info/json',
       'https://de1.api.radio-browser.info/json',
       'https://nl1.api.radio-browser.info/json',
-      'https://de2.api.radio-browser.info/json',
     ],
     this.timeout = 30,
     this.maxPageSize = 10000,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:radio_stations/core/design_system/theme/app_spacing.dart';
 import 'package:radio_stations/features/radio/presentation/presentation.dart';
 
 /// A template widget for displaying the error state
@@ -26,7 +27,7 @@ class RadioErrorTemplate extends StatelessWidget {
                 'Error: $errorMessage',
                 style: Theme.of(context).textTheme.titleMedium,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.md),
               ElevatedButton(
                 onPressed: () {
                   context.read<RadioPageBloc>().add(

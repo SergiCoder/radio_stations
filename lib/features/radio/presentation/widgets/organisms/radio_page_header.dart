@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:radio_stations/core/design_system/theme/theme.dart';
+import 'package:radio_stations/core/design_system/theme/app_spacing.dart';
 import 'package:radio_stations/features/radio/presentation/presentation.dart';
 
 /// A widget that displays the search and filter controls below the app bar
@@ -10,6 +10,8 @@ class RadioPageHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     // Select all state needed for the filter controls
     final isLoaded = context.select<RadioPageBloc, bool>(
       (bloc) => bloc.state is RadioPageLoaded,
@@ -50,13 +52,13 @@ class RadioPageHeader extends StatelessWidget {
         right: AppSpacing.xs + 2, // 6px
         top: AppSpacing.xs + 2, // 6px
       ),
-      decoration: const BoxDecoration(
-        color: AppColors.background,
+      decoration: BoxDecoration(
+        color: theme.scaffoldBackgroundColor,
         boxShadow: [
           BoxShadow(
-            color: Color(0x1A000000),
+            color: theme.shadowColor,
             blurRadius: 4,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),

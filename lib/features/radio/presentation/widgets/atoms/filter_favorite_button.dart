@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:radio_stations/core/design_system/theme/app_sizes.dart';
 import 'package:radio_stations/core/utils/input_utils.dart';
 
 /// A simple button widget for toggling favorite filter
@@ -25,6 +26,7 @@ class FilterFavoriteButton extends StatelessWidget {
       icon: Icon(
         showFavorites ? Icons.favorite : Icons.favorite_border,
         color: showFavorites ? Theme.of(context).colorScheme.primary : null,
+        size: AppSizes.iconMedium,
       ),
       onPressed: () {
         // Unfocus before toggling filter

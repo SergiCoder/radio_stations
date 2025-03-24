@@ -21,27 +21,15 @@ class AudioVolumeIndicator extends StatelessWidget {
     final volume = state.volume;
     final bloc = context.read<RadioPageBloc>();
 
-    return Row(
-      children: [
-        // Volume percentage text
-
-        // Slider
-        Expanded(
-          child: Slider(
-            value: volume,
-            divisions: 10, // 10% increments
-            onChanged: (newValue) {
-              // Unfocus before changing volume
-              InputUtils.unfocusAndThen(context, () {
-                if (bloc.state is RadioPageLoaded) {
-                  final currentVolume = (bloc.state as RadioPageLoaded).volume;
-                  bloc.add(VolumeChanged(newValue - currentVolume));
-                }
-              });
-            },
-          ),
-        ),
-      ],
+    return Slider(
+      value: volume,
+      divisions: 10, // 10% increments
+      onChanged: (newValue) {
+        InputUtils.unfocusAndThen(context, () {
+          // Send the direct volume value rather than calculating delta
+          bloc.add(VolumeChanged(newValue - volume));
+        });
+      },
     );
   }
 }

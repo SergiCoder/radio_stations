@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:radio_stations/core/design_system/theme/app_sizes.dart';
 
 /// A widget that displays a favicon image or a radio icon if the image is not
 /// available.
@@ -12,8 +13,8 @@ class RadioFaviconTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 24,
-      height: 24,
+      width: AppSizes.iconMedium,
+      height: AppSizes.iconMedium,
       child:
           favicon != null
               ? Image.network(

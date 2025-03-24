@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:radio_stations/core/utils/ui_utils.dart';
 
 /// A widget that displays a sync progress indicator
 class SyncProgressIndicator extends StatelessWidget {
@@ -12,16 +13,15 @@ class SyncProgressIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final halfWidth = MediaQuery.of(context).size.width * 0.5;
+    final theme = Theme.of(context);
+    final indicatorWidth = UIUtils.getMediumWidth(context);
 
     return SizedBox(
-      width: halfWidth,
+      width: indicatorWidth,
       child: LinearProgressIndicator(
         value: progressPercentage,
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        valueColor: AlwaysStoppedAnimation<Color>(
-          Theme.of(context).colorScheme.primary,
-        ),
+        backgroundColor: theme.colorScheme.surface,
+        valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
       ),
     );
   }
