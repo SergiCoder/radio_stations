@@ -15,11 +15,13 @@ class CountrySelector extends StatelessWidget {
       (cubit) => cubit.state,
     );
 
-    final loadedState = state is RadioPageLoadedState;
+    if (state is! RadioPageLoadedState) {
+      return const SizedBox.shrink();
+    }
 
-    final selectedCountry = loadedState ? state.selectedCountry : null;
+    final selectedCountry = state.selectedFilter?.country;
 
-    final countries = loadedState ? state.countries : <String>[];
+    final countries = state.countries;
 
     final onChanged = context.read<RadioPageCubit>().setSelectedCountry;
 

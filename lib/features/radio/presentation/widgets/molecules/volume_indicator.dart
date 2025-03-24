@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:radio_stations/features/radio/presentation/cubit/radio_page_cubit.dart';
+import 'package:radio_stations/features/radio/presentation/presentation.dart';
 
 /// A widget that displays a volume indicator
 class VolumeIndicator extends StatelessWidget {
@@ -9,9 +9,15 @@ class VolumeIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final volume = context.select<RadioPageCubit, double>(
-      (cubit) => cubit.volume,
+    final state = context.select<RadioPageCubit, RadioPageState>(
+      (cubit) => cubit.state,
     );
+
+    if (state is! RadioPageLoadedState) {
+      return const SizedBox.shrink();
+    }
+
+    final volume = state.volume;
 
     const height = 24.0;
     final volumeIndicatorHeight = height * volume;

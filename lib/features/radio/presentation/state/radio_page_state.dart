@@ -56,7 +56,6 @@ class RadioPageLoadedState extends RadioPageState {
   /// [selectedFilter] is the currently selected filter, if any
   /// [isPlaying] indicates whether the current station is playing
   /// [countries] is the list of available countries
-  /// [selectedCountry] is the currently selected country, if any
   /// [volume] is the current volume level between 0.0 and 1.0
   const RadioPageLoadedState({
     required this.stations,
@@ -64,7 +63,6 @@ class RadioPageLoadedState extends RadioPageState {
     this.selectedStation,
     this.isPlaying = false,
     this.countries = const [],
-    this.selectedCountry,
     this.volume = 1.0,
   });
 
@@ -82,9 +80,6 @@ class RadioPageLoadedState extends RadioPageState {
 
   /// The list of available countries
   final List<String> countries;
-
-  /// The currently selected country, if any
-  final String? selectedCountry;
 
   /// The current volume level between 0.0 and 1.0
   final double volume;
@@ -108,7 +103,6 @@ class RadioPageLoadedState extends RadioPageState {
       selectedFilter: selectedFilter ?? this.selectedFilter,
       isPlaying: isPlaying ?? this.isPlaying,
       countries: countries ?? this.countries,
-      selectedCountry: selectedCountry ?? this.selectedCountry,
       volume: volume ?? this.volume,
     );
   }
@@ -120,7 +114,6 @@ class RadioPageLoadedState extends RadioPageState {
     selectedFilter,
     isPlaying,
     countries,
-    selectedCountry,
     volume,
   ];
 }

@@ -82,15 +82,6 @@ class RadioPageCubit extends Cubit<RadioPageState> {
   /// The use case for getting volume changes
   final GetVolumeStreamUseCase _getVolumeStreamUseCase;
 
-  /// The favorite filter state: null = disabled, true = favorites only, false = non-favorites only
-  bool _showFavorites = false;
-
-  /// The currently selected country
-  String? _selectedCountry;
-
-  /// The currently selected station
-  RadioStation? _selectedStation;
-
   /// Subscription to error events
   StreamSubscription<RadioStation>? _errorSubscription;
 
@@ -99,15 +90,6 @@ class RadioPageCubit extends Cubit<RadioPageState> {
 
   /// Subscription to volume changes
   StreamSubscription<double>? _volumeSubscription;
-
-  /// Gets whether to show only favorite stations
-  bool get showFavorites => _showFavorites;
-
-  /// Gets the currently selected country
-  String? get selectedCountry => _selectedCountry;
-
-  /// Gets the current volume level
-  double get volume => _setVolumeUseCase.volume;
 
   /// Initializes the cubit and loads the stations
   ///
@@ -189,13 +171,17 @@ class RadioPageCubit extends Cubit<RadioPageState> {
   /// If [forceSync] is true, it will synchronize with the remote source first.
   /// Otherwise, it will only sync if there are no stations locally.
   Future<void> loadStations({bool forceSync = false}) async {
+    final lastLoadedState =
+        state is RadioPageLoadedState ? state as RadioPageLoadedState : null;
+
     try {
       if (forceSync) {
         await _syncStations();
       }
 
-      final filter = _createFilter();
-
+      final filter =
+          lastLoadedState?.selectedFilter ??
+          const RadioStationFilter(favorite: false);
       // First try to get stations from local cache
       final stations = await _getRadioStationListUseCase.execute(filter);
 
@@ -208,12 +194,13 @@ class RadioPageCubit extends Cubit<RadioPageState> {
       // Update available countries and languages
       final countries =
           await _getRadioStationListUseCase.getAvailableCountries();
+
       emit(
         RadioPageLoadedState(
           stations: stations,
-          selectedStation: _selectedStation,
+          selectedStation: lastLoadedState?.selectedStation,
           countries: countries,
-          selectedCountry: _selectedCountry,
+          selectedFilter: lastLoadedState?.selectedFilter,
         ),
       );
     } catch (e) {
@@ -230,10 +217,13 @@ class RadioPageCubit extends Cubit<RadioPageState> {
 
   /// Creates a filter based on current selection
   RadioStationFilter _createFilter() {
-    return RadioStationFilter(
-      country: _selectedCountry,
-      favorite: _showFavorites,
-    );
+    if (state is! RadioPageLoadedState) {
+      return const RadioStationFilter(favorite: false);
+    }
+
+    final loadedState = state as RadioPageLoadedState;
+    return loadedState.selectedFilter ??
+        const RadioStationFilter(favorite: false);
   }
 
   /// Handles the selection of a radio station
@@ -250,7 +240,6 @@ class RadioPageCubit extends Cubit<RadioPageState> {
     }
     emit(loadedState.copyWith(selectedStation: station));
 
-    _selectedStation = station;
     await _playRadioStationUseCase.execute(station);
   }
 
@@ -310,18 +299,22 @@ class RadioPageCubit extends Cubit<RadioPageState> {
   Future<void> toggleFavorites() async {
     if (state is! RadioPageLoadedState) return;
 
-    _showFavorites = !_showFavorites;
-
-    final filter = _createFilter();
-    final stations = await _getRadioStationListUseCase.execute(filter);
     final loadedState = state as RadioPageLoadedState;
+    final currentFilter =
+        loadedState.selectedFilter ?? const RadioStationFilter(favorite: false);
+
+    final filter = RadioStationFilter(
+      favorite: !currentFilter.favorite,
+      country: currentFilter.country,
+    );
+
+    final stations = await _getRadioStationListUseCase.execute(filter);
 
     emit(
       loadedState.copyWith(
         stations: stations,
-        selectedStation: _selectedStation,
+        selectedStation: loadedState.selectedStation,
         selectedFilter: filter,
-        selectedCountry: _selectedCountry,
       ),
     );
   }
@@ -330,20 +323,15 @@ class RadioPageCubit extends Cubit<RadioPageState> {
   Future<void> setSelectedCountry(String? country) async {
     if (state is! RadioPageLoadedState) return;
 
-    _selectedCountry = country;
-
     final loadedState = state as RadioPageLoadedState;
 
-    final filter = _createFilter();
+    final filter = RadioStationFilter(
+      country: country,
+      favorite: loadedState.selectedFilter?.favorite ?? false,
+    );
     final stations = await _getRadioStationListUseCase.execute(filter);
 
-    emit(
-      loadedState.copyWith(
-        stations: stations,
-        selectedFilter: filter,
-        selectedCountry: country,
-      ),
-    );
+    emit(loadedState.copyWith(stations: stations, selectedFilter: filter));
   }
 
   /// Toggles the favorite status of a station
@@ -379,7 +367,7 @@ class RadioPageCubit extends Cubit<RadioPageState> {
       emit(
         loadedState.copyWith(
           stations: stations,
-          selectedCountry: _selectedCountry,
+          selectedCountry: loadedState.selectedFilter?.country,
         ),
       );
     } catch (e) {
@@ -396,9 +384,15 @@ class RadioPageCubit extends Cubit<RadioPageState> {
 
   /// Sets the volume level
   ///
-  /// [volume] is the volume level between 0.0 and 1.0
+  /// [volume] is the volume level between 0.0 and 1.0, or a relative change
+  /// (positive for increase, negative for decrease)
   Future<void> setVolume(double volume) async {
-    final clampedVolume = volume.clamp(0.0, 1.0);
-    await _setVolumeUseCase.execute(clampedVolume);
+    if (state is! RadioPageLoadedState) return;
+
+    final loadedState = state as RadioPageLoadedState;
+    final currentVolume = loadedState.volume;
+    final newVolume = (currentVolume + volume).clamp(0.0, 1.0);
+
+    await _setVolumeUseCase.execute(newVolume);
   }
 }

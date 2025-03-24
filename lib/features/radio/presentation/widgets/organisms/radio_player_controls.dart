@@ -35,11 +35,11 @@ class RadioPlayerControls extends StatelessWidget {
         ),
         IconButton(
           icon: const Icon(Icons.volume_up),
-          onPressed: () => cubit.setVolume(cubit.volume + 0.1),
+          onPressed: () => cubit.setVolume(0.1),
         ),
         IconButton(
           icon: const Icon(Icons.volume_down),
-          onPressed: () => cubit.setVolume(cubit.volume - 0.1),
+          onPressed: () => cubit.setVolume(-0.1),
         ),
         const VolumeIndicator(),
       ],
