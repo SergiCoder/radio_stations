@@ -7,11 +7,11 @@ class FilterCountrySelector extends StatelessWidget {
   ///
   /// [selectedCountry] is the currently selected country, or null for all countries
   /// [countries] is the list of available countries to select from
-  /// [onCountrySelected] is called when a country is selected
+  /// [onChanged] is called when a country is selected
   const FilterCountrySelector({
     required this.selectedCountry,
     required this.countries,
-    required this.onCountrySelected,
+    required this.onChanged,
     super.key,
   });
 
@@ -21,8 +21,8 @@ class FilterCountrySelector extends StatelessWidget {
   /// List of available countries to select from
   final List<String> countries;
 
-  /// Callback when a country is selected
-  final void Function(String?) onCountrySelected;
+  /// Callback when country selection changes
+  final void Function(String?) onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,10 @@ class FilterCountrySelector extends StatelessWidget {
       hint: const Text('All Countries'),
       isExpanded: true,
       items: [
-        const DropdownMenuItem<String?>(child: Text('All Countries')),
+        const DropdownMenuItem<String?>(
+          value: null,
+          child: Text('All Countries'),
+        ),
         ...countries.map(
           (country) => DropdownMenuItem<String>(
             value: country,
@@ -45,7 +48,7 @@ class FilterCountrySelector extends StatelessWidget {
       onChanged: (country) {
         // Unfocus before selecting country
         InputUtils.unfocusAndThen(context, () {
-          onCountrySelected(country);
+          onChanged(country);
         });
       },
     );

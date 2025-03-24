@@ -8,12 +8,12 @@ class FilterBar extends StatelessWidget {
   const FilterBar({
     required this.stationCount,
     required this.showFavorites,
-    required this.onFavoriteToggle,
-    required this.onSearchChanged,
-    required this.onCountrySelected,
     required this.selectedCountry,
     required this.countries,
     required this.searchTerm,
+    required this.onFavoriteToggled,
+    required this.onSearchTermChanged,
+    required this.onCountryChanged,
     super.key,
   });
 
@@ -22,15 +22,6 @@ class FilterBar extends StatelessWidget {
 
   /// Whether to show only favorites
   final bool showFavorites;
-
-  /// Callback when favorite filter is toggled
-  final VoidCallback onFavoriteToggle;
-
-  /// Callback when search term changes
-  final void Function(String) onSearchChanged;
-
-  /// Callback when country is selected
-  final void Function(String?) onCountrySelected;
 
   /// Currently selected country
   final String? selectedCountry;
@@ -41,6 +32,15 @@ class FilterBar extends StatelessWidget {
   /// Current search term
   final String searchTerm;
 
+  /// Callback when favorite filter is toggled
+  final VoidCallback onFavoriteToggled;
+
+  /// Callback when search term changes
+  final void Function(String) onSearchTermChanged;
+
+  /// Callback when country selection changes
+  final void Function(String?) onCountryChanged;
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -50,7 +50,7 @@ class FilterBar extends StatelessWidget {
           flex: 3,
           child: FilterSearchField(
             searchTerm: searchTerm,
-            onChanged: onSearchChanged,
+            onChanged: onSearchTermChanged,
           ),
         ),
         SizedBox(width: AppSpacing.sm),
@@ -60,14 +60,14 @@ class FilterBar extends StatelessWidget {
           child: FilterCountrySelector(
             selectedCountry: selectedCountry,
             countries: countries,
-            onCountrySelected: onCountrySelected,
+            onChanged: onCountryChanged,
           ),
         ),
         SizedBox(width: AppSpacing.sm),
         // Favorite filter
         FilterFavoriteButton(
           showFavorites: showFavorites,
-          onToggle: onFavoriteToggle,
+          onToggled: onFavoriteToggled,
         ),
       ],
     );

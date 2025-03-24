@@ -6,10 +6,10 @@ class FilterFavoriteButton extends StatelessWidget {
   /// Creates a new instance of [FilterFavoriteButton]
   ///
   /// [showFavorites] indicates whether the favorites filter is active
-  /// [onToggle] is called when the button is pressed
+  /// [onToggled] is called when the button is toggled
   const FilterFavoriteButton({
     required this.showFavorites,
-    required this.onToggle,
+    required this.onToggled,
     super.key,
   });
 
@@ -17,7 +17,7 @@ class FilterFavoriteButton extends StatelessWidget {
   final bool showFavorites;
 
   /// Callback when the button is toggled
-  final VoidCallback onToggle;
+  final VoidCallback onToggled;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,7 @@ class FilterFavoriteButton extends StatelessWidget {
       ),
       onPressed: () {
         // Unfocus before toggling filter
-        InputUtils.unfocusAndThen(context, onToggle);
+        InputUtils.unfocusAndThen(context, onToggled);
       },
       tooltip:
           showFavorites ? 'Show Non-Favorites Only' : 'Show Favorites Only',

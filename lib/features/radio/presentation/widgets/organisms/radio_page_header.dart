@@ -66,14 +66,14 @@ class RadioPageHeader extends StatelessWidget {
         selectedCountry: selectedCountry,
         countries: countries,
         searchTerm: searchTerm,
-        onFavoriteToggle:
+        onFavoriteToggled:
             () => context.read<RadioPageBloc>().add(
               const FavoritesFilterToggled(),
             ),
-        onCountrySelected:
+        onCountryChanged:
             (country) =>
                 context.read<RadioPageBloc>().add(CountrySelected(country)),
-        onSearchChanged:
+        onSearchTermChanged:
             (term) =>
                 context.read<RadioPageBloc>().add(SearchTermChanged(term)),
       ),
