@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:radio_stations/core/utils/validators.dart';
 import 'package:radio_stations/features/radio/data/dto/radio_station_local_dto.dart';
 import 'package:radio_stations/features/radio/data/dto/radio_station_remote_dto.dart';
 import 'package:radio_stations/features/radio/domain/domain.dart';
@@ -10,6 +11,8 @@ import 'package:radio_stations/features/radio/domain/domain.dart';
 /// - Remote DTOs (from API)
 /// - Local DTOs (from database)
 /// - Domain entities
+///
+/// It also handles all validation to ensure that only valid data is passed to the domain layer.
 class RadioStationMapper {
   /// Converts a [RadioStationRemoteDto] to a [RadioStationLocalDto]
   ///
@@ -62,29 +65,85 @@ class RadioStationMapper {
   ///
   /// The [localDto] parameter is the local DTO to convert.
   /// Returns a new [RadioStation] instance.
+  /// Throws [RadioStationMappingFailure] if validation fails.
   RadioStation toEntity(RadioStationLocalDto localDto) {
     try {
-      return RadioStation.create(
+      // Validate UUID
+      if (!Validators.isValidUuid(localDto.changeuuid)) {
+        throw const RadioStationMappingFailure('Invalid UUID format');
+      }
+
+      // Validate URL
+      if (!Validators.isValidUrl(localDto.url)) {
+        throw const RadioStationMappingFailure('Invalid stream URL');
+      }
+
+      // Clean and validate other fields
+      final name =
+          localDto.name.trim().isEmpty
+              ? 'Unknown Station'
+              : localDto.name.trim();
+
+      final homepage =
+          Validators.isValidUrl(localDto.homepage) ? localDto.homepage : '';
+
+      final favicon =
+          Validators.isValidUrl(localDto.favicon) ? localDto.favicon : '';
+
+      // Create the entity with validated data
+      return RadioStation(
         uuid: localDto.changeuuid,
-        name: localDto.name,
+        name: name,
         url: localDto.url,
-        homepage: localDto.homepage,
-        favicon: localDto.favicon,
+        homepage: homepage,
+        favicon: favicon,
         country: localDto.country,
-        favorite: localDto.isFavorite,
+        isFavorite: localDto.isFavorite,
         broken: localDto.broken,
-      )!;
+      );
     } catch (e) {
+      if (e is RadioStationFailure) {
+        log('Validation error converting local DTO to entity: ${e.message}');
+        rethrow;
+      }
       log('Error converting local DTO to entity: $e');
-      rethrow;
+      throw RadioStationMappingFailure('Failed to create RadioStation: $e');
     }
   }
 
   /// Converts a list of [RadioStationLocalDto] to a list of [RadioStation] domain entities
   ///
   /// The [localDtos] parameter is the list of local DTOs to convert.
-  /// Returns a new list of [RadioStation] instances.
+  /// Returns a new list of [RadioStation] instances, skipping any invalid entities.
   List<RadioStation> toEntities(List<RadioStationLocalDto> localDtos) {
-    return localDtos.map(toEntity).toList();
+    final entities = <RadioStation>[];
+
+    for (final dto in localDtos) {
+      try {
+        entities.add(toEntity(dto));
+      } catch (e) {
+        // Log the error but continue processing other entities
+        log('Skipping invalid entity: $e');
+      }
+    }
+
+    return entities;
+  }
+
+  /// Converts a [RadioStation] entity to a [RadioStationLocalDto] for storage
+  ///
+  /// The [entity] parameter is the domain entity to convert.
+  /// Returns a new [RadioStationLocalDto] instance.
+  RadioStationLocalDto fromEntity(RadioStation entity) {
+    return RadioStationLocalDto(
+      changeuuid: entity.uuid,
+      name: entity.name,
+      url: entity.url,
+      homepage: entity.homepage,
+      favicon: entity.favicon,
+      country: entity.country,
+      isFavorite: entity.isFavorite,
+      broken: entity.broken,
+    );
   }
 }

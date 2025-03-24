@@ -27,3 +27,11 @@ class RadioStationDataFailure extends RadioStationFailure {
   /// [message] describes why the data retrieval failed
   const RadioStationDataFailure(super.message);
 }
+
+/// Failure when data mapping or validation fails
+class RadioStationMappingFailure extends RadioStationFailure {
+  /// Creates a new [RadioStationMappingFailure]
+  ///
+  /// [message] describes why the mapping or validation failed
+  const RadioStationMappingFailure(super.message);
+}
