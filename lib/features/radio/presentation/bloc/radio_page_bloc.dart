@@ -48,6 +48,7 @@ class RadioPageBloc extends Bloc<RadioPageEvent, RadioPageState> {
     on<PlaybackStateChanged>(_onPlaybackStateChanged);
     on<VolumeStateChanged>(_onVolumeStateChanged);
     on<SyncProgressUpdated>(_onSyncProgressUpdated);
+    on<SearchTermChanged>(_onSearchTermChanged);
   }
   // ========== Use Cases ==========
 
@@ -404,6 +405,25 @@ class RadioPageBloc extends Bloc<RadioPageEvent, RadioPageState> {
         downloadedStations: event.downloadedStations,
       ),
     );
+  }
+
+  /// Handles changes to the search term
+  Future<void> _onSearchTermChanged(
+    SearchTermChanged event,
+    Emitter<RadioPageState> emit,
+  ) async {
+    if (state is! RadioPageLoaded) return;
+    final loadedState = state as RadioPageLoaded;
+
+    try {
+      final currentFilter = loadedState.selectedFilter;
+      final filter = currentFilter.withSearchTerm(event.term);
+      final stations = await _getRadioStationListUseCase.execute(filter);
+
+      emit(loadedState.copyWith(stations: stations, selectedFilter: filter));
+    } catch (e) {
+      add(ErrorOccurred(e));
+    }
   }
 
   // ========== Helper Methods ==========

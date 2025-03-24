@@ -285,3 +285,20 @@ class SyncProgressUpdated extends RadioPageEvent {
   @override
   List<Object> get props => [totalStations, downloadedStations];
 }
+
+/// Event dispatched when the search term changes
+///
+/// This event triggers updating of the filter to include the new search term
+/// and reloading the stations list based on the updated filter.
+class SearchTermChanged extends RadioPageEvent {
+  /// Creates a new [SearchTermChanged] event.
+  ///
+  /// [term] is the new search term to filter by.
+  const SearchTermChanged(this.term);
+
+  /// The search term to filter stations by
+  final String term;
+
+  @override
+  List<Object> get props => [term];
+}

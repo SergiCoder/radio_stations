@@ -61,12 +61,24 @@ class RadioStationRepositoryImpl implements RadioStationRepository {
     // Filter stations first
     final filteredStationsDtos =
         stations.where((station) {
+          // Filter by favorites
           if (filter.favorite && !station.isFavorite) {
             return false;
           }
+
+          // Filter by country
           if (filter.country != null && station.country != filter.country) {
             return false;
           }
+
+          // Filter by search term
+          if (filter.searchTerm.isNotEmpty &&
+              !station.name.toLowerCase().contains(
+                filter.searchTerm.toLowerCase(),
+              )) {
+            return false;
+          }
+
           return true;
         }).toList();
 

@@ -11,12 +11,22 @@ class FilterBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Column(
       children: [
-        const CountrySelector(),
-        RadioStationCount(count: stationCount),
-        const FavoriteFilterButton(),
+        // Search field on top
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: 8),
+          child: SearchField(),
+        ),
+        // Country and favorite filters below
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const CountrySelector(),
+            RadioStationCount(count: stationCount),
+            const FavoriteFilterButton(),
+          ],
+        ),
       ],
     );
   }
