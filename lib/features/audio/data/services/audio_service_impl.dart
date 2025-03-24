@@ -68,10 +68,7 @@ class AudioServiceImpl extends BaseAudioHandler {
   }
 
   List<MediaControl> _createMediaControls() {
-    final mediaControls = <MediaControl>[
-      if (_player.playing) MediaControl.pause else MediaControl.play,
-    ];
-    return mediaControls;
+    return [if (_player.playing) MediaControl.pause else MediaControl.play];
   }
 
   void _notifyAudioHandlerAboutPlaybackEvents() {
@@ -80,7 +77,7 @@ class AudioServiceImpl extends BaseAudioHandler {
         playbackState.value.copyWith(
           controls: _createMediaControls(),
           systemActions: const {MediaAction.seek},
-          androidCompactActionIndices: [0, 1, 2],
+          androidCompactActionIndices: const [0], // Only play/pause control
           processingState:
               const {
                 ProcessingState.idle: AudioProcessingState.idle,
