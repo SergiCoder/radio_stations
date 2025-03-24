@@ -15,7 +15,13 @@ class RadioStationList extends StatelessWidget {
     final state = cubit.state as RadioPageLoadedState;
 
     if (state.stations.isEmpty) {
-      return const Center(child: Text('No stations found, try to sync again'));
+      return const Center(
+        child: Text(
+          'No stations found,\n maybe try to sync?',
+          textAlign: TextAlign.center,
+          maxLines: 2,
+        ),
+      );
     }
 
     return ListView.builder(

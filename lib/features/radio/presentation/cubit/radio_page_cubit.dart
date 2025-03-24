@@ -213,6 +213,7 @@ class RadioPageCubit extends Cubit<RadioPageState> {
           stations: stations,
           selectedStation: _selectedStation,
           countries: countries,
+          selectedCountry: _selectedCountry,
         ),
       );
     } catch (e) {
@@ -320,6 +321,7 @@ class RadioPageCubit extends Cubit<RadioPageState> {
         stations: stations,
         selectedStation: _selectedStation,
         selectedFilter: filter,
+        selectedCountry: _selectedCountry,
       ),
     );
   }
@@ -335,7 +337,13 @@ class RadioPageCubit extends Cubit<RadioPageState> {
     final filter = _createFilter();
     final stations = await _getRadioStationListUseCase.execute(filter);
 
-    emit(loadedState.copyWith(stations: stations, selectedFilter: filter));
+    emit(
+      loadedState.copyWith(
+        stations: stations,
+        selectedFilter: filter,
+        selectedCountry: country,
+      ),
+    );
   }
 
   /// Toggles the favorite status of a station
@@ -368,7 +376,12 @@ class RadioPageCubit extends Cubit<RadioPageState> {
       final stations = await _getRadioStationListUseCase.execute(
         _createFilter(),
       );
-      emit(loadedState.copyWith(stations: stations));
+      emit(
+        loadedState.copyWith(
+          stations: stations,
+          selectedCountry: _selectedCountry,
+        ),
+      );
     } catch (e) {
       final String errorMessage;
       if (e is RadioStationFailure) {

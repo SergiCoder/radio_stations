@@ -27,11 +27,11 @@ class RadioPage extends StatelessWidget {
       child: BlocBuilder<RadioPageCubit, RadioPageState>(
         builder: (context, state) {
           if (state is RadioPageSyncProgressState) {
-            return RadioSyncProgressTemplate(syncProgress: state.syncProgress);
+            return const RadioSyncProgressTemplate();
           } else if (state is RadioPageErrorState) {
             return RadioErrorTemplate(errorMessage: state.errorMessage);
           } else if (state is RadioPageLoadedState) {
-            return RadioLoadedTemplate(stations: state.stations);
+            return const RadioLoadedTemplate();
           }
 
           return const Scaffold(

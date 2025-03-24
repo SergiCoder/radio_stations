@@ -41,7 +41,7 @@ class _RadioPageView extends StatelessWidget {
     return BlocBuilder<RadioPageCubit, RadioPageState>(
       builder: (context, state) {
         if (state is RadioPageSyncProgressState) {
-          return RadioSyncProgressTemplate(syncProgress: state.syncProgress);
+          return const RadioSyncProgressTemplate();
         }
 
         if (state is RadioPageErrorState) {
@@ -49,7 +49,7 @@ class _RadioPageView extends StatelessWidget {
         }
 
         if (state is RadioPageLoadedState) {
-          return RadioLoadedTemplate(stations: state.stations);
+          return const RadioLoadedTemplate();
         }
 
         return const SizedBox.shrink();
