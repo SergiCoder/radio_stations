@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:radio_stations/features/radio/presentation/cubit/radio_page_cubit.dart';
-import 'package:radio_stations/features/radio/presentation/state/radio_page_state.dart';
+import 'package:radio_stations/features/radio/presentation/bloc/radio_page_bloc.dart';
+import 'package:radio_stations/features/radio/presentation/bloc/radio_page_states.dart';
 import 'package:radio_stations/features/radio/presentation/widgets/molecules/filter_bar.dart';
 import 'package:radio_stations/features/radio/presentation/widgets/molecules/player_bar.dart';
 
@@ -12,21 +12,26 @@ class RadioControlBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cubit = context.watch<RadioPageCubit>();
-    final state = cubit.state as RadioPageLoadedState;
+    return BlocBuilder<RadioPageBloc, RadioPageState>(
+      builder: (context, state) {
+        if (state is! RadioPageLoaded) {
+          return const SizedBox.shrink();
+        }
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          FilterBar(stationCount: state.stations.length),
-          if (state.selectedStation != null)
-            PlayerBar(station: state.selectedStation!)
-          else
-            const Text('No station selected'),
-        ],
-      ),
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              FilterBar(stationCount: state.stations.length),
+              if (state.selectedStation != null)
+                PlayerBar(station: state.selectedStation!)
+              else
+                const Text('No station selected'),
+            ],
+          ),
+        );
+      },
     );
   }
 }

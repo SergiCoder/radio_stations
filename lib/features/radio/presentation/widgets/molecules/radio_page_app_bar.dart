@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:radio_stations/features/radio/presentation/cubit/radio_page_cubit.dart';
-import 'package:radio_stations/features/radio/presentation/state/radio_page_state.dart';
+import 'package:radio_stations/features/radio/presentation/bloc/radio_page_bloc.dart';
+import 'package:radio_stations/features/radio/presentation/bloc/radio_page_events.dart';
+import 'package:radio_stations/features/radio/presentation/bloc/radio_page_states.dart';
 
 /// A widget that displays the app bar for the radio page
 class RadioPageAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -10,11 +11,11 @@ class RadioPageAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final state = context.select<RadioPageCubit, RadioPageState>(
-      (cubit) => cubit.state,
+    final state = context.select<RadioPageBloc, RadioPageState>(
+      (bloc) => bloc.state,
     );
 
-    final isLoaded = state is RadioPageLoadedState;
+    final isLoaded = state is RadioPageLoaded;
 
     return AppBar(
       title: const Text('Radio Stations'),
@@ -23,7 +24,9 @@ class RadioPageAppBar extends StatelessWidget implements PreferredSizeWidget {
           IconButton(
             icon: const Icon(Icons.sync),
             onPressed: () {
-              context.read<RadioPageCubit>().loadStations(forceSync: true);
+              context.read<RadioPageBloc>().add(
+                const RadioStationsRequested(forceSync: true),
+              );
             },
             tooltip: 'Sync stations',
           ),

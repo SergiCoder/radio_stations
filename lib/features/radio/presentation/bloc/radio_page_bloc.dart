@@ -97,8 +97,7 @@ class RadioPageBloc extends Bloc<RadioPageEvent, RadioPageState> {
   ) async {
     try {
       final isLoadedState = state is RadioPageLoaded;
-      final RadioPageLoaded? loadedState =
-          isLoadedState ? state as RadioPageLoaded : null;
+      final loadedState = isLoadedState ? state as RadioPageLoaded : null;
 
       if (event.forceSync) {
         await _syncStations(emit);

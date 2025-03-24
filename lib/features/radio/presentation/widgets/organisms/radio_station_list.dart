@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:radio_stations/features/radio/presentation/cubit/radio_page_cubit.dart';
-import 'package:radio_stations/features/radio/presentation/state/radio_page_state.dart';
+import 'package:radio_stations/features/radio/presentation/bloc/radio_page_bloc.dart';
+import 'package:radio_stations/features/radio/presentation/bloc/radio_page_events.dart';
+import 'package:radio_stations/features/radio/presentation/bloc/radio_page_states.dart';
 import 'package:radio_stations/features/radio/presentation/widgets/molecules/radio_station_list_item.dart';
 
 /// A widget that displays a list of radio stations
@@ -11,26 +12,34 @@ class RadioStationList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cubit = context.watch<RadioPageCubit>();
-    final state = cubit.state as RadioPageLoadedState;
+    return BlocBuilder<RadioPageBloc, RadioPageState>(
+      builder: (context, state) {
+        if (state is! RadioPageLoaded) {
+          return const SizedBox.shrink();
+        }
 
-    if (state.stations.isEmpty) {
-      return const Center(
-        child: Text(
-          'No stations found,\n maybe try to sync?',
-          textAlign: TextAlign.center,
-          maxLines: 2,
-        ),
-      );
-    }
+        if (state.stations.isEmpty) {
+          return const Center(
+            child: Text(
+              'No stations found,\n maybe try to sync?',
+              textAlign: TextAlign.center,
+              maxLines: 2,
+            ),
+          );
+        }
 
-    return ListView.builder(
-      itemCount: state.stations.length,
-      itemBuilder: (context, index) {
-        final station = state.stations[index];
-        return RadioStationListItemWidget(
-          station: station,
-          onTap: () => cubit.selectStation(station),
+        return ListView.builder(
+          itemCount: state.stations.length,
+          itemBuilder: (context, index) {
+            final station = state.stations[index];
+            return RadioStationListItemWidget(
+              station: station,
+              onTap:
+                  () => context.read<RadioPageBloc>().add(
+                    RadioStationSelected(station),
+                  ),
+            );
+          },
         );
       },
     );

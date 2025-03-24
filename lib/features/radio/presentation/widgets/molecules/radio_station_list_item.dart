@@ -2,7 +2,8 @@ import 'dart:developer' as dev;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:radio_stations/features/radio/presentation/cubit/radio_page_cubit.dart';
+import 'package:radio_stations/features/radio/presentation/bloc/radio_page_bloc.dart';
+import 'package:radio_stations/features/radio/presentation/bloc/radio_page_events.dart';
 import 'package:radio_stations/features/radio/presentation/widgets/atoms/favicon_tile.dart';
 import 'package:radio_stations/features/shared/domain/entitites/radio_station.dart';
 
@@ -52,10 +53,11 @@ class RadioStationListItemWidget extends StatelessWidget {
                         color: Theme.of(context).colorScheme.primary,
                       )
                       : const Icon(Icons.favorite_border),
-              onPressed:
-                  () => context.read<RadioPageCubit>().toggleStationFavorite(
-                    station,
-                  ),
+              onPressed: () {
+                context.read<RadioPageBloc>().add(
+                  StationFavoriteToggled(station),
+                );
+              },
             ),
           ],
         ),

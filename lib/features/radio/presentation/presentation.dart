@@ -3,6 +3,5 @@
 /// states.
 library;
 
-export 'cubit/radio_page_cubit.dart';
-export 'state/radio_page_state.dart';
+export 'bloc/radio_page_bloc.dart';
 export 'widgets/pages/radio_page.dart';

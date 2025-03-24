@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:radio_stations/features/radio/presentation/cubit/radio_page_cubit.dart';
-import 'package:radio_stations/features/radio/presentation/state/radio_page_state.dart';
+import 'package:radio_stations/features/radio/presentation/bloc/radio_page_bloc.dart';
+import 'package:radio_stations/features/radio/presentation/bloc/radio_page_events.dart';
+import 'package:radio_stations/features/radio/presentation/bloc/radio_page_states.dart';
 
 /// A simple button widget for toggling favorite filter
 class FavoriteFilterButton extends StatelessWidget {
@@ -10,11 +11,11 @@ class FavoriteFilterButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final state = context.select<RadioPageCubit, RadioPageState>(
-      (cubit) => cubit.state,
+    final state = context.select<RadioPageBloc, RadioPageState>(
+      (bloc) => bloc.state,
     );
 
-    if (state is! RadioPageLoadedState) {
+    if (state is! RadioPageLoaded) {
       return const SizedBox.shrink();
     }
 
@@ -26,7 +27,7 @@ class FavoriteFilterButton extends StatelessWidget {
         color: showFavorites ? Theme.of(context).colorScheme.primary : null,
       ),
       onPressed: () {
-        context.read<RadioPageCubit>().toggleFavorites();
+        context.read<RadioPageBloc>().add(const FavoritesFilterToggled());
       },
       tooltip:
           showFavorites ? 'Show Non-Favorites Only' : 'Show Favorites Only',

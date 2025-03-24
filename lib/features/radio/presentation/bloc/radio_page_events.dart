@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:radio_stations/features/radio/domain/domain.dart';
 
 /// Base class for all radio page events.
@@ -5,9 +6,12 @@ import 'package:radio_stations/features/radio/domain/domain.dart';
 /// Events represent actions or occurrences that can change the state of the
 /// radio page. All concrete events extend this class to maintain a consistent
 /// approach to event handling in the BLoC pattern.
-abstract class RadioPageEvent {
+abstract class RadioPageEvent extends Equatable {
   /// Creates a new [RadioPageEvent] instance.
   const RadioPageEvent();
+
+  @override
+  List<Object?> get props => [];
 }
 
 /// Event dispatched when the radio page needs to be initialized.
@@ -39,6 +43,9 @@ class RadioStationsRequested extends RadioPageEvent {
   /// before loading stations. When false, it will first try to use cached data
   /// and only sync if the cache is empty.
   final bool forceSync;
+
+  @override
+  List<Object?> get props => [forceSync];
 }
 
 /// Event dispatched to toggle the favorites filter.
@@ -67,6 +74,9 @@ class CountrySelected extends RadioPageEvent {
   /// When specified, only stations from this country will be shown.
   /// When null, stations from all countries will be shown (subject to other filters).
   final String? country;
+
+  @override
+  List<Object?> get props => [country];
 }
 
 /// Event dispatched when a radio station is selected.
@@ -84,6 +94,9 @@ class RadioStationSelected extends RadioPageEvent {
   /// This station will become the currently selected station, and playback
   /// will start automatically.
   final RadioStation station;
+
+  @override
+  List<Object> get props => [station];
 }
 
 /// Event dispatched to toggle playback between play and pause.
@@ -134,6 +147,9 @@ class StationFavoriteToggled extends RadioPageEvent {
   /// If the station is currently a favorite, it will be removed from favorites.
   /// If it's not a favorite, it will be added to favorites.
   final RadioStation station;
+
+  @override
+  List<Object> get props => [station];
 }
 
 /// Event dispatched to change the playback volume.
@@ -152,6 +168,9 @@ class VolumeChanged extends RadioPageEvent {
   /// Positive values increase the volume, negative values decrease it.
   /// The resulting volume will be clamped between 0.0 (silent) and 1.0 (maximum).
   final double delta;
+
+  @override
+  List<Object> get props => [delta];
 }
 
 /// Event dispatched when an error occurs.
@@ -171,6 +190,9 @@ class ErrorOccurred extends RadioPageEvent {
   /// If it's a [RadioStationFailure], its message will be used directly.
   /// Otherwise, a generic error message will be created.
   final dynamic error;
+
+  @override
+  List<Object?> get props => [error];
 }
 
 /// Event dispatched when a station is marked as broken.
@@ -188,6 +210,9 @@ class StationMarkedAsBroken extends RadioPageEvent {
   ///
   /// This station will be updated with broken=true in the UI and data source.
   final RadioStation station;
+
+  @override
+  List<Object> get props => [station];
 }
 
 /// Event dispatched when the playback state changes.
@@ -205,6 +230,9 @@ class PlaybackStateChanged extends RadioPageEvent {
   ///
   /// True if a station is currently playing, false if paused or stopped.
   final bool isPlaying;
+
+  @override
+  List<Object> get props => [isPlaying];
 }
 
 /// Event dispatched when the volume level changes.
@@ -222,6 +250,9 @@ class VolumeStateChanged extends RadioPageEvent {
   ///
   /// The volume level ranges from 0.0 (silent) to 1.0 (maximum).
   final double volume;
+
+  @override
+  List<Object> get props => [volume];
 }
 
 /// Event dispatched when synchronization progress changes.
@@ -249,4 +280,7 @@ class SyncProgressUpdated extends RadioPageEvent {
   /// This represents the current progress of the synchronization process.
   /// It should never exceed [totalStations].
   final int downloadedStations;
+
+  @override
+  List<Object> get props => [totalStations, downloadedStations];
 }

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:radio_stations/features/radio/presentation/cubit/radio_page_cubit.dart';
-import 'package:radio_stations/features/radio/presentation/state/radio_page_state.dart';
+import 'package:radio_stations/features/radio/presentation/bloc/radio_page_bloc.dart';
+import 'package:radio_stations/features/radio/presentation/bloc/radio_page_events.dart';
+import 'package:radio_stations/features/radio/presentation/bloc/radio_page_states.dart';
 import 'package:radio_stations/features/radio/presentation/widgets/molecules/volume_indicator.dart';
 
 /// A widget that displays radio player controls
@@ -11,35 +12,35 @@ class RadioPlayerControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isPlaying = context.select<RadioPageCubit, bool>(
-      (cubit) =>
-          cubit.state is RadioPageLoadedState &&
-          (cubit.state as RadioPageLoadedState).isPlaying,
+    final isPlaying = context.select<RadioPageBloc, bool>(
+      (bloc) =>
+          bloc.state is RadioPageLoaded &&
+          (bloc.state as RadioPageLoaded).isPlaying,
     );
-    final cubit = context.read<RadioPageCubit>();
+    final bloc = context.read<RadioPageBloc>();
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         IconButton(
           icon: const Icon(Icons.skip_previous),
-          onPressed: cubit.previousStation,
+          onPressed: () => bloc.add(const PreviousStationRequested()),
         ),
         IconButton(
           icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
-          onPressed: cubit.togglePlayPause,
+          onPressed: () => bloc.add(const PlaybackToggled()),
         ),
         IconButton(
           icon: const Icon(Icons.skip_next),
-          onPressed: cubit.nextStation,
+          onPressed: () => bloc.add(const NextStationRequested()),
         ),
         IconButton(
           icon: const Icon(Icons.volume_up),
-          onPressed: () => cubit.setVolume(0.1),
+          onPressed: () => bloc.add(const VolumeChanged(0.1)),
         ),
         IconButton(
           icon: const Icon(Icons.volume_down),
-          onPressed: () => cubit.setVolume(-0.1),
+          onPressed: () => bloc.add(const VolumeChanged(-0.1)),
         ),
         const VolumeIndicator(),
       ],

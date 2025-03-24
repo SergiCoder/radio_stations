@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:radio_stations/features/radio/presentation/cubit/radio_page_cubit.dart';
-import 'package:radio_stations/features/radio/presentation/state/radio_page_state.dart';
+import 'package:radio_stations/features/radio/presentation/bloc/radio_page_bloc.dart';
+import 'package:radio_stations/features/radio/presentation/bloc/radio_page_events.dart';
+import 'package:radio_stations/features/radio/presentation/bloc/radio_page_states.dart';
 import 'package:radio_stations/features/radio/presentation/widgets/templates/radio_error_template.dart';
 import 'package:radio_stations/features/radio/presentation/widgets/templates/radio_loaded_template.dart';
 import 'package:radio_stations/features/radio/presentation/widgets/templates/radio_sync_progress_template.dart';
@@ -14,23 +15,23 @@ import 'package:radio_stations/features/radio/presentation/widgets/templates/rad
 class RadioPage extends StatelessWidget {
   /// Creates a new instance of [RadioPage]
   ///
-  /// [cubit] is the cubit that manages the state of this page
-  const RadioPage({required RadioPageCubit cubit, super.key}) : _cubit = cubit;
+  /// [bloc] is the bloc that manages the state of this page
+  const RadioPage({required RadioPageBloc bloc, super.key}) : _bloc = bloc;
 
-  final RadioPageCubit _cubit;
+  final RadioPageBloc _bloc;
 
   @override
   Widget build(BuildContext context) {
-    _cubit.init();
+    _bloc.add(const RadioPageInitialized());
     return BlocProvider(
-      create: (context) => _cubit,
-      child: BlocBuilder<RadioPageCubit, RadioPageState>(
+      create: (context) => _bloc,
+      child: BlocBuilder<RadioPageBloc, RadioPageState>(
         builder: (context, state) {
-          if (state is RadioPageSyncProgressState) {
+          if (state is RadioPageSyncProgress) {
             return const RadioSyncProgressTemplate();
-          } else if (state is RadioPageErrorState) {
+          } else if (state is RadioPageError) {
             return RadioErrorTemplate(errorMessage: state.errorMessage);
-          } else if (state is RadioPageLoadedState) {
+          } else if (state is RadioPageLoaded) {
             return const RadioLoadedTemplate();
           }
 

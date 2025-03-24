@@ -11,7 +11,7 @@ import 'package:radio_stations/features/radio/data/data.dart';
 import 'package:radio_stations/features/radio/domain/domain.dart';
 import 'package:radio_stations/features/radio/domain/use_cases/set_volume_use_case.dart';
 import 'package:radio_stations/features/radio/domain/use_cases/toggle_favorite_radio_station_use_case.dart';
-import 'package:radio_stations/features/radio/presentation/cubit/radio_page_cubit.dart';
+import 'package:radio_stations/features/radio/presentation/bloc/radio_page_bloc.dart';
 import 'package:radio_stations/features/shared/domain/events/error_event_bus.dart';
 
 /// Global service locator instance
@@ -96,9 +96,9 @@ Future<void> init() async {
     ..registerLazySingleton<GetVolumeStreamUseCase>(
       () => GetVolumeStreamUseCase(repository: getIt()),
     )
-    // Cubits
-    ..registerFactory<RadioPageCubit>(
-      () => RadioPageCubit(
+    // BLoC
+    ..registerFactory<RadioPageBloc>(
+      () => RadioPageBloc(
         getRadioStationListUseCase: getIt(),
         syncStationsUseCase: getIt(),
         playRadioStationUseCase: getIt(),

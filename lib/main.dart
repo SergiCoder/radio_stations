@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Radio Stations',
       theme: AppTheme.darkTheme,
-      home: RadioPage(cubit: getIt()),
+      home: RadioPage(bloc: getIt()),
     );
   }
 }

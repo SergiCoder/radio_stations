@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:radio_stations/features/radio/presentation/cubit/radio_page_cubit.dart';
-import 'package:radio_stations/features/radio/presentation/state/radio_page_state.dart';
+import 'package:radio_stations/features/radio/presentation/bloc/radio_page_bloc.dart';
+import 'package:radio_stations/features/radio/presentation/bloc/radio_page_events.dart';
+import 'package:radio_stations/features/radio/presentation/bloc/radio_page_states.dart';
 
 /// A widget that displays a dropdown menu for selecting a country
 class CountrySelector extends StatelessWidget {
@@ -10,21 +11,17 @@ class CountrySelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Select the state from the cubit
-    final state = context.select<RadioPageCubit, RadioPageState>(
-      (cubit) => cubit.state,
+    // Select the state from the bloc
+    final state = context.select<RadioPageBloc, RadioPageState>(
+      (bloc) => bloc.state,
     );
 
-    if (state is! RadioPageLoadedState) {
+    if (state is! RadioPageLoaded) {
       return const SizedBox.shrink();
     }
 
     final selectedCountry = state.selectedFilter.country;
-
     final countries = state.countries;
-
-    final onChanged = context.read<RadioPageCubit>().setSelectedCountry;
-
     final sixtyPercentWidth = MediaQuery.of(context).size.width * 0.6;
 
     return SizedBox(
@@ -47,7 +44,9 @@ class CountrySelector extends StatelessWidget {
             ),
           ),
         ],
-        onChanged: onChanged,
+        onChanged: (country) {
+          context.read<RadioPageBloc>().add(CountrySelected(country));
+        },
       ),
     );
   }
