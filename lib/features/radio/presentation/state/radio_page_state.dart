@@ -55,11 +55,15 @@ class RadioPageLoadedState extends RadioPageState {
   /// [selectedStation] is the currently selected station, if any
   /// [selectedFilter] is the currently selected filter, if any
   /// [isPlaying] indicates whether the current station is playing
+  /// [countries] is the list of available countries
+  /// [selectedCountry] is the currently selected country, if any
   const RadioPageLoadedState({
     required this.stations,
     this.selectedFilter,
     this.selectedStation,
     this.isPlaying = false,
+    this.countries = const [],
+    this.selectedCountry,
   });
 
   /// The list of loaded stations
@@ -74,6 +78,12 @@ class RadioPageLoadedState extends RadioPageState {
   /// Whether the current station is playing
   final bool isPlaying;
 
+  /// The list of available countries
+  final List<String> countries;
+
+  /// The currently selected country, if any
+  final String? selectedCountry;
+
   /// Creates a copy of this state with the given fields replaced with new
   /// values
   RadioPageLoadedState copyWith({
@@ -81,6 +91,8 @@ class RadioPageLoadedState extends RadioPageState {
     RadioStation? selectedStation,
     RadioStationFilter? selectedFilter,
     bool? isPlaying,
+    List<String>? countries,
+    String? selectedCountry,
     bool clearSelectedStation = false,
   }) {
     return RadioPageLoadedState(
@@ -89,6 +101,8 @@ class RadioPageLoadedState extends RadioPageState {
           clearSelectedStation ? null : selectedStation ?? this.selectedStation,
       selectedFilter: selectedFilter ?? this.selectedFilter,
       isPlaying: isPlaying ?? this.isPlaying,
+      countries: countries ?? this.countries,
+      selectedCountry: selectedCountry ?? this.selectedCountry,
     );
   }
 
@@ -98,6 +112,8 @@ class RadioPageLoadedState extends RadioPageState {
     selectedStation,
     selectedFilter,
     isPlaying,
+    countries,
+    selectedCountry,
   ];
 }
 

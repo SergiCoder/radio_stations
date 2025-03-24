@@ -13,6 +13,7 @@ class RadioStationCount extends StatelessWidget {
     return Text(
       '$count stations',
       style: Theme.of(context).textTheme.bodySmall,
+      maxLines: 2,
     );
   }
 }

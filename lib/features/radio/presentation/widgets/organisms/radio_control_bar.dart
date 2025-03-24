@@ -16,6 +16,9 @@ class RadioControlBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final cubit = context.watch<RadioPageCubit>();
     final state = cubit.state as RadioPageLoadedState;
+    final countries = state.countries;
+
+    final threeQuarterWidth = MediaQuery.of(context).size.width * 0.65;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -27,7 +30,7 @@ class RadioControlBar extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               SizedBox(
-                width: 200,
+                width: threeQuarterWidth,
                 child: DropdownButton<String?>(
                   value: cubit.selectedCountry,
                   hint: const Text('All Countries'),
@@ -36,7 +39,7 @@ class RadioControlBar extends StatelessWidget {
                     const DropdownMenuItem<String?>(
                       child: Text('All Countries'),
                     ),
-                    ...cubit.countries.map(
+                    ...countries.map(
                       (country) => DropdownMenuItem<String>(
                         value: country,
                         child: Text(
@@ -56,7 +59,6 @@ class RadioControlBar extends StatelessWidget {
             ],
           ),
           if (state.selectedStation != null) ...[
-            const SizedBox(height: 8),
             Row(
               children: [
                 SizedBox(

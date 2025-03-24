@@ -1,4 +1,4 @@
-import 'dart:developer';
+import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:radio_stations/features/radio/domain/domain.dart';
@@ -75,26 +75,29 @@ class RadioPageCubit extends Cubit<RadioPageState> {
   /// The use case for controlling audio volume
   final SetVolumeUseCase _setVolumeUseCase;
 
-  /// The list of available countries
-  List<String> _countries = [];
+  /// The favorite filter state: null = disabled, true = favorites only, false = non-favorites only
+  bool _showFavorites = false;
 
   /// The currently selected country
   String? _selectedCountry;
 
-  /// The favorite filter state: null = disabled, true = favorites only, false = non-favorites only
-  bool _showFavorites = false;
-
   /// The currently selected station
   RadioStation? _selectedStation;
 
-  /// Gets the list of available countries
-  List<String> get countries => _countries;
+  /// Subscription to error events
+  StreamSubscription<RadioStation>? _errorSubscription;
+
+  /// Subscription to playback state changes
+  StreamSubscription<bool>? _playbackSubscription;
+
+  /// Gets whether to show only favorite stations
+  bool get showFavorites => _showFavorites;
 
   /// Gets the currently selected country
   String? get selectedCountry => _selectedCountry;
 
-  /// Gets whether to show only favorite stations
-  bool get showFavorites => _showFavorites;
+  /// Gets the current volume level
+  double get volume => _setVolumeUseCase.volume;
 
   /// Initializes the cubit and loads the stations
   ///
@@ -106,7 +109,7 @@ class RadioPageCubit extends Cubit<RadioPageState> {
   }
 
   void _listenToErrorEvents() {
-    _errorEventBus.stream.listen((station) {
+    _errorSubscription = _errorEventBus.stream.listen((station) {
       if (state is RadioPageLoadedState) {
         final loadedState = state as RadioPageLoadedState;
         final stations =
@@ -126,12 +129,21 @@ class RadioPageCubit extends Cubit<RadioPageState> {
 
   /// Listens to playback state changes and updates the UI accordingly
   void _listenToPlaybackState() {
-    _getPlaybackStateUseCase.playingStateStream.listen((isPlaying) {
+    _playbackSubscription = _getPlaybackStateUseCase.playingStateStream.listen((
+      isPlaying,
+    ) {
       if (state is RadioPageLoadedState) {
         final loadedState = state as RadioPageLoadedState;
         emit(loadedState.copyWith(isPlaying: isPlaying));
       }
     });
+  }
+
+  @override
+  Future<void> close() async {
+    await _errorSubscription?.cancel();
+    await _playbackSubscription?.cancel();
+    await super.close();
   }
 
   Future<void> _syncStations() async {
@@ -172,11 +184,13 @@ class RadioPageCubit extends Cubit<RadioPageState> {
       }
 
       // Update available countries and languages
-      _countries = await _getRadioStationListUseCase.getAvailableCountries();
+      final countries =
+          await _getRadioStationListUseCase.getAvailableCountries();
       emit(
         RadioPageLoadedState(
           stations: stations,
           selectedStation: _selectedStation,
+          countries: countries,
         ),
       );
     } catch (e) {
@@ -207,14 +221,12 @@ class RadioPageCubit extends Cubit<RadioPageState> {
 
     final loadedState = state as RadioPageLoadedState;
 
-    // If the same station is selected, toggle play/pause
+    // If the same station is selected, do nothing
     if (loadedState.selectedStation?.uuid == station.uuid) {
       return;
     }
     emit(loadedState.copyWith(selectedStation: station));
-    log(
-      'hash old state: ${loadedState.hashCode} new state: ${station.hashCode}',
-    );
+
     _selectedStation = station;
     await _playRadioStationUseCase.execute(station);
   }
@@ -270,33 +282,32 @@ class RadioPageCubit extends Cubit<RadioPageState> {
     if (state is! RadioPageLoadedState) return;
 
     _showFavorites = !_showFavorites;
-    final stations = await _getRadioStationListUseCase.execute(_createFilter());
-    final loadedState = state as RadioPageLoadedState;
-    final newFilter = _createFilter();
 
-    emit(
-      loadedState.copyWith(
-        stations: stations,
-        selectedStation: loadedState.selectedStation,
-        selectedFilter: newFilter,
-      ),
-    );
-  }
-
-  /// Handles setting the selected country
-  Future<void> setSelectedCountry(String? country) async {
-    if (state is! RadioPageLoadedState) return;
-    _selectedCountry = country;
-    final stations = await _getRadioStationListUseCase.execute(_createFilter());
+    final filter = _createFilter();
+    final stations = await _getRadioStationListUseCase.execute(filter);
     final loadedState = state as RadioPageLoadedState;
 
     emit(
       loadedState.copyWith(
         stations: stations,
         selectedStation: _selectedStation,
-        selectedFilter: _createFilter(),
+        selectedFilter: filter,
       ),
     );
+  }
+
+  /// Sets the selected country and updates the stations list
+  Future<void> setSelectedCountry(String? country) async {
+    if (state is! RadioPageLoadedState) return;
+
+    _selectedCountry = country;
+
+    final loadedState = state as RadioPageLoadedState;
+
+    final filter = _createFilter();
+    final stations = await _getRadioStationListUseCase.execute(filter);
+
+    emit(loadedState.copyWith(stations: stations, selectedFilter: filter));
   }
 
   /// Toggles the favorite status of a station
@@ -341,11 +352,6 @@ class RadioPageCubit extends Cubit<RadioPageState> {
       emit(RadioPageErrorState(errorMessage: errorMessage));
     }
   }
-
-  /// Gets the current volume level
-  ///
-  /// Returns the volume level between 0.0 and 1.0
-  double get volume => _setVolumeUseCase.volume;
 
   /// Sets the volume level
   ///
