@@ -156,10 +156,12 @@ class RadioPageCubit extends Cubit<RadioPageState> {
     );
     await _syncStationsUseCase.execute(
       onProgress: (total, downloaded) {
+        // Ensure downloaded never exceeds total
+        final validDownloaded = downloaded > total ? total : downloaded;
         emit(
           RadioPageSyncProgressState(
             totalStations: total,
-            downloadedStations: downloaded,
+            downloadedStations: validDownloaded,
           ),
         );
       },
@@ -216,14 +218,22 @@ class RadioPageCubit extends Cubit<RadioPageState> {
   }
 
   /// Creates a filter based on current selection
-  RadioStationFilter _createFilter() {
+  ///
+  /// [country] is the country to filter by. If null, uses the current country.
+  /// [favorite] is whether to show only favorites. If null, uses the current favorite state.
+  RadioStationFilter _createFilter({String? country, bool? favorite}) {
     if (state is! RadioPageLoadedState) {
       return const RadioStationFilter(favorite: false);
     }
 
     final loadedState = state as RadioPageLoadedState;
-    return loadedState.selectedFilter ??
-        const RadioStationFilter(favorite: false);
+    final currentFilter =
+        loadedState.selectedFilter ?? const RadioStationFilter(favorite: false);
+
+    return RadioStationFilter(
+      country: country ?? currentFilter.country,
+      favorite: favorite ?? currentFilter.favorite,
+    );
   }
 
   /// Handles the selection of a radio station
@@ -310,11 +320,7 @@ class RadioPageCubit extends Cubit<RadioPageState> {
     final currentFilter =
         loadedState.selectedFilter ?? const RadioStationFilter(favorite: false);
 
-    final filter = RadioStationFilter(
-      favorite: !currentFilter.favorite,
-      country: currentFilter.country,
-    );
-
+    final filter = _createFilter(favorite: !currentFilter.favorite);
     final stations = await _getRadioStationListUseCase.execute(filter);
 
     emit(
@@ -331,11 +337,7 @@ class RadioPageCubit extends Cubit<RadioPageState> {
     if (state is! RadioPageLoadedState) return;
 
     final loadedState = state as RadioPageLoadedState;
-
-    final filter = RadioStationFilter(
-      country: country,
-      favorite: loadedState.selectedFilter?.favorite ?? false,
-    );
+    final filter = _createFilter(country: country);
     final stations = await _getRadioStationListUseCase.execute(filter);
 
     emit(loadedState.copyWith(stations: stations, selectedFilter: filter));
@@ -368,15 +370,9 @@ class RadioPageCubit extends Cubit<RadioPageState> {
 
     try {
       final loadedState = state as RadioPageLoadedState;
-      final stations = await _getRadioStationListUseCase.execute(
-        _createFilter(),
-      );
-      emit(
-        loadedState.copyWith(
-          stations: stations,
-          selectedCountry: loadedState.selectedFilter?.country,
-        ),
-      );
+      final filter = _createFilter();
+      final stations = await _getRadioStationListUseCase.execute(filter);
+      emit(loadedState.copyWith(stations: stations, selectedFilter: filter));
     } catch (e) {
       final String errorMessage;
       if (e is RadioStationFailure) {
