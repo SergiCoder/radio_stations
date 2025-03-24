@@ -45,6 +45,9 @@ class AudioRepositoryImpl implements AudioRepository {
   double get volume => _audioService.volume;
 
   @override
+  Stream<double> get volumeStream => _audioService.volumeStream;
+
+  @override
   Future<void> dispose() async {
     await _audioService.dispose();
   }

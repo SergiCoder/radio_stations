@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:radio_stations/features/audio/domain/usecases/get_volume_stream_use_case.dart';
 import 'package:radio_stations/features/radio/domain/domain.dart';
 import 'package:radio_stations/features/radio/domain/use_cases/set_volume_use_case.dart';
 import 'package:radio_stations/features/radio/domain/use_cases/toggle_favorite_radio_station_use_case.dart';
@@ -23,6 +24,7 @@ class RadioPageCubit extends Cubit<RadioPageState> {
   /// [getPlaybackStateUseCase] is used to get the current playback state
   /// [togglePlayPauseUseCase] is used to toggle play/pause
   /// [setVolumeUseCase] is used to control the audio volume
+  /// [getVolumeStreamUseCase] is used to get volume changes
   RadioPageCubit({
     required GetRadioStationListUseCase getRadioStationListUseCase,
     required SyncRadioStationsUseCase syncStationsUseCase,
@@ -32,6 +34,7 @@ class RadioPageCubit extends Cubit<RadioPageState> {
     required TogglePlayPauseUseCase togglePlayPauseUseCase,
     required SetBrokenRadioStationUseCase setBrokenRadioStationUseCase,
     required SetVolumeUseCase setVolumeUseCase,
+    required GetVolumeStreamUseCase getVolumeStreamUseCase,
     required ErrorEventBus errorEventBus,
   }) : _getRadioStationListUseCase = getRadioStationListUseCase,
        _syncStationsUseCase = syncStationsUseCase,
@@ -41,6 +44,7 @@ class RadioPageCubit extends Cubit<RadioPageState> {
        _togglePlayPauseUseCase = togglePlayPauseUseCase,
        _setBrokenRadioStationUseCase = setBrokenRadioStationUseCase,
        _setVolumeUseCase = setVolumeUseCase,
+       _getVolumeStreamUseCase = getVolumeStreamUseCase,
        _errorEventBus = errorEventBus,
        super(
          const RadioPageSyncProgressState(
@@ -75,6 +79,9 @@ class RadioPageCubit extends Cubit<RadioPageState> {
   /// The use case for controlling audio volume
   final SetVolumeUseCase _setVolumeUseCase;
 
+  /// The use case for getting volume changes
+  final GetVolumeStreamUseCase _getVolumeStreamUseCase;
+
   /// The favorite filter state: null = disabled, true = favorites only, false = non-favorites only
   bool _showFavorites = false;
 
@@ -89,6 +96,9 @@ class RadioPageCubit extends Cubit<RadioPageState> {
 
   /// Subscription to playback state changes
   StreamSubscription<bool>? _playbackSubscription;
+
+  /// Subscription to volume changes
+  StreamSubscription<double>? _volumeSubscription;
 
   /// Gets whether to show only favorite stations
   bool get showFavorites => _showFavorites;
@@ -106,6 +116,7 @@ class RadioPageCubit extends Cubit<RadioPageState> {
     await loadStations();
     _listenToPlaybackState();
     _listenToErrorEvents();
+    _listenToVolumeChanges();
   }
 
   void _listenToErrorEvents() {
@@ -139,10 +150,21 @@ class RadioPageCubit extends Cubit<RadioPageState> {
     });
   }
 
+  /// Listens to volume changes and updates the UI accordingly
+  void _listenToVolumeChanges() {
+    _volumeSubscription = _getVolumeStreamUseCase().listen((volume) {
+      if (state is RadioPageLoadedState) {
+        final loadedState = state as RadioPageLoadedState;
+        emit(loadedState.copyWith(volume: volume));
+      }
+    });
+  }
+
   @override
   Future<void> close() async {
     await _errorSubscription?.cancel();
     await _playbackSubscription?.cancel();
+    await _volumeSubscription?.cancel();
     await super.close();
   }
 
@@ -241,24 +263,30 @@ class RadioPageCubit extends Cubit<RadioPageState> {
   }
 
   /// Handles skipping to the next station
+  ///
+  /// If there is no next station, it will skip to the first station.
   Future<void> nextStation() async {
     if (state is! RadioPageLoadedState) return;
 
     final loadedState = state as RadioPageLoadedState;
     final currentStation = loadedState.selectedStation;
+    final stations = loadedState.stations;
 
-    if (currentStation == null) return;
+    if (currentStation == null || stations.isEmpty) return;
 
-    final currentIndex = loadedState.stations.indexOf(currentStation);
+    final currentIndex = stations.indexWhere(
+      (s) => s.uuid == currentStation.uuid,
+    );
     if (currentIndex == -1) return;
 
-    final nextIndex = (currentIndex + 1) % loadedState.stations.length;
-    final nextStation = loadedState.stations[nextIndex];
+    final nextIndex = (currentIndex + 1) % stations.length;
+    final nextStation = stations[nextIndex];
 
     await selectStation(nextStation);
   }
 
-  /// Handles skipping to the previous station
+  /// Handles skipping to the previous station, if there is no previous station,
+  /// it will skip to the last station
   Future<void> previousStation() async {
     if (state is! RadioPageLoadedState) return;
 
@@ -357,6 +385,7 @@ class RadioPageCubit extends Cubit<RadioPageState> {
   ///
   /// [volume] is the volume level between 0.0 and 1.0
   Future<void> setVolume(double volume) async {
-    await _setVolumeUseCase.execute(volume);
+    final clampedVolume = volume.clamp(0.0, 1.0);
+    await _setVolumeUseCase.execute(clampedVolume);
   }
 }

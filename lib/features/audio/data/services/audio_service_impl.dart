@@ -173,6 +173,9 @@ class AudioServiceImpl extends BaseAudioHandler {
   /// Returns the volume of the player
   double get volume => _player.volume;
 
+  /// Returns a stream of volume changes
+  Stream<double> get volumeStream => _player.volumeStream;
+
   /// Set the volume of the player
   Future<void> setVolume(double volume) async => _player.setVolume(volume);
 

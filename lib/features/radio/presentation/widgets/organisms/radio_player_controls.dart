@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:radio_stations/features/radio/presentation/cubit/radio_page_cubit.dart';
 import 'package:radio_stations/features/radio/presentation/state/radio_page_state.dart';
+import 'package:radio_stations/features/radio/presentation/widgets/molecules/volume_indicator.dart';
 
 /// A widget that displays radio player controls
 class RadioPlayerControls extends StatelessWidget {
@@ -18,7 +19,7 @@ class RadioPlayerControls extends StatelessWidget {
     final cubit = context.read<RadioPageCubit>();
 
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         IconButton(
           icon: const Icon(Icons.skip_previous),
@@ -40,6 +41,7 @@ class RadioPlayerControls extends StatelessWidget {
           icon: const Icon(Icons.volume_down),
           onPressed: () => cubit.setVolume(cubit.volume - 0.1),
         ),
+        const VolumeIndicator(),
       ],
     );
   }

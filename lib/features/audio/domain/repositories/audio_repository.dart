@@ -36,6 +36,11 @@ abstract class AudioRepository {
   /// Returns the volume level between 0.0 and 1.0
   double get volume;
 
+  /// Gets a stream of volume changes
+  ///
+  /// Returns a stream that emits the current volume level whenever it changes
+  Stream<double> get volumeStream;
+
   /// Disposes of the audio resources
   ///
   /// This should be called when the audio repository is no longer needed

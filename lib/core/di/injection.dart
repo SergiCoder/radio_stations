@@ -6,6 +6,7 @@ import 'package:radio_stations/core/database/hive_database.dart';
 import 'package:radio_stations/features/audio/data/repositories/audio_repository_impl.dart';
 import 'package:radio_stations/features/audio/data/services/audio_service_impl.dart';
 import 'package:radio_stations/features/audio/domain/repositories/audio_repository.dart';
+import 'package:radio_stations/features/audio/domain/usecases/get_volume_stream_use_case.dart';
 import 'package:radio_stations/features/radio/data/data.dart';
 import 'package:radio_stations/features/radio/domain/domain.dart';
 import 'package:radio_stations/features/radio/domain/use_cases/set_volume_use_case.dart';
@@ -92,6 +93,9 @@ Future<void> init() async {
     ..registerLazySingleton<SetVolumeUseCase>(
       () => SetVolumeUseCase(audioRepository: getIt()),
     )
+    ..registerLazySingleton<GetVolumeStreamUseCase>(
+      () => GetVolumeStreamUseCase(repository: getIt()),
+    )
     // Cubits
     ..registerFactory<RadioPageCubit>(
       () => RadioPageCubit(
@@ -103,6 +107,7 @@ Future<void> init() async {
         togglePlayPauseUseCase: getIt(),
         setBrokenRadioStationUseCase: getIt(),
         setVolumeUseCase: getIt(),
+        getVolumeStreamUseCase: getIt(),
         errorEventBus: getIt(),
       ),
     );
