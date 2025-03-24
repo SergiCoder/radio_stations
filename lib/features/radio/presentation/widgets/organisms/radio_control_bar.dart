@@ -62,7 +62,8 @@ class RadioControlBar extends StatelessWidget {
             RadioStationInfo(station: state.selectedStation!),
             const SizedBox(height: 8),
             const RadioPlayerControls(),
-          ],
+          ] else
+            const Text('No station selected'),
         ],
       ),
     );
