@@ -262,13 +262,15 @@ class RadioPageCubit extends Cubit<RadioPageState> {
     final currentStation = loadedState.selectedStation;
     final stations = loadedState.stations;
 
-    if (currentStation == null || stations.isEmpty) return;
+    if (stations.isEmpty) return;
 
-    final currentIndex = stations.indexWhere(
-      (s) => s.uuid == currentStation.uuid,
-    );
-    if (currentIndex == -1) return;
+    // If current station is not in the filtered list, start from the first station
+    if (currentStation == null || !stations.contains(currentStation)) {
+      await selectStation(stations.first);
+      return;
+    }
 
+    final currentIndex = stations.indexOf(currentStation);
     final nextIndex = (currentIndex + 1) % stations.length;
     final nextStation = stations[nextIndex];
 
@@ -282,15 +284,20 @@ class RadioPageCubit extends Cubit<RadioPageState> {
 
     final loadedState = state as RadioPageLoadedState;
     final currentStation = loadedState.selectedStation;
+    final stations = loadedState.stations;
 
-    if (currentStation == null) return;
+    if (stations.isEmpty) return;
 
-    final currentIndex = loadedState.stations.indexOf(currentStation);
-    if (currentIndex == -1) return;
+    // If current station is not in the filtered list, start from the last station
+    if (currentStation == null || !stations.contains(currentStation)) {
+      await selectStation(stations.last);
+      return;
+    }
 
+    final currentIndex = stations.indexOf(currentStation);
     final previousIndex =
-        currentIndex == 0 ? loadedState.stations.length - 1 : currentIndex - 1;
-    final previousStation = loadedState.stations[previousIndex];
+        currentIndex == 0 ? stations.length - 1 : currentIndex - 1;
+    final previousStation = stations[previousIndex];
 
     await selectStation(previousStation);
   }
