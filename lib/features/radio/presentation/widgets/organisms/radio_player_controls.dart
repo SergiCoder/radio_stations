@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:radio_stations/core/design_system/theme/app_spacing.dart';
+import 'package:radio_stations/core/utils/input_utils.dart';
 import 'package:radio_stations/features/radio/presentation/presentation.dart';
 import 'package:radio_stations/features/radio/presentation/widgets/molecules/volume_button.dart';
 
@@ -27,17 +28,26 @@ class RadioPlayerControls extends StatelessWidget {
           children: [
             IconButton(
               icon: const Icon(Icons.skip_previous),
-              onPressed: () => bloc.add(const PreviousStationRequested()),
+              onPressed:
+                  () => InputUtils.unfocusAndThen(context, () {
+                    bloc.add(const PreviousStationRequested());
+                  }),
               iconSize: 32,
             ),
             IconButton(
               icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
-              onPressed: () => bloc.add(const PlaybackToggled()),
+              onPressed:
+                  () => InputUtils.unfocusAndThen(context, () {
+                    bloc.add(const PlaybackToggled());
+                  }),
               iconSize: 48,
             ),
             IconButton(
               icon: const Icon(Icons.skip_next),
-              onPressed: () => bloc.add(const NextStationRequested()),
+              onPressed:
+                  () => InputUtils.unfocusAndThen(context, () {
+                    bloc.add(const NextStationRequested());
+                  }),
               iconSize: 32,
             ),
           ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:radio_stations/core/utils/input_utils.dart';
 import 'package:radio_stations/features/radio/presentation/bloc/bloc.dart';
 
 /// A button that allows the user to adjust the volume of the radio
@@ -14,7 +15,10 @@ class VolumeButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final bloc = context.read<RadioPageBloc>();
 
-    void onPressed() => bloc.add(VolumeChanged(volume));
+    void onPressed() => InputUtils.unfocusAndThen(context, () {
+      bloc.add(VolumeChanged(volume));
+    });
+
     return SizedBox(
       width: 30,
       height: 30,

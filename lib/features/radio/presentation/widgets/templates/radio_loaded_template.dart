@@ -8,15 +8,21 @@ class RadioLoadedTemplate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      resizeToAvoidBottomInset: false,
-      appBar: RadioPageAppBar(),
-      body: Column(
-        children: [
-          RadioPageHeader(),
-          Expanded(child: RadioStationList()),
-          RadioControlBar(),
-        ],
+    return GestureDetector(
+      // Unfocus when tapping anywhere outside interactive elements
+      onTap: () => FocusScope.of(context).unfocus(),
+      // This is critical - it allows the detector to handle taps that weren't handled by children
+      behavior: HitTestBehavior.translucent,
+      child: const Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: RadioPageAppBar(),
+        body: Column(
+          children: [
+            RadioPageHeader(),
+            Expanded(child: RadioStationList()),
+            RadioControlBar(),
+          ],
+        ),
       ),
     );
   }

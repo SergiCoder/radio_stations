@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:radio_stations/core/utils/input_utils.dart';
 import 'package:radio_stations/features/radio/presentation/presentation.dart';
 
 /// A widget that displays a dropdown menu for selecting a country
@@ -20,32 +21,29 @@ class CountrySelector extends StatelessWidget {
 
     final selectedCountry = state.selectedFilter.country;
     final countries = state.countries;
-    final sixtyPercentWidth = MediaQuery.of(context).size.width * 0.6;
 
-    return SizedBox(
-      width: sixtyPercentWidth,
-      child: DropdownButton<String?>(
-        value: selectedCountry,
-        hint: const Text('All Countries'),
-        isExpanded: true,
-        items: [
-          const DropdownMenuItem<String?>(child: Text('All Countries')),
-          ...countries.map(
-            (country) => DropdownMenuItem<String>(
-              value: country,
-              child: Text(
-                country.length > 20
-                    ? '${country.substring(0, 20)}...'
-                    : country,
-                overflow: TextOverflow.fade,
-              ),
+    return DropdownButton<String?>(
+      value: selectedCountry,
+      hint: const Text('All Countries'),
+      isExpanded: true,
+      items: [
+        const DropdownMenuItem<String?>(child: Text('All Countries')),
+        ...countries.map(
+          (country) => DropdownMenuItem<String>(
+            value: country,
+            child: Text(
+              country.length > 20 ? '${country.substring(0, 20)}...' : country,
+              overflow: TextOverflow.fade,
             ),
           ),
-        ],
-        onChanged: (country) {
+        ),
+      ],
+      onChanged: (country) {
+        // Unfocus before selecting country
+        InputUtils.unfocusAndThen(context, () {
           context.read<RadioPageBloc>().add(CountrySelected(country));
-        },
-      ),
+        });
+      },
     );
   }
 }

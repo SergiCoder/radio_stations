@@ -2,6 +2,7 @@ import 'dart:developer' as dev;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:radio_stations/core/utils/input_utils.dart';
 import 'package:radio_stations/features/radio/presentation/presentation.dart';
 import 'package:radio_stations/features/shared/domain/entitites/radio_station.dart';
 
@@ -55,16 +56,20 @@ class RadioStationListItemWidget extends StatelessWidget {
                       )
                       : const Icon(Icons.favorite_border),
               onPressed: () {
-                context.read<RadioPageBloc>().add(
-                  StationFavoriteToggled(station),
-                );
+                // Unfocus before toggling favorite
+                InputUtils.unfocusAndThen(context, () {
+                  context.read<RadioPageBloc>().add(
+                    StationFavoriteToggled(station),
+                  );
+                });
               },
             ),
           ],
         ),
         onTap: () {
           dev.log('Selected station: $station');
-          onTap();
+          // Unfocus before selecting station
+          InputUtils.unfocusAndThen(context, onTap);
         },
       ),
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:radio_stations/core/utils/input_utils.dart';
 import 'package:radio_stations/features/radio/presentation/bloc/bloc.dart';
 
 /// A widget that displays a volume indicator with interactive volume adjustment
@@ -30,10 +31,13 @@ class VolumeIndicator extends StatelessWidget {
             value: volume,
             divisions: 10, // 10% increments
             onChanged: (newValue) {
-              if (bloc.state is RadioPageLoaded) {
-                final currentVolume = (bloc.state as RadioPageLoaded).volume;
-                bloc.add(VolumeChanged(newValue - currentVolume));
-              }
+              // Unfocus before changing volume
+              InputUtils.unfocusAndThen(context, () {
+                if (bloc.state is RadioPageLoaded) {
+                  final currentVolume = (bloc.state as RadioPageLoaded).volume;
+                  bloc.add(VolumeChanged(newValue - currentVolume));
+                }
+              });
             },
           ),
         ),

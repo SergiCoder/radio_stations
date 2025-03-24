@@ -18,7 +18,7 @@ class RadioStationInfo extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Padding(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.only(left: 12, top: 12, bottom: 12),
             child: SizedBox(
               width: twentyPercentWidth,
               height: twentyPercentWidth,

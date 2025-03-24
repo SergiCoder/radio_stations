@@ -17,9 +17,9 @@ class RadioPageHeader extends StatelessWidget {
         }
 
         return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: const EdgeInsets.only(bottom: 16, left: 6, right: 6, top: 6),
           decoration: const BoxDecoration(
-            color: AppColors.surface,
+            color: AppColors.background,
             boxShadow: [
               BoxShadow(
                 color: Color(0x1A000000),

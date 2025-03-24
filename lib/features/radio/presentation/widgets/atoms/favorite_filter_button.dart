@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:radio_stations/core/utils/input_utils.dart';
 import 'package:radio_stations/features/radio/radio.dart';
 
 /// A simple button widget for toggling favorite filter
@@ -25,7 +26,10 @@ class FavoriteFilterButton extends StatelessWidget {
         color: showFavorites ? Theme.of(context).colorScheme.primary : null,
       ),
       onPressed: () {
-        context.read<RadioPageBloc>().add(const FavoritesFilterToggled());
+        // Unfocus before toggling filter
+        InputUtils.unfocusAndThen(context, () {
+          context.read<RadioPageBloc>().add(const FavoritesFilterToggled());
+        });
       },
       tooltip:
           showFavorites ? 'Show Non-Favorites Only' : 'Show Favorites Only',

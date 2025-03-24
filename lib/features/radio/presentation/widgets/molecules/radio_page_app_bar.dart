@@ -15,11 +15,12 @@ class RadioPageAppBar extends StatelessWidget implements PreferredSizeWidget {
     );
 
     final isLoaded = state is RadioPageLoaded;
+    final stationCount = isLoaded ? state.stations.length : 0;
 
     return AppBar(
-      title: const Text('Radio Stations'),
-      backgroundColor: AppColors.surface,
+      backgroundColor: AppColors.background,
       scrolledUnderElevation: 0,
+      title: Text('Radio Stations: $stationCount listed'),
       actions: [
         if (isLoaded)
           IconButton(

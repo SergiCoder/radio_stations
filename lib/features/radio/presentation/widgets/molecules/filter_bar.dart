@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:radio_stations/features/radio/presentation/widgets/widgets.dart';
 
-/// A widget that displays the filter controls and station count
+/// A widget that displays all filter controls in a single row
 class FilterBar extends StatelessWidget {
   /// Creates a new instance of [FilterBar]
   const FilterBar({required this.stationCount, super.key});
@@ -11,22 +11,16 @@ class FilterBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return const Row(
       children: [
-        // Search field on top
-        const Padding(
-          padding: EdgeInsets.symmetric(vertical: 8),
-          child: SearchField(),
-        ),
-        // Country and favorite filters below
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const CountrySelector(),
-            RadioStationCount(count: stationCount),
-            const FavoriteFilterButton(),
-          ],
-        ),
+        // Search field
+        Expanded(flex: 3, child: SearchField()),
+        SizedBox(width: 8),
+        // Country selector
+        Expanded(flex: 2, child: CountrySelector()),
+        SizedBox(width: 8),
+        // Favorite filter
+        FavoriteFilterButton(),
       ],
     );
   }
