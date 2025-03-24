@@ -9,7 +9,9 @@ class FavoriteFilterButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final showFavorites = context.read<RadioPageCubit>().showFavorites;
+    final showFavorites = context.select<RadioPageCubit, bool>(
+      (cubit) => cubit.showFavorites,
+    );
     return IconButton(
       icon: Icon(
         showFavorites ? Icons.favorite : Icons.favorite_border,

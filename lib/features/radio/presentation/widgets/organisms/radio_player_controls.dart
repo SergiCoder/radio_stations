@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:radio_stations/features/radio/presentation/cubit/radio_page_cubit.dart';
+import 'package:radio_stations/features/radio/presentation/state/radio_page_state.dart';
 
 /// A widget that displays radio player controls
 class RadioPlayerControls extends StatelessWidget {
@@ -9,7 +10,13 @@ class RadioPlayerControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isPlaying = context.select<RadioPageCubit, bool>(
+      (cubit) =>
+          cubit.state is RadioPageLoadedState &&
+          (cubit.state as RadioPageLoadedState).isPlaying,
+    );
     final cubit = context.read<RadioPageCubit>();
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
@@ -18,7 +25,7 @@ class RadioPlayerControls extends StatelessWidget {
           onPressed: cubit.previousStation,
         ),
         IconButton(
-          icon: Icon(cubit.isPlaying ? Icons.pause : Icons.play_arrow),
+          icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
           onPressed: cubit.togglePlayPause,
         ),
         IconButton(

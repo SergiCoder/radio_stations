@@ -129,7 +129,7 @@ class RadioPageCubit extends Cubit<RadioPageState> {
     _getPlaybackStateUseCase.playingStateStream.listen((isPlaying) {
       if (state is RadioPageLoadedState) {
         final loadedState = state as RadioPageLoadedState;
-        emit(loadedState.copyWith());
+        emit(loadedState.copyWith(isPlaying: isPlaying));
       }
     });
   }
@@ -340,18 +340,6 @@ class RadioPageCubit extends Cubit<RadioPageState> {
 
       emit(RadioPageErrorState(errorMessage: errorMessage));
     }
-  }
-
-  /// Gets whether a station is currently playing
-  ///
-  /// Returns true if a station is currently playing, false otherwise.
-  /// This is determined by checking the current state and the audio repository's
-  /// playing state.
-  bool get isPlaying {
-    if (state is! RadioPageLoadedState) return false;
-    final loadedState = state as RadioPageLoadedState;
-    return loadedState.selectedStation != null &&
-        _getPlaybackStateUseCase.isPlaying;
   }
 
   /// Gets the current volume level

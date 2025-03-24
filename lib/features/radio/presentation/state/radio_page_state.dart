@@ -54,10 +54,12 @@ class RadioPageLoadedState extends RadioPageState {
   /// [stations] is the list of loaded stations
   /// [selectedStation] is the currently selected station, if any
   /// [selectedFilter] is the currently selected filter, if any
+  /// [isPlaying] indicates whether the current station is playing
   const RadioPageLoadedState({
     required this.stations,
     this.selectedFilter,
     this.selectedStation,
+    this.isPlaying = false,
   });
 
   /// The list of loaded stations
@@ -69,12 +71,16 @@ class RadioPageLoadedState extends RadioPageState {
   /// The currently selected filter, if any
   final RadioStationFilter? selectedFilter;
 
+  /// Whether the current station is playing
+  final bool isPlaying;
+
   /// Creates a copy of this state with the given fields replaced with new
   /// values
   RadioPageLoadedState copyWith({
     List<RadioStation>? stations,
     RadioStation? selectedStation,
     RadioStationFilter? selectedFilter,
+    bool? isPlaying,
     bool clearSelectedStation = false,
   }) {
     return RadioPageLoadedState(
@@ -82,11 +88,17 @@ class RadioPageLoadedState extends RadioPageState {
       selectedStation:
           clearSelectedStation ? null : selectedStation ?? this.selectedStation,
       selectedFilter: selectedFilter ?? this.selectedFilter,
+      isPlaying: isPlaying ?? this.isPlaying,
     );
   }
 
   @override
-  List<Object?> get props => [stations, selectedStation, selectedFilter];
+  List<Object?> get props => [
+    stations,
+    selectedStation,
+    selectedFilter,
+    isPlaying,
+  ];
 }
 
 /// Sync progress state for the radio page
