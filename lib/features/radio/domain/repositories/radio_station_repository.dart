@@ -43,4 +43,9 @@ abstract class RadioStationRepository {
   ///
   /// [station] is the station to toggle the broken status for
   Future<void> toggleStationBroken(RadioStation station);
+
+  /// Releases resources used by the repository including:
+  /// - Closing the HTTP client
+  /// - Closing the Hive database connection
+  Future<void> dispose();
 }

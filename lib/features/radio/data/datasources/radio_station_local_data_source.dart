@@ -62,4 +62,11 @@ class RadioStationLocalDataSource {
     final updatedStation = stationDto!.copyWith(broken: !station.broken);
     await box.put(station.uuid, updatedStation);
   }
+
+  /// Disposes resources used by the data source
+  ///
+  /// This closes the Hive box and frees up resources.
+  Future<void> dispose() async {
+    await box.close();
+  }
 }

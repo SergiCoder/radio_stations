@@ -29,9 +29,15 @@ class AudioServiceImpl extends BaseAudioHandler {
 
   RadioStation? _currentStation;
 
+  /// Subscription for error handling stream
+  StreamSubscription<PlaybackEvent>? _errorHandlingSubscription;
+
+  /// Subscription for playback events stream
+  StreamSubscription<PlaybackEvent>? _playbackEventsSubscription;
+
   /// Sets up error handling for the audio player
   void _setupErrorHandling() {
-    _player.playbackEventStream.listen(
+    _errorHandlingSubscription = _player.playbackEventStream.listen(
       (event) {},
       onError: (Object e, StackTrace stackTrace) {
         log('A stream error occurred: $e');
@@ -70,7 +76,9 @@ class AudioServiceImpl extends BaseAudioHandler {
   }
 
   void _notifyAudioHandlerAboutPlaybackEvents() {
-    _player.playbackEventStream.listen((PlaybackEvent event) {
+    _playbackEventsSubscription = _player.playbackEventStream.listen((
+      PlaybackEvent event,
+    ) {
       playbackState.add(
         playbackState.value.copyWith(
           controls: _createMediaControls(),
@@ -179,6 +187,8 @@ class AudioServiceImpl extends BaseAudioHandler {
 
   /// Dispose audio player instance
   Future<void> dispose() async {
+    await _errorHandlingSubscription?.cancel();
+    await _playbackEventsSubscription?.cancel();
     await _player.dispose();
   }
 

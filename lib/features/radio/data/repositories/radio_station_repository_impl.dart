@@ -120,4 +120,16 @@ class RadioStationRepositoryImpl implements RadioStationRepository {
       throw RadioStationDataFailure('Failed to toggle broken status: $e');
     }
   }
+
+  /// Closes resources used by the repository including:
+  /// - The remote data source's HTTP client
+  /// - The local data source (which will close the Hive box)
+  @override
+  Future<void> dispose() async {
+    // Close the HTTP client in the remote data source
+    remoteDataSource.dispose();
+
+    // Close the local data source which will close the Hive box
+    await localDataSource.dispose();
+  }
 }
