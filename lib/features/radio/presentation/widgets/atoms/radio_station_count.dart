@@ -10,10 +10,14 @@ class RadioStationCount extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      '$count stations',
-      style: Theme.of(context).textTheme.bodySmall,
-      maxLines: 2,
+    return Flexible(
+      child: Text(
+        '$count stations',
+        style: Theme.of(context).textTheme.bodySmall,
+        maxLines: 2,
+        overflow: TextOverflow.fade,
+        textAlign: TextAlign.center,
+      ),
     );
   }
 }
