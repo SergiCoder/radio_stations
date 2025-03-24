@@ -104,10 +104,14 @@ class RadioStationInfo extends StatelessWidget {
                           color: theme.colorScheme.onSurface,
                         ),
                         const SizedBox(width: AppSpacing.xs),
-                        Text(
-                          station.country,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurface,
+                        Expanded(
+                          child: Text(
+                            station.country,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurface,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
                           ),
                         ),
                       ],
