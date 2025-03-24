@@ -34,7 +34,9 @@ class RadioPage extends StatelessWidget {
             return RadioLoadedTemplate(stations: state.stations);
           }
 
-          return const Scaffold(body: Center(child: Text('Unknown state')));
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
         },
       ),
     );

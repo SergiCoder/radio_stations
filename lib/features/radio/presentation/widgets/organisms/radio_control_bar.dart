@@ -4,8 +4,8 @@ import 'package:radio_stations/features/radio/presentation/cubit/radio_page_cubi
 import 'package:radio_stations/features/radio/presentation/state/radio_page_state.dart';
 import 'package:radio_stations/features/radio/presentation/widgets/atoms/favorite_filter_button.dart';
 import 'package:radio_stations/features/radio/presentation/widgets/atoms/radio_station_count.dart';
+import 'package:radio_stations/features/radio/presentation/widgets/molecules/radio_station_info.dart';
 import 'package:radio_stations/features/radio/presentation/widgets/organisms/radio_player_controls.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 /// A widget that displays the bottom control bar for the radio page
 class RadioControlBar extends StatelessWidget {
@@ -18,7 +18,7 @@ class RadioControlBar extends StatelessWidget {
     final state = cubit.state as RadioPageLoadedState;
     final countries = state.countries;
 
-    final threeQuarterWidth = MediaQuery.of(context).size.width * 0.65;
+    final sixtyPercentWidth = MediaQuery.of(context).size.width * 0.60;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -30,7 +30,7 @@ class RadioControlBar extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               SizedBox(
-                width: threeQuarterWidth,
+                width: sixtyPercentWidth,
                 child: DropdownButton<String?>(
                   value: cubit.selectedCountry,
                   hint: const Text('All Countries'),
@@ -59,89 +59,7 @@ class RadioControlBar extends StatelessWidget {
             ],
           ),
           if (state.selectedStation != null) ...[
-            Row(
-              children: [
-                SizedBox(
-                  width: 48,
-                  height: 48,
-                  child:
-                      state.selectedStation!.favicon.isNotEmpty
-                          ? Image.network(
-                            state.selectedStation!.favicon,
-                            errorBuilder:
-                                (context, error, stackTrace) =>
-                                    const Icon(Icons.radio, size: 48),
-                          )
-                          : const Icon(Icons.radio, size: 48),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        state.selectedStation!.name,
-                        style: Theme.of(context).textTheme.titleMedium,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      if (state.selectedStation!.homepage.isNotEmpty) ...[
-                        const SizedBox(height: 4),
-                        GestureDetector(
-                          onTap:
-                              () => launchUrl(
-                                Uri.parse(state.selectedStation!.homepage),
-                              ),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.language, size: 16),
-                              const SizedBox(width: 4),
-                              Expanded(
-                                child: Text(
-                                  state.selectedStation!.homepage,
-                                  style: Theme.of(context).textTheme.bodySmall,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                      if (state.selectedStation!.country.isNotEmpty) ...[
-                        const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            const Icon(Icons.location_on, size: 16),
-                            const SizedBox(width: 4),
-                            Text(
-                              state.selectedStation!.country,
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                          ],
-                        ),
-                      ],
-                      if (state.selectedStation!.broken) ...[
-                        const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            const Icon(Icons.error_outline, size: 16),
-                            const SizedBox(width: 4),
-                            Text(
-                              'Station is broken',
-                              style: Theme.of(
-                                context,
-                              ).textTheme.bodySmall?.copyWith(
-                                color: Theme.of(context).colorScheme.error,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ],
-            ),
+            RadioStationInfo(station: state.selectedStation!),
             const SizedBox(height: 8),
             const RadioPlayerControls(),
           ],
