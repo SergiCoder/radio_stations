@@ -74,7 +74,7 @@ The app uses the following architectural patterns:
 
 1. Clone the repository
    ```bash
-   git clone https://github.com/yourusername/radio_stations.git
+   git clone https://github.com/SergiCoder/radio_stations.git
    cd radio_stations
    ```
 
