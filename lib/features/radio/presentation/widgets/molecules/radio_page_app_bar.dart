@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:radio_stations/core/design_system/theme/theme.dart';
 import 'package:radio_stations/features/radio/presentation/bloc/bloc.dart';
 
 /// A widget that displays the app bar for the radio page
@@ -17,6 +18,8 @@ class RadioPageAppBar extends StatelessWidget implements PreferredSizeWidget {
 
     return AppBar(
       title: const Text('Radio Stations'),
+      backgroundColor: AppColors.surface,
+      scrolledUnderElevation: 0,
       actions: [
         if (isLoaded)
           IconButton(

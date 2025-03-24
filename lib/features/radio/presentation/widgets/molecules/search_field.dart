@@ -67,7 +67,10 @@ class _SearchFieldState extends State<SearchField> {
         ),
         onChanged: (value) {
           _debounce.run(() {
-            context.read<RadioPageBloc>().add(SearchTermChanged(value));
+            // Only trigger search when input is empty or has at least 2 characters
+            if (value.isEmpty || value.length >= 2) {
+              context.read<RadioPageBloc>().add(SearchTermChanged(value));
+            }
           });
         },
       ),
@@ -78,6 +81,8 @@ class _SearchFieldState extends State<SearchField> {
 /// A utility class to debounce rapid text input events
 class Debouncer {
   /// Creates a new instance of [Debouncer]
+  ///
+  /// [milliseconds] is the delay duration in milliseconds
   Debouncer({required this.milliseconds});
 
   /// The delay duration in milliseconds

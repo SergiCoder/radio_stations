@@ -16,15 +16,17 @@ class RadioControlBar extends StatelessWidget {
         }
 
         return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.fromLTRB(16, 5, 16, 0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              FilterBar(stationCount: state.stations.length),
               if (state.selectedStation != null)
                 PlayerBar(station: state.selectedStation!)
               else
-                const Text('No station selected'),
+                const Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Text('No station selected'),
+                ),
             ],
           ),
         );

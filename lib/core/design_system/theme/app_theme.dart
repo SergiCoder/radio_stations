@@ -32,6 +32,13 @@ class AppTheme {
         surface: AppColors.surface,
       ),
       scaffoldBackgroundColor: AppColors.background,
+      // AppBar theme
+      appBarTheme: const AppBarTheme(
+        backgroundColor: AppColors.surface,
+        foregroundColor: AppColors.textPrimary,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+      ),
       // Typography
       textTheme: const TextTheme(
         displayLarge: AppTypography.displayLarge,

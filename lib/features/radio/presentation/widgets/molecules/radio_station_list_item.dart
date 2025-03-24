@@ -40,7 +40,10 @@ class RadioStationListItemWidget extends StatelessWidget {
               height: 24,
               child:
                   station.broken
-                      ? const Icon(Icons.error_outline, color: Colors.orange)
+                      ? Icon(
+                        Icons.error_outline,
+                        color: Theme.of(context).colorScheme.error,
+                      )
                       : null,
             ),
             IconButton(

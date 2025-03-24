@@ -13,85 +13,83 @@ class RadioStationInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final twentyPercentWidth = MediaQuery.of(context).size.width * 0.20;
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        SizedBox(
-          width: twentyPercentWidth,
-          height: twentyPercentWidth,
-          child:
-              station.favicon.isNotEmpty
-                  ? Image.network(
-                    station.favicon,
-                    errorBuilder:
-                        (context, error, stackTrace) =>
-                            const Icon(Icons.radio, size: 48),
-                  )
-                  : const Icon(Icons.radio, size: 48),
-        ),
-        const Spacer(),
-        Expanded(
-          flex: 20,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                station.name,
-                style: Theme.of(context).textTheme.titleMedium,
-                overflow: TextOverflow.ellipsis,
-              ),
-              if (station.homepage.isNotEmpty) ...[
-                const SizedBox(height: 4),
-                GestureDetector(
-                  onTap: () => launchUrl(Uri.parse(station.homepage)),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.language, size: 16),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          station.homepage,
-                          style: Theme.of(context).textTheme.bodySmall,
-                          overflow: TextOverflow.ellipsis,
+    return Card(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: SizedBox(
+              width: twentyPercentWidth,
+              height: twentyPercentWidth,
+              child:
+                  station.broken
+                      ? Icon(Icons.error_outline, color: Colors.red.shade300)
+                      : station.favicon.isNotEmpty
+                      ? Image.network(
+                        station.favicon,
+                        errorBuilder:
+                            (context, error, stackTrace) =>
+                                const Icon(Icons.radio),
+                      )
+                      : const Icon(Icons.radio),
+            ),
+          ),
+          const Spacer(),
+          Expanded(
+            flex: 20,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        station.name,
+                        style: Theme.of(context).textTheme.titleMedium,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+                if (station.homepage.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  GestureDetector(
+                    onTap: () => launchUrl(Uri.parse(station.homepage)),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.language, size: 16),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            station.homepage,
+                            style: Theme.of(context).textTheme.bodySmall,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
+                      ],
+                    ),
+                  ),
+                ],
+                if (station.country.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      const Icon(Icons.location_on, size: 16),
+                      const SizedBox(width: 4),
+                      Text(
+                        station.country,
+                        style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ],
                   ),
-                ),
+                ],
               ],
-              if (station.country.isNotEmpty) ...[
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    const Icon(Icons.location_on, size: 16),
-                    const SizedBox(width: 4),
-                    Text(
-                      station.country,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  ],
-                ),
-              ],
-              if (station.broken) ...[
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    const Icon(Icons.error_outline, size: 16),
-                    const SizedBox(width: 4),
-                    Text(
-                      'Station is broken',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.error,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

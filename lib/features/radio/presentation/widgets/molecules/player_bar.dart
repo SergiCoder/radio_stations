@@ -17,9 +17,9 @@ class PlayerBar extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         RadioStationInfo(station: station),
-        const SizedBox(height: AppSpacing.md),
+        const SizedBox(height: AppSpacing.xs),
         const RadioPlayerControls(),
-        const SizedBox(height: AppSpacing.sm),
+        const SizedBox(height: AppSpacing.xs),
       ],
     );
   }

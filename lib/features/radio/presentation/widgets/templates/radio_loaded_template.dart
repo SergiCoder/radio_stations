@@ -9,9 +9,14 @@ class RadioLoadedTemplate extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: RadioPageAppBar(),
       body: Column(
-        children: [Expanded(child: RadioStationList()), RadioControlBar()],
+        children: [
+          RadioPageHeader(),
+          Expanded(child: RadioStationList()),
+          RadioControlBar(),
+        ],
       ),
     );
   }

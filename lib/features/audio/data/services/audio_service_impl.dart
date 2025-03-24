@@ -206,11 +206,8 @@ class AudioServiceImpl extends BaseAudioHandler {
       _currentStation = station;
       await _player.setAudioSource(AudioSource.uri(Uri.parse(station.url)));
       unawaited(_player.play());
-      notifyStation(
-        stationUrl: station.url,
-        stationName: station.name,
-        stationCountry: station.country,
-      );
+      notifyStation(station: station);
+
       _isPreparing = false;
     } catch (e) {
       _isPreparing = false;
@@ -221,13 +218,14 @@ class AudioServiceImpl extends BaseAudioHandler {
   }
 
   /// Notify the system the current station
-  void notifyStation({
-    required String stationUrl,
-    required String stationName,
-    String? stationCountry,
-  }) {
+  void notifyStation({required RadioStation station}) {
     mediaItem.add(
-      MediaItem(id: stationUrl, title: stationName, artist: stationCountry),
+      MediaItem(
+        id: station.url,
+        title: station.name,
+        artist: station.country,
+        artUri: station.favicon.isNotEmpty ? Uri.parse(station.favicon) : null,
+      ),
     );
   }
 }
