@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:radio_stations/features/radio/domain/domain.dart';
+import 'package:radio_stations/features/shared/domain/entitites/radio_station.dart';
 
 /// Use case for marking radio stations as broken based on error events
 ///

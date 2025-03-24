@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:radio_stations/features/radio/domain/domain.dart';
+import 'package:radio_stations/features/shared/domain/entitites/radio_station.dart';
 
 /// Base class for all radio page events.
 ///

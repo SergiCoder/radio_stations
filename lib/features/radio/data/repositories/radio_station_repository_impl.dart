@@ -1,9 +1,5 @@
-import 'package:radio_stations/features/radio/data/datasources/radio_station_local_data_source.dart';
-import 'package:radio_stations/features/radio/data/datasources/radio_station_remote_data_source.dart';
-import 'package:radio_stations/features/radio/data/extensions/radio_station_remote_dto_extensions.dart';
-import 'package:radio_stations/features/radio/data/mappers/radio_station_mapper.dart';
-import 'package:radio_stations/features/radio/domain/domain.dart';
-import 'package:radio_stations/features/radio/domain/extensions/radio_station_list_item_extensions.dart';
+import 'package:radio_stations/features/radio/radio.dart';
+import 'package:radio_stations/features/shared/shared.dart';
 
 /// Implementation of [RadioStationRepository]
 ///

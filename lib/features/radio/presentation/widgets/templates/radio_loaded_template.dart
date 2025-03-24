@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:radio_stations/features/radio/presentation/widgets/molecules/radio_page_app_bar.dart';
-import 'package:radio_stations/features/radio/presentation/widgets/organisms/radio_control_bar.dart';
-import 'package:radio_stations/features/radio/presentation/widgets/organisms/radio_station_list.dart';
+import 'package:radio_stations/features/radio/presentation/presentation.dart';
 
 /// A template widget for displaying the loaded state
 class RadioLoadedTemplate extends StatelessWidget {

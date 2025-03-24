@@ -14,6 +14,8 @@ analyzer:
     one_member_abstracts: ignore
     # For readability
     lines_longer_than_80_chars: ignore
+    # For readability specifically in barrel files
+    dangling_library_doc_comments: ignore
   # Exclude generated files from analysis to avoid false positives
   exclude:
     # Generated code for JSON serialization, etc.

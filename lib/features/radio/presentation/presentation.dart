@@ -1,7 +1,13 @@
-/// Barrel file for the radio presentation layer.
-/// Exports all presentation layer components including pages, cubits, and
-/// states.
-library;
+/// Radio presentation layer barrel file
+///
+/// This barrel exports the key components of the radio feature's presentation layer,
+/// including BLoC, pages, and widget components.
+/// It provides a clean API for other parts of the application to access
+/// presentation components.
 
-export 'bloc/radio_page_bloc.dart';
-export 'widgets/pages/radio_page.dart';
+// Export BLoC-related components
+export 'bloc/bloc.dart';
+
+// Export widget components
+// Note: Pages are accessed through the widgets barrel
+export 'widgets/widgets.dart';

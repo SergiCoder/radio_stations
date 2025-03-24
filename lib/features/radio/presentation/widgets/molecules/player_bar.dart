@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:radio_stations/features/radio/presentation/widgets/organisms/radio_player_controls.dart';
-import 'package:radio_stations/features/radio/presentation/widgets/organisms/radio_station_info.dart';
+import 'package:radio_stations/features/radio/presentation/widgets/organisms/organisms.dart';
 import 'package:radio_stations/features/shared/domain/entitites/radio_station.dart';
 
 /// A widget that displays the player information and controls

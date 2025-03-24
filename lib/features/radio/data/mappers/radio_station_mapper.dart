@@ -1,9 +1,8 @@
 import 'dart:developer';
 
 import 'package:radio_stations/core/utils/validators.dart';
-import 'package:radio_stations/features/radio/data/dto/radio_station_local_dto.dart';
-import 'package:radio_stations/features/radio/data/dto/radio_station_remote_dto.dart';
-import 'package:radio_stations/features/radio/domain/domain.dart';
+import 'package:radio_stations/features/radio/radio.dart';
+import 'package:radio_stations/features/shared/domain/entitites/radio_station.dart';
 
 /// Mapper class for converting between different radio station data types
 ///

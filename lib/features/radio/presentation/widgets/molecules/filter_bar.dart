@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:radio_stations/features/radio/presentation/widgets/atoms/favorite_filter_button.dart';
-import 'package:radio_stations/features/radio/presentation/widgets/atoms/radio_station_count.dart';
-import 'package:radio_stations/features/radio/presentation/widgets/molecules/country_selector.dart';
+import 'package:radio_stations/features/radio/presentation/widgets/widgets.dart';
 
 /// A widget that displays the filter controls and station count
 class FilterBar extends StatelessWidget {

@@ -1,4 +1,5 @@
 import 'package:radio_stations/features/radio/domain/domain.dart';
+import 'package:radio_stations/features/shared/domain/entitites/radio_station.dart';
 
 /// Use case for retrieving all radio station list items
 ///

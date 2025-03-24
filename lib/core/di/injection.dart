@@ -2,17 +2,14 @@ import 'package:get_it/get_it.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart';
+// Core imports
 import 'package:radio_stations/core/database/hive_database.dart';
-import 'package:radio_stations/features/audio/data/repositories/audio_repository_impl.dart';
-import 'package:radio_stations/features/audio/data/services/audio_service_impl.dart';
-import 'package:radio_stations/features/audio/domain/repositories/audio_repository.dart';
-import 'package:radio_stations/features/audio/domain/usecases/get_volume_stream_use_case.dart';
-import 'package:radio_stations/features/radio/data/data.dart';
-import 'package:radio_stations/features/radio/domain/domain.dart';
-import 'package:radio_stations/features/radio/domain/use_cases/set_volume_use_case.dart';
-import 'package:radio_stations/features/radio/domain/use_cases/toggle_favorite_radio_station_use_case.dart';
-import 'package:radio_stations/features/radio/presentation/bloc/radio_page_bloc.dart';
-import 'package:radio_stations/features/shared/domain/events/error_event_bus.dart';
+// Feature imports - each barrel contains all components for that feature
+import 'package:radio_stations/features/audio/audio.dart';
+import 'package:radio_stations/features/radio/radio.dart';
+import 'package:radio_stations/features/shared/shared.dart';
+// Feature API imports - public interfaces used across features
+// Feature implementation imports - only needed in DI
 
 /// Global service locator instance
 ///

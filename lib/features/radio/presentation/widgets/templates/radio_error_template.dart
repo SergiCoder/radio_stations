@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:radio_stations/features/radio/presentation/bloc/radio_page_bloc.dart';
-import 'package:radio_stations/features/radio/presentation/bloc/radio_page_events.dart';
-import 'package:radio_stations/features/radio/presentation/widgets/molecules/radio_page_app_bar.dart';
+import 'package:radio_stations/features/radio/presentation/presentation.dart';
 
 /// A template widget for displaying the error state
 class RadioErrorTemplate extends StatelessWidget {
