@@ -4,9 +4,9 @@ import 'package:radio_stations/core/utils/input_utils.dart';
 import 'package:radio_stations/features/radio/presentation/bloc/bloc.dart';
 
 /// A button that allows the user to adjust the volume of the radio
-class VolumeButton extends StatelessWidget {
-  /// Creates a new instance of [VolumeButton]
-  const VolumeButton({required this.volume, super.key});
+class AudioVolumeButton extends StatelessWidget {
+  /// Creates a new instance of [AudioVolumeButton]
+  const AudioVolumeButton({required this.volume, super.key});
 
   /// The bloc that manages the radio page
   final double volume;

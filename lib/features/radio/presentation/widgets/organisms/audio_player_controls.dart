@@ -3,12 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:radio_stations/core/design_system/theme/app_spacing.dart';
 import 'package:radio_stations/core/utils/input_utils.dart';
 import 'package:radio_stations/features/radio/presentation/presentation.dart';
-import 'package:radio_stations/features/radio/presentation/widgets/molecules/volume_button.dart';
 
 /// A widget that displays radio player controls
-class RadioPlayerControls extends StatelessWidget {
-  /// Creates a new instance of [RadioPlayerControls]
-  const RadioPlayerControls({super.key});
+class AudioPlayerControls extends StatelessWidget {
+  /// Creates a new instance of [AudioPlayerControls]
+  const AudioPlayerControls({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -59,11 +58,11 @@ class RadioPlayerControls extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              VolumeButton(volume: -0.1),
+              AudioVolumeButton(volume: -0.1),
               SizedBox(width: AppSpacing.md),
-              Expanded(child: VolumeIndicator()),
+              Expanded(child: AudioVolumeIndicator()),
               SizedBox(width: AppSpacing.md),
-              VolumeButton(volume: 0.1),
+              AudioVolumeButton(volume: 0.1),
             ],
           ),
         ),

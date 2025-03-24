@@ -1,27 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:radio_stations/core/utils/input_utils.dart';
-import 'package:radio_stations/features/radio/presentation/presentation.dart';
 
 /// A widget that displays a dropdown menu for selecting a country
-class CountrySelector extends StatelessWidget {
-  /// Creates a new instance of [CountrySelector]
-  const CountrySelector({super.key});
+class FilterCountrySelector extends StatelessWidget {
+  /// Creates a new instance of [FilterCountrySelector]
+  ///
+  /// [selectedCountry] is the currently selected country, or null for all countries
+  /// [countries] is the list of available countries to select from
+  /// [onCountrySelected] is called when a country is selected
+  const FilterCountrySelector({
+    required this.selectedCountry,
+    required this.countries,
+    required this.onCountrySelected,
+    super.key,
+  });
+
+  /// Currently selected country, or null for all countries
+  final String? selectedCountry;
+
+  /// List of available countries to select from
+  final List<String> countries;
+
+  /// Callback when a country is selected
+  final void Function(String?) onCountrySelected;
 
   @override
   Widget build(BuildContext context) {
-    // Select the state from the bloc
-    final state = context.select<RadioPageBloc, RadioPageState>(
-      (bloc) => bloc.state,
-    );
-
-    if (state is! RadioPageLoaded) {
-      return const SizedBox.shrink();
-    }
-
-    final selectedCountry = state.selectedFilter.country;
-    final countries = state.countries;
-
     return DropdownButton<String?>(
       value: selectedCountry,
       hint: const Text('All Countries'),
@@ -41,7 +45,7 @@ class CountrySelector extends StatelessWidget {
       onChanged: (country) {
         // Unfocus before selecting country
         InputUtils.unfocusAndThen(context, () {
-          context.read<RadioPageBloc>().add(CountrySelected(country));
+          onCountrySelected(country);
         });
       },
     );

@@ -9,28 +9,28 @@ class RadioControlBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<RadioPageBloc, RadioPageState>(
-      builder: (context, state) {
-        if (state is! RadioPageLoaded) {
-          return const SizedBox.shrink();
-        }
+    final state = context.select<RadioPageBloc, RadioPageState>(
+      (bloc) => bloc.state,
+    );
 
-        return Container(
-          padding: const EdgeInsets.fromLTRB(16, 5, 16, 0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (state.selectedStation != null)
-                PlayerBar(station: state.selectedStation!)
-              else
-                const Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Text('No station selected'),
-                ),
-            ],
-          ),
-        );
-      },
+    if (state is! RadioPageLoaded) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 5, 16, 0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (state.selectedStation != null)
+            PlayerBar(station: state.selectedStation!)
+          else
+            const Padding(
+              padding: EdgeInsets.all(20),
+              child: Text('No station selected'),
+            ),
+        ],
+      ),
     );
   }
 }

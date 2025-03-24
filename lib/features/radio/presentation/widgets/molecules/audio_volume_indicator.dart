@@ -4,9 +4,9 @@ import 'package:radio_stations/core/utils/input_utils.dart';
 import 'package:radio_stations/features/radio/presentation/bloc/bloc.dart';
 
 /// A widget that displays a volume indicator with interactive volume adjustment
-class VolumeIndicator extends StatelessWidget {
-  /// Creates a new instance of [VolumeIndicator]
-  const VolumeIndicator({super.key});
+class AudioVolumeIndicator extends StatelessWidget {
+  /// Creates a new instance of [AudioVolumeIndicator]
+  const AudioVolumeIndicator({super.key});
 
   @override
   Widget build(BuildContext context) {

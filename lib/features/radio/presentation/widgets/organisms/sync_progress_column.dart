@@ -17,6 +17,8 @@ class SyncProgressColumn extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
+    final progressPercentage = state.progressPercentage;
+
     /// Gets the progress message to display
     final progressMessage =
         '${state.downloadedStations} of ${state.totalStations} stations';
@@ -36,7 +38,7 @@ class SyncProgressColumn extends StatelessWidget {
             style: Theme.of(context).textTheme.headlineMedium,
           ),
           const Spacer(flex: 3),
-          const SyncProgressIndicator(),
+          SyncProgressIndicator(progressPercentage: progressPercentage),
           const Spacer(flex: 20),
         ],
       ),

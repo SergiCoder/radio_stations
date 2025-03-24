@@ -18,7 +18,7 @@ class PlayerBar extends StatelessWidget {
       children: [
         RadioStationInfo(station: station),
         const SizedBox(height: AppSpacing.xs),
-        const RadioPlayerControls(),
+        const AudioPlayerControls(),
         const SizedBox(height: AppSpacing.xs),
       ],
     );

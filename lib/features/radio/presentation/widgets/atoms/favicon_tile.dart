@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 /// A widget that displays a favicon image or a radio icon if the image is not
 /// available.
-class FaviconTile extends StatelessWidget {
-  /// Creates a new instance of [FaviconTile]
-  const FaviconTile({required this.favicon, super.key});
+class RadioFaviconTile extends StatelessWidget {
+  /// Creates a new instance of [RadioFaviconTile]
+  const RadioFaviconTile({required this.favicon, super.key});
 
   /// The favicon URL
   final String? favicon;
