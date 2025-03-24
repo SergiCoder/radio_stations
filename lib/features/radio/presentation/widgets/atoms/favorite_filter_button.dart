@@ -18,7 +18,7 @@ class FavoriteFilterButton extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    final showFavorites = state.selectedFilter?.favorite ?? false;
+    final showFavorites = state.selectedFilter.favorite;
 
     return IconButton(
       icon: Icon(

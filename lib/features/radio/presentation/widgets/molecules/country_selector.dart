@@ -19,7 +19,7 @@ class CountrySelector extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    final selectedCountry = state.selectedFilter?.country;
+    final selectedCountry = state.selectedFilter.country;
 
     final countries = state.countries;
 

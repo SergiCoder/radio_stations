@@ -59,7 +59,7 @@ class RadioPageLoadedState extends RadioPageState {
   /// [volume] is the current volume level between 0.0 and 1.0
   const RadioPageLoadedState({
     required this.stations,
-    this.selectedFilter,
+    required this.selectedFilter,
     this.selectedStation,
     this.isPlaying = false,
     this.countries = const [],
@@ -73,7 +73,7 @@ class RadioPageLoadedState extends RadioPageState {
   final RadioStation? selectedStation;
 
   /// The currently selected filter, if any
-  final RadioStationFilter? selectedFilter;
+  final RadioStationFilter selectedFilter;
 
   /// Whether the current station is playing
   final bool isPlaying;

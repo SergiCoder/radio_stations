@@ -9,11 +9,18 @@ class RadioStationFilter {
   /// The country to filter by
   final String? country;
 
-  /// Creates a copy of this filter with the given fields replaced with new values
-  RadioStationFilter copyWith({bool? favorite, String? country}) {
-    return RadioStationFilter(
-      favorite: favorite ?? this.favorite,
-      country: country ?? this.country,
-    );
+  /// Toggles the favorite filter
+  RadioStationFilter toggleFavorite() {
+    return RadioStationFilter(favorite: !favorite, country: country);
+  }
+
+  /// Creates a new filter with no country selected
+  RadioStationFilter withoutCountry() {
+    return RadioStationFilter(favorite: favorite);
+  }
+
+  /// Creates a new filter with the country set to the given value
+  RadioStationFilter withCountry(String country) {
+    return RadioStationFilter(favorite: favorite, country: country);
   }
 }

@@ -173,17 +173,19 @@ class RadioPageCubit extends Cubit<RadioPageState> {
   /// If [forceSync] is true, it will synchronize with the remote source first.
   /// Otherwise, it will only sync if there are no stations locally.
   Future<void> loadStations({bool forceSync = false}) async {
-    final lastLoadedState =
-        state is RadioPageLoadedState ? state as RadioPageLoadedState : null;
-
     try {
+      final isLoadedState = state is RadioPageLoadedState;
+      final lastLoadedState =
+          isLoadedState ? state as RadioPageLoadedState : null;
+
       if (forceSync) {
         await _syncStations();
       }
 
       final filter =
-          lastLoadedState?.selectedFilter ??
-          const RadioStationFilter(favorite: false);
+          isLoadedState
+              ? lastLoadedState!.selectedFilter
+              : const RadioStationFilter(favorite: false);
       // First try to get stations from local cache
       final stations = await _getRadioStationListUseCase.execute(filter);
 
@@ -202,7 +204,9 @@ class RadioPageCubit extends Cubit<RadioPageState> {
           stations: stations,
           selectedStation: lastLoadedState?.selectedStation,
           countries: countries,
-          selectedFilter: lastLoadedState?.selectedFilter,
+          selectedFilter:
+              lastLoadedState?.selectedFilter ??
+              const RadioStationFilter(favorite: false),
         ),
       );
     } catch (e) {
@@ -217,23 +221,37 @@ class RadioPageCubit extends Cubit<RadioPageState> {
     }
   }
 
-  /// Creates a filter based on current selection
-  ///
-  /// [country] is the country to filter by. If null, uses the current country.
-  /// [favorite] is whether to show only favorites. If null, uses the current favorite state.
-  RadioStationFilter _createFilter({String? country, bool? favorite}) {
-    if (state is! RadioPageLoadedState) {
-      return const RadioStationFilter(favorite: false);
-    }
+  /// Handles toggling the favorite filter
+  Future<void> toggleFavorites() async {
+    if (state is! RadioPageLoadedState) return;
 
     final loadedState = state as RadioPageLoadedState;
-    final currentFilter =
-        loadedState.selectedFilter ?? const RadioStationFilter(favorite: false);
+    final currentFilter = loadedState.selectedFilter;
+    final filter = currentFilter.toggleFavorite();
+    final stations = await _getRadioStationListUseCase.execute(filter);
 
-    return RadioStationFilter(
-      country: country ?? currentFilter.country,
-      favorite: favorite ?? currentFilter.favorite,
+    emit(
+      loadedState.copyWith(
+        stations: stations,
+        selectedStation: loadedState.selectedStation,
+        selectedFilter: filter,
+      ),
     );
+  }
+
+  /// Sets the selected country and updates the stations list
+  Future<void> setSelectedCountry(String? country) async {
+    if (state is! RadioPageLoadedState) return;
+
+    final loadedState = state as RadioPageLoadedState;
+    final currentFilter = loadedState.selectedFilter;
+    final filter =
+        country == null
+            ? currentFilter.withoutCountry()
+            : currentFilter.withCountry(country);
+    final stations = await _getRadioStationListUseCase.execute(filter);
+
+    emit(loadedState.copyWith(stations: stations, selectedFilter: filter));
   }
 
   /// Handles the selection of a radio station
@@ -312,37 +330,6 @@ class RadioPageCubit extends Cubit<RadioPageState> {
     await selectStation(previousStation);
   }
 
-  /// Handles toggling the favorite filter
-  Future<void> toggleFavorites() async {
-    if (state is! RadioPageLoadedState) return;
-
-    final loadedState = state as RadioPageLoadedState;
-    final currentFilter =
-        loadedState.selectedFilter ?? const RadioStationFilter(favorite: false);
-
-    final filter = _createFilter(favorite: !currentFilter.favorite);
-    final stations = await _getRadioStationListUseCase.execute(filter);
-
-    emit(
-      loadedState.copyWith(
-        stations: stations,
-        selectedStation: loadedState.selectedStation,
-        selectedFilter: filter,
-      ),
-    );
-  }
-
-  /// Sets the selected country and updates the stations list
-  Future<void> setSelectedCountry(String? country) async {
-    if (state is! RadioPageLoadedState) return;
-
-    final loadedState = state as RadioPageLoadedState;
-    final filter = _createFilter(country: country);
-    final stations = await _getRadioStationListUseCase.execute(filter);
-
-    emit(loadedState.copyWith(stations: stations, selectedFilter: filter));
-  }
-
   /// Toggles the favorite status of a station
   ///
   /// [station] is the station to toggle
@@ -351,34 +338,13 @@ class RadioPageCubit extends Cubit<RadioPageState> {
 
     try {
       await _toggleFavoriteUseCase.execute(station);
-      await _updateFilteredStations();
+      await loadStations();
     } catch (e) {
       final String errorMessage;
       if (e is RadioStationFailure) {
         errorMessage = e.message;
       } else {
         errorMessage = 'Failed to toggle favorite: $e';
-      }
-
-      emit(RadioPageErrorState(errorMessage: errorMessage));
-    }
-  }
-
-  /// Updates the filtered stations based on current filters
-  Future<void> _updateFilteredStations() async {
-    if (state is! RadioPageLoadedState) return;
-
-    try {
-      final loadedState = state as RadioPageLoadedState;
-      final filter = _createFilter();
-      final stations = await _getRadioStationListUseCase.execute(filter);
-      emit(loadedState.copyWith(stations: stations, selectedFilter: filter));
-    } catch (e) {
-      final String errorMessage;
-      if (e is RadioStationFailure) {
-        errorMessage = e.message;
-      } else {
-        errorMessage = 'Failed to update stations: $e';
       }
 
       emit(RadioPageErrorState(errorMessage: errorMessage));
