@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart';
 // Core imports
 import 'package:radio_stations/core/database/hive_database.dart';
+import 'package:radio_stations/core/utils/validators.dart';
 // Feature imports - each barrel contains all components for that feature
 import 'package:radio_stations/features/audio/audio.dart';
 import 'package:radio_stations/features/radio/radio.dart';
@@ -23,9 +24,15 @@ final getIt = GetIt.instance;
 /// This function is called at app startup to register all services,
 /// repositories, and other dependencies with the service locator.
 Future<void> init() async {
-  final radioStationBox = await HiveDatabase.init();
+  // Register database
+  final database = await HiveDatabase.create();
+  getIt.registerLazySingleton<Database>(() => database);
+  final radioStationBox = await database.init();
 
-  getIt.registerLazySingleton<ErrorEventBus>(ErrorEventBus.new);
+  // Register core services
+  getIt
+    ..registerLazySingleton<ValidationService>(() => const Validators())
+    ..registerLazySingleton<ErrorEventBus>(ErrorEventBus.new);
 
   final player = AudioPlayer();
 
@@ -47,7 +54,9 @@ Future<void> init() async {
     ..registerLazySingleton<RadioStationLocalDataSource>(
       () => RadioStationLocalDataSource(box: getIt()),
     )
-    ..registerLazySingleton<RadioStationMapper>(RadioStationMapper.new)
+    ..registerLazySingleton<RadioStationMapper>(
+      () => RadioStationMapper(validationService: getIt()),
+    )
     // Repositories
     ..registerLazySingleton<AudioRepository>(
       () => AudioRepositoryImpl(audioService: getIt()),

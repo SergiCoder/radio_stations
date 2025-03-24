@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:radio_stations/core/utils/validators.dart';
 import 'package:radio_stations/features/radio/radio.dart';
-import 'package:radio_stations/features/shared/domain/entitites/radio_station.dart';
+import 'package:radio_stations/features/shared/shared.dart';
 
 /// Mapper class for converting between different radio station data types
 ///
@@ -13,6 +13,14 @@ import 'package:radio_stations/features/shared/domain/entitites/radio_station.da
 ///
 /// It also handles all validation to ensure that only valid data is passed to the domain layer.
 class RadioStationMapper {
+  /// Creates a new instance of [RadioStationMapper]
+  ///
+  /// [validationService] is the service used to validate data during mapping
+  const RadioStationMapper({required this.validationService});
+
+  /// The validation service used to validate data during mapping
+  final ValidationService validationService;
+
   /// Converts a [RadioStationRemoteDto] to a [RadioStationLocalDto]
   ///
   /// The [remoteDto] parameter is the remote DTO to convert.
@@ -41,23 +49,30 @@ class RadioStationMapper {
   /// Returns a new list of [RadioStationLocalDto] instances.
   List<RadioStationLocalDto> toLocalDtos(
     List<RadioStationRemoteDto> remoteDtos, {
-    List<RadioStationLocalDto>? existingLocalDtos,
+    List<RadioStationLocalDto> existingLocalDtos = const [],
   }) {
-    try {
-      final existingLocalDtosMap = existingLocalDtos
-          ?.fold<Map<String, RadioStationLocalDto>>({}, (map, dto) {
-            map[dto.changeuuid] = dto;
-            return map;
-          });
+    // Create a map for O(1) lookups by UUID
+    final existingMap = {
+      for (final dto in existingLocalDtos) dto.changeuuid: dto,
+    };
 
-      return remoteDtos.map((dto) {
-        final existingDto = existingLocalDtosMap?[dto.changeuuid];
-        return toLocalDto(dto, existingLocalDto: existingDto);
-      }).toList();
-    } catch (e) {
-      log('Error converting remote DTOs to local DTOs: $e');
-      return [];
-    }
+    return remoteDtos.map((remoteDto) {
+      // Check if we have an existing entry with the same UUID
+      final existing = existingMap[remoteDto.stationuuid];
+
+      // Create a new local DTO, preserving favorite and broken status if it exists
+      return RadioStationLocalDto(
+        changeuuid: remoteDto.stationuuid,
+        name: remoteDto.name,
+        url: remoteDto.url,
+        homepage: remoteDto.homepage,
+        favicon: remoteDto.favicon,
+        country: remoteDto.country,
+        // Preserve metadata from existing entries or set defaults
+        isFavorite: existing?.isFavorite ?? false,
+        broken: existing?.broken ?? false,
+      );
+    }).toList();
   }
 
   /// Converts a [RadioStationLocalDto] to a [RadioStation] domain entity
@@ -68,12 +83,12 @@ class RadioStationMapper {
   RadioStation toEntity(RadioStationLocalDto localDto) {
     try {
       // Validate UUID
-      if (!Validators.isValidUuid(localDto.changeuuid)) {
+      if (!validationService.isValidUuid(localDto.changeuuid)) {
         throw const RadioStationMappingFailure('Invalid UUID format');
       }
 
       // Validate URL
-      if (!Validators.isValidUrl(localDto.url)) {
+      if (!validationService.isValidUrl(localDto.url)) {
         throw const RadioStationMappingFailure('Invalid stream URL');
       }
 
@@ -84,10 +99,14 @@ class RadioStationMapper {
               : localDto.name.trim();
 
       final homepage =
-          Validators.isValidUrl(localDto.homepage) ? localDto.homepage : '';
+          validationService.isValidUrl(localDto.homepage)
+              ? localDto.homepage
+              : '';
 
       final favicon =
-          Validators.isValidUrl(localDto.favicon) ? localDto.favicon : '';
+          validationService.isValidUrl(localDto.favicon)
+              ? localDto.favicon
+              : '';
 
       // Create the entity with validated data
       return RadioStation(
@@ -101,12 +120,7 @@ class RadioStationMapper {
         broken: localDto.broken,
       );
     } catch (e) {
-      if (e is RadioStationFailure) {
-        log('Validation error converting local DTO to entity: ${e.message}');
-        rethrow;
-      }
-      log('Error converting local DTO to entity: $e');
-      throw RadioStationMappingFailure('Failed to create RadioStation: $e');
+      throw RadioStationMappingFailure('Failed to map local DTO to entity: $e');
     }
   }
 

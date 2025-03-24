@@ -5,7 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:radio_stations/core/design_system/theme/app_theme.dart';
 import 'package:radio_stations/core/di/injection.dart';
 import 'package:radio_stations/features/audio/domain/repositories/audio_repository.dart';
-import 'package:radio_stations/features/radio/radio.dart';
+import 'package:radio_stations/features/radio/domain/repositories/radio_station_repository.dart';
+import 'package:radio_stations/features/radio/presentation/widgets/pages/radio_page.dart';
 import 'package:radio_stations/features/shared/domain/events/error_event_bus.dart';
 
 /// The main entry point of the application
