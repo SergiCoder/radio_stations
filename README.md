@@ -8,6 +8,7 @@ A Flutter application for streaming online radio stations with a clean, modern U
 - Filter stations by country or favorites
 - Stream audio with playback controls (play/pause, previous/next, volume)
 - Background audio playback support
+- Integration with system media controls (notification, lock screen, headset buttons)
 - Mark stations as favorites for quick access
 - Automatic handling of broken station links
 - Dark theme with Material 3 design
@@ -43,7 +44,7 @@ The app uses the following architectural patterns:
 
 ### Audio Features
 - **just_audio**: Cross-platform audio playback
-- **audio_service**: Background audio support
+- **audio_service**: Background audio support with system media control integration (notifications, lock screen controls, headphone buttons, Android Auto, Apple CarPlay)
 
 ### Code Quality
 - **very_good_analysis**: Strict Dart linting rules
@@ -118,6 +119,7 @@ lib/
 │   │           ├── organisms/ # Organism widgets
 │   │           ├── templates/ # Template widgets
 │   │           └── pages/     # Page widgets
+│   │
 │   └── shared/            # Shared functionality
 │       └── domain/        # Shared domain entities
 └── main.dart              # Application entry point
