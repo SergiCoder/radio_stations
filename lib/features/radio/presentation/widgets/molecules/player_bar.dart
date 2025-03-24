@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:radio_stations/core/design_system/theme/app_spacing.dart';
 import 'package:radio_stations/features/radio/presentation/widgets/organisms/organisms.dart';
 import 'package:radio_stations/features/shared/domain/entitites/radio_station.dart';
 
@@ -16,8 +17,9 @@ class PlayerBar extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         RadioStationInfo(station: station),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSpacing.md),
         const RadioPlayerControls(),
+        const SizedBox(height: AppSpacing.sm),
       ],
     );
   }

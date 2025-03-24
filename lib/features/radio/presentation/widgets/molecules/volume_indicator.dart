@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:radio_stations/features/radio/presentation/bloc/bloc.dart';
 
-/// A widget that displays a volume indicator
+/// A widget that displays a volume indicator with interactive volume adjustment
 class VolumeIndicator extends StatelessWidget {
   /// Creates a new instance of [VolumeIndicator]
   const VolumeIndicator({super.key});
@@ -18,25 +18,26 @@ class VolumeIndicator extends StatelessWidget {
     }
 
     final volume = state.volume;
+    final bloc = context.read<RadioPageBloc>();
 
-    const height = 24.0;
-    final volumeIndicatorHeight = height * volume;
+    return Row(
+      children: [
+        // Volume percentage text
 
-    return Container(
-      width: 2,
-      height: height,
-      margin: const EdgeInsets.symmetric(horizontal: 8),
-      color: Theme.of(context).colorScheme.surface,
-      child: Stack(
-        alignment: Alignment.bottomCenter,
-        children: [
-          Container(
-            width: 2,
-            height: volumeIndicatorHeight,
-            color: Theme.of(context).colorScheme.primary,
+        // Slider
+        Expanded(
+          child: Slider(
+            value: volume,
+            divisions: 10, // 10% increments
+            onChanged: (newValue) {
+              if (bloc.state is RadioPageLoaded) {
+                final currentVolume = (bloc.state as RadioPageLoaded).volume;
+                bloc.add(VolumeChanged(newValue - currentVolume));
+              }
+            },
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

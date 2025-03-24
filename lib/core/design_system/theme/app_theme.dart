@@ -86,6 +86,11 @@ class AppTheme {
           borderSide: const BorderSide(color: AppColors.primary),
         ),
       ),
+      sliderTheme: SliderThemeData(
+        thumbShape: SliderComponentShape.noThumb,
+        overlayShape: SliderComponentShape.noOverlay,
+        tickMarkShape: SliderTickMarkShape.noTickMark,
+      ),
     );
   }
 }
