@@ -173,6 +173,14 @@ This project follows:
 - Consistent error handling
 - Comprehensive documentation
 
+## Acknowledgments
+
+This project would not be possible without the following:
+
+- [Radio Browser API](https://www.radio-browser.info/) - A free API for internet radio stations
+- [Flutter](https://flutter.dev/) - The UI framework for building beautiful, natively compiled applications
+- All the amazing packages in the Flutter ecosystem that make development easier and more efficient
+
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
