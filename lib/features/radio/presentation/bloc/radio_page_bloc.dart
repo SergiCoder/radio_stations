@@ -233,13 +233,16 @@ class RadioPageBloc extends Bloc<RadioPageEvent, RadioPageState> {
     if (stations.isEmpty) return;
 
     try {
-      // If current station is not in the filtered list, start from the first station
-      if (currentStation == null || !stations.contains(currentStation)) {
+      // If current station is not in the filtered list or is broken, start from the first station
+      if (currentStation == null ||
+          !stations.any((s) => s.uuid == currentStation.uuid)) {
         add(RadioStationSelected(stations.first));
         return;
       }
 
-      final currentIndex = stations.indexOf(currentStation);
+      final currentIndex = stations.indexWhere(
+        (s) => s.uuid == currentStation.uuid,
+      );
       final nextIndex = (currentIndex + 1) % stations.length;
       final nextStation = stations[nextIndex];
 
@@ -259,17 +262,19 @@ class RadioPageBloc extends Bloc<RadioPageEvent, RadioPageState> {
 
     final currentStation = loadedState.selectedStation;
     final stations = loadedState.stations;
-
     if (stations.isEmpty) return;
 
     try {
-      // If current station is not in the filtered list, start from the last station
-      if (currentStation == null || !stations.contains(currentStation)) {
+      // If current station is not in the filtered list or is broken, start from the last station
+      if (currentStation == null ||
+          !stations.any((s) => s.uuid == currentStation.uuid)) {
         add(RadioStationSelected(stations.last));
         return;
       }
 
-      final currentIndex = stations.indexOf(currentStation);
+      final currentIndex = stations.indexWhere(
+        (s) => s.uuid == currentStation.uuid,
+      );
       final previousIndex =
           currentIndex == 0 ? stations.length - 1 : currentIndex - 1;
       final previousStation = stations[previousIndex];
