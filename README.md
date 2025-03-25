@@ -99,7 +99,7 @@ The app uses the following architectural patterns:
 lib/
 ├── core/                  # Core functionality
 │   ├── constants/         # App-wide constants
-│   ├── database/          # Database configuration
+│   ├── database/          # Database configuration 
 │   ├── design_system/     # Design system components
 │   │   └── theme/         # Theme configuration
 │   ├── di/                # Dependency injection
@@ -107,21 +107,35 @@ lib/
 ├── features/              # Feature modules
 │   ├── audio/             # Audio playback feature
 │   │   ├── data/          # Audio data layer
+│   │   │   ├── repositories/  # Repository implementations
+│   │   │   └── services/      # Audio service implementations
 │   │   └── domain/        # Audio domain layer
+│   │       ├── repositories/  # Repository interfaces
+│   │       └── use_cases/     # Audio use cases
 │   ├── radio/             # Radio station feature
 │   │   ├── data/          # Radio data layer
+│   │   │   ├── datasources/   # Data sources (local, remote)
+│   │   │   ├── models/        # Data models and DTOs
+│   │   │   └── repositories/  # Repository implementations
 │   │   ├── domain/        # Radio domain layer
+│   │   │   ├── repositories/  # Repository interfaces 
+│   │   │   └── use_cases/     # Business logic use cases
 │   │   └── presentation/  # Radio UI components
 │   │       ├── bloc/      # State management
-│   │       └── widgets/   # UI components
-│   │           ├── atoms/     # Atomic widgets
-│   │           ├── molecules/ # Molecular widgets
-│   │           ├── organisms/ # Organism widgets
-│   │           ├── templates/ # Template widgets
-│   │           └── pages/     # Page widgets
-│   │
+│   │       │   ├── radio_page_bloc.dart
+│   │       │   ├── radio_page_events.dart
+│   │       │   └── radio_page_states.dart
+│   │       └── widgets/   # UI components (following Atomic Design)
+│   │           ├── atoms/     # Basic UI elements
+│   │           ├── molecules/ # Composed elements
+│   │           ├── organisms/ # Complex UI sections
+│   │           ├── templates/ # Page layouts
+│   │           └── pages/     # Complete screens
 │   └── shared/            # Shared functionality
 │       └── domain/        # Shared domain entities
+│           ├── entities/  # Core data entities
+│           ├── events/    # Shared events
+│           └── extensions/ # Extension methods
 └── main.dart              # Application entry point
 ```
 
