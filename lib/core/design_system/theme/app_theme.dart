@@ -95,8 +95,10 @@ class AppTheme {
       ),
       sliderTheme: SliderThemeData(
         thumbShape: SliderComponentShape.noThumb,
-        overlayShape: SliderComponentShape.noOverlay,
         tickMarkShape: SliderTickMarkShape.noTickMark,
+        overlayShape: const RoundSliderOverlayShape(
+          overlayRadius: AppSpacing.sm,
+        ),
       ),
     );
   }
