@@ -44,7 +44,6 @@ The app uses the following architectural patterns:
 ### Code Quality
 - **very_good_analysis**: Strict Dart linting rules
 - **Semantic versioning**: For dependency management
-- **Unit testing**: For business logic validation
 
 ## Dependencies
 
