@@ -12,7 +12,6 @@ A Flutter application for streaming online radio stations with a clean, modern U
 - Mark stations as favorites for quick access
 - Automatic handling of broken station links
 - Dark theme with Material 3 design
-- Responsive layout for various screen sizes
 - Full offline support with local storage
 
 ## Architecture
