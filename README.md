@@ -15,10 +15,6 @@ A Flutter application for streaming online radio stations with a clean, modern U
 - Responsive layout for various screen sizes
 - Full offline support with local storage
 
-## Screenshots
-
-*Add screenshots here*
-
 ## Architecture
 
 The application follows Clean Architecture principles with a feature-first organization:
