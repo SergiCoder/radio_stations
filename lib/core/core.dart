@@ -7,7 +7,7 @@
 /// and dependency injection setup in a structured way.
 
 // Re-export database functionality
-export 'database/database.dart';
+export 'database/local_database.dart';
 // Re-export design system with a prefix for clearer imports
 export 'design_system/design_system.dart';
 // Export only the main entry point for dependency injection

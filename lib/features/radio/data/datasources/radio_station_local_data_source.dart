@@ -1,4 +1,4 @@
-import 'package:hive_ce/hive.dart';
+import 'package:radio_stations/core/core.dart';
 import 'package:radio_stations/features/radio/data/dto/radio_station_local_dto.dart';
 import 'package:radio_stations/features/shared/domain/entitites/radio_station.dart';
 
@@ -8,24 +8,24 @@ import 'package:radio_stations/features/shared/domain/entitites/radio_station.da
 class RadioStationLocalDataSource {
   /// Creates a new instance of [RadioStationLocalDataSource]
   ///
-  /// The [box] parameter is the Hive box that stores the radio stations.
-  RadioStationLocalDataSource({required this.box});
+  /// The [database] parameter is the local database that stores the radio stations.
+  RadioStationLocalDataSource({required this.database});
 
   /// The Hive box that stores the radio stations
-  final Box<RadioStationLocalDto> box;
+  final LocalDatabase<RadioStationLocalDto> database;
 
   /// Gets all radio stations from local storage
   ///
   /// Returns a list of [RadioStationLocalDto] objects.
-  List<RadioStationLocalDto> getAllStations() {
-    return box.values.toList();
+  Future<List<RadioStationLocalDto>> getAllStations() async {
+    return database.getAll();
   }
 
   /// Saves a radio station to local storage
   ///
   /// The [station] parameter is the [RadioStationLocalDto] to save.
   Future<void> saveStation(RadioStationLocalDto station) async {
-    await box.put(station.changeuuid, station);
+    await database.set(station.changeuuid, station);
   }
 
   /// Saves multiple radio stations to local storage
@@ -35,38 +35,36 @@ class RadioStationLocalDataSource {
     final map = <String, RadioStationLocalDto>{
       for (final station in stations) station.changeuuid: station,
     };
-    await box.putAll(map);
+    await database.setAll(map);
   }
 
   /// Deletes all radio stations from local storage
   Future<void> deleteAllStations() async {
-    await box.clear();
+    await database.clear();
   }
 
   /// Toggles the favorite status of a station
   ///
   /// [station] is the station to toggle the favorite status for
   Future<void> toggleStationFavorite(RadioStation station) async {
-    final stationDto = box.get(station.uuid);
-    final updatedStation = stationDto!.copyWith(
-      isFavorite: !station.isFavorite,
-    );
-    await box.put(station.uuid, updatedStation);
+    final stationDto = await database.get(station.uuid);
+    final updatedStation = stationDto.copyWith(isFavorite: !station.isFavorite);
+    await database.set(station.uuid, updatedStation);
   }
 
   /// Toggles the broken status of a station
   ///
   /// [station] is the station to toggle the broken status for
   Future<void> toggleStationBroken(RadioStation station) async {
-    final stationDto = box.get(station.uuid);
-    final updatedStation = stationDto!.copyWith(broken: !station.broken);
-    await box.put(station.uuid, updatedStation);
+    final stationDto = await database.get(station.uuid);
+    final updatedStation = stationDto.copyWith(broken: !station.broken);
+    await database.set(station.uuid, updatedStation);
   }
 
   /// Disposes resources used by the data source
   ///
   /// This closes the Hive box and frees up resources.
   Future<void> dispose() async {
-    await box.close();
+    await database.close();
   }
 }

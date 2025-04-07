@@ -15,11 +15,11 @@ import 'package:radio_stations/features/shared/shared.dart';
 class RadioStationMapper {
   /// Creates a new instance of [RadioStationMapper]
   ///
-  /// [validationService] is the service used to validate data during mapping
-  const RadioStationMapper({required this.validationService});
+  /// [validators] is the service used to validate data during mapping
+  const RadioStationMapper({required this.validators});
 
-  /// The validation service used to validate data during mapping
-  final ValidationService validationService;
+  /// The validator instance used to validate data during mapping
+  final Validators validators;
 
   /// Converts a [RadioStationRemoteDto] to a [RadioStationLocalDto]
   ///
@@ -58,11 +58,12 @@ class RadioStationMapper {
 
     return remoteDtos.map((remoteDto) {
       // Check if we have an existing entry with the same UUID
-      final existing = existingMap[remoteDto.stationuuid];
+      final existing =
+          existingMap[remoteDto.changeuuid ?? remoteDto.stationuuid];
 
       // Create a new local DTO, preserving favorite and broken status if it exists
       return RadioStationLocalDto(
-        changeuuid: remoteDto.stationuuid,
+        changeuuid: remoteDto.changeuuid ?? remoteDto.stationuuid,
         name: remoteDto.name,
         url: remoteDto.url,
         homepage: remoteDto.homepage,
@@ -83,12 +84,12 @@ class RadioStationMapper {
   RadioStation toEntity(RadioStationLocalDto localDto) {
     try {
       // Validate UUID
-      if (!validationService.isValidUuid(localDto.changeuuid)) {
+      if (!validators.isValidUuid(localDto.changeuuid)) {
         throw const RadioStationMappingFailure('Invalid UUID format');
       }
 
       // Validate URL
-      if (!validationService.isValidUrl(localDto.url)) {
+      if (!validators.isValidUrl(localDto.url)) {
         throw const RadioStationMappingFailure('Invalid stream URL');
       }
 
@@ -99,14 +100,10 @@ class RadioStationMapper {
               : localDto.name.trim();
 
       final homepage =
-          validationService.isValidUrl(localDto.homepage)
-              ? localDto.homepage
-              : '';
+          validators.isValidUrl(localDto.homepage) ? localDto.homepage : '';
 
       final favicon =
-          validationService.isValidUrl(localDto.favicon)
-              ? localDto.favicon
-              : '';
+          validators.isValidUrl(localDto.favicon) ? localDto.favicon : '';
 
       // Create the entity with validated data
       return RadioStation(

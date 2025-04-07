@@ -2,8 +2,9 @@ import 'package:get_it/get_it.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart';
+import 'package:path_provider/path_provider.dart';
 // Core imports
-import 'package:radio_stations/core/database/hive_database.dart';
+import 'package:radio_stations/core/database/local_database.dart';
 import 'package:radio_stations/core/utils/validators.dart';
 // Feature imports - each barrel contains all components for that feature
 import 'package:radio_stations/features/audio/audio.dart';
@@ -24,14 +25,22 @@ final getIt = GetIt.instance;
 /// This function is called at app startup to register all services,
 /// repositories, and other dependencies with the service locator.
 Future<void> init() async {
-  // Register database
-  final database = await HiveDatabase.create();
-  getIt.registerLazySingleton<Database>(() => database);
-  final radioStationBox = await database.init();
+  // Get the app documents directory
+  final appDir = await getApplicationDocumentsDirectory();
+  final dbPath = '${appDir.path}/radio_stations';
 
-  // Register core services
+  // Register Hive adapters
+  Hive.registerAdapter<RadioStationLocalDto>(RadioStationLocalDtoAdapter());
+
+  // Register database
+  final database = await LocalDatabase.instance<RadioStationLocalDto>(
+    storageId: 'radio_stations',
+    path: dbPath,
+  );
   getIt
-    ..registerLazySingleton<ValidationService>(() => const Validators())
+    ..registerLazySingleton<LocalDatabase<RadioStationLocalDto>>(() => database)
+    // Register core services
+    ..registerLazySingleton<Validators>(() => const Validators())
     ..registerLazySingleton<ErrorEventBus>(ErrorEventBus.new);
 
   final player = AudioPlayer();
@@ -45,17 +54,15 @@ Future<void> init() async {
   getIt
     ..registerLazySingleton<http.Client>(http.Client.new)
     ..registerLazySingleton<RadioBrowserConfig>(RadioBrowserConfig.new)
-    // Database
-    ..registerLazySingleton<Box<RadioStationLocalDto>>(() => radioStationBox)
     // Data sources
     ..registerLazySingleton<RadioStationRemoteDataSource>(
       () => RadioStationRemoteDataSource(client: getIt(), config: getIt()),
     )
     ..registerLazySingleton<RadioStationLocalDataSource>(
-      () => RadioStationLocalDataSource(box: getIt()),
+      () => RadioStationLocalDataSource(database: getIt()),
     )
     ..registerLazySingleton<RadioStationMapper>(
-      () => RadioStationMapper(validationService: getIt()),
+      () => RadioStationMapper(validators: getIt()),
     )
     // Repositories
     ..registerLazySingleton<AudioRepository>(

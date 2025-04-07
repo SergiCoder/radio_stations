@@ -36,7 +36,7 @@ class RadioStationRepositoryImpl implements RadioStationRepository {
     final nonHlsStations = remoteStations.removeHlsStations();
 
     // Fetch all stations from local data source
-    final localStations = localDataSource.getAllStations();
+    final localStations = await localDataSource.getAllStations();
     // Convert to local DTOs and preserve existing stations favorites and
     // broken status
     final updatedStations = mapper.toLocalDtos(
@@ -51,7 +51,7 @@ class RadioStationRepositoryImpl implements RadioStationRepository {
 
   @override
   Future<List<RadioStation>> getAllStations(RadioStationFilter? filter) async {
-    final stations = localDataSource.getAllStations();
+    final stations = await localDataSource.getAllStations();
 
     if (filter == null) {
       final listItems = mapper.toEntities(stations);
@@ -89,7 +89,7 @@ class RadioStationRepositoryImpl implements RadioStationRepository {
   @override
   Future<List<String>> getAvailableCountries() async {
     try {
-      final stations = localDataSource.getAllStations();
+      final stations = await localDataSource.getAllStations();
       final countries =
           stations
               .map((s) => s.country)

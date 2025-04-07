@@ -18,8 +18,8 @@ class RadioPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     _bloc.add(const RadioPageInitialized());
-    return BlocProvider(
-      create: (context) => _bloc,
+    return BlocProvider.value(
+      value: _bloc,
       child: BlocBuilder<RadioPageBloc, RadioPageState>(
         builder: (context, state) {
           if (state is RadioPageSyncProgress) {
