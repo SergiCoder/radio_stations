@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:radio_stations/core/utils/event_transformers.dart';
 import 'package:radio_stations/features/audio/audio.dart';
 import 'package:radio_stations/features/radio/radio.dart';
 import 'package:radio_stations/features/shared/shared.dart';
@@ -21,6 +22,7 @@ class RadioPageBloc extends Bloc<RadioPageEvent, RadioPageState> {
     required SetVolumeUseCase setVolumeUseCase,
     required GetVolumeStreamUseCase getVolumeStreamUseCase,
     required ErrorEventBus errorEventBus,
+    required EventTransformers eventTransformers,
   }) : _getRadioStationListUseCase = getRadioStationListUseCase,
        _syncStationsUseCase = syncStationsUseCase,
        _playRadioStationUseCase = playRadioStationUseCase,
@@ -31,18 +33,19 @@ class RadioPageBloc extends Bloc<RadioPageEvent, RadioPageState> {
        _setVolumeUseCase = setVolumeUseCase,
        _getVolumeStreamUseCase = getVolumeStreamUseCase,
        _errorEventBus = errorEventBus,
+       _events = eventTransformers,
        super(const RadioPageInitial()) {
     // Register event handlers
     on<RadioPageInitialized>(_onInitialized);
-    on<RadioStationsRequested>(_onRadioStationsRequested);
+    on<RadioStationsRequested>(_onRadioStationsRequested, transformer: _events.droppable());
     on<FavoritesFilterToggled>(_onFavoritesFilterToggled);
     on<CountrySelected>(_onCountrySelected);
     on<RadioStationSelected>(_onRadioStationSelected);
-    on<PlaybackToggled>(_onPlaybackToggled);
-    on<NextStationRequested>(_onNextStationRequested);
-    on<PreviousStationRequested>(_onPreviousStationRequested);
+    on<PlaybackToggled>(_onPlaybackToggled, );
+    on<NextStationRequested>(_onNextStationRequested, transformer: _events.droppable());
+    on<PreviousStationRequested>(_onPreviousStationRequested, transformer: _events.droppable());
     on<StationFavoriteToggled>(_onStationFavoriteToggled);
-    on<VolumeChanged>(_onVolumeChanged);
+    on<VolumeChanged>(_onVolumeChanged, transformer: _events.droppable());
     on<ErrorOccurred>(_onErrorOccurred);
     on<StationMarkedAsBroken>(_onStationMarkedAsBroken);
     on<PlaybackStateChanged>(_onPlaybackStateChanged);
@@ -62,6 +65,7 @@ class RadioPageBloc extends Bloc<RadioPageEvent, RadioPageState> {
   final SetVolumeUseCase _setVolumeUseCase;
   final GetVolumeStreamUseCase _getVolumeStreamUseCase;
   final ErrorEventBus _errorEventBus;
+  final EventTransformers _events;
 
   // ========== Subscriptions ==========
 

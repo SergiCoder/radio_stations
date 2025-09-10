@@ -41,6 +41,7 @@ class PlayRadioStationUseCase {
   /// Throws a [RadioStationDataFailure] if playback fails.
   Future<void> execute(RadioStation station) async {
     try {
+      log('Selected station: $station');
       await _audioRepository.play(station);
       if (station.broken) {
         await _radioStationRepository.toggleStationBroken(station);

@@ -5,6 +5,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
 // Core imports
 import 'package:radio_stations/core/database/local_database.dart';
+import 'package:radio_stations/core/utils/event_transformers.dart';
 import 'package:radio_stations/core/utils/validators.dart';
 // Feature imports - each barrel contains all components for that feature
 import 'package:radio_stations/features/audio/audio.dart';
@@ -110,6 +111,9 @@ Future<void> init() async {
       () => GetVolumeStreamUseCase(repository: getIt()),
     )
     // BLoC
+    ..registerLazySingleton<EventTransformers>(
+      () => const EventTransformers(),
+    )
     ..registerFactory<RadioPageBloc>(
       () => RadioPageBloc(
         getRadioStationListUseCase: getIt(),
@@ -122,6 +126,7 @@ Future<void> init() async {
         setVolumeUseCase: getIt(),
         getVolumeStreamUseCase: getIt(),
         errorEventBus: getIt(),
+        eventTransformers: getIt(),
       ),
     );
 }

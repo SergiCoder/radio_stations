@@ -1,4 +1,3 @@
-import 'dart:developer' as dev;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -81,7 +80,6 @@ class RadioStationListItem extends StatelessWidget {
           ],
         ),
         onTap: () {
-          dev.log('Selected station: $station');
           InputUtils.unfocusAndThen(context, onTap);
         },
       ),
