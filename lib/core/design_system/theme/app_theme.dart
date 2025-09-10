@@ -58,7 +58,7 @@ class AppTheme {
         labelSmall: AppTypography.labelSmall,
       ),
       // Component themes
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.surface,
         elevation: 2,
         shape: RoundedRectangleBorder(
