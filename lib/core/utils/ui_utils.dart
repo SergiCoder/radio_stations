@@ -14,7 +14,7 @@ class UIUtils {
       percentage >= 0 && percentage <= 1,
       'Percentage must be between 0.0 and 1.0',
     );
-    return MediaQuery.of(context).size.width * percentage;
+    return MediaQuery.sizeOf(context).width * percentage;
   }
 
   /// Calculates a percentage of the available screen height
@@ -27,7 +27,7 @@ class UIUtils {
       percentage >= 0 && percentage <= 1,
       'Percentage must be between 0.0 and 1.0',
     );
-    return MediaQuery.of(context).size.height * percentage;
+    return MediaQuery.sizeOf(context).height * percentage;
   }
 
   /// Returns a standard width for narrow content

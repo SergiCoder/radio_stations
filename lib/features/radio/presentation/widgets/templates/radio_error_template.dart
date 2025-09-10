@@ -13,7 +13,7 @@ class RadioErrorTemplate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final sixtyPercentWidth = MediaQuery.of(context).size.width * 0.6;
+    final sixtyPercentWidth = MediaQuery.sizeOf(context).width * 0.6;
 
     return Scaffold(
       appBar: const RadioPageAppBar(),
