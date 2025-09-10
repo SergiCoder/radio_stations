@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:radio_stations/core/design_system/theme/app_spacing.dart';
-import 'package:radio_stations/features/radio/presentation/widgets/organisms/organisms.dart';
+import 'package:radio_stations/features/radio/presentation/widgets/molecules/radio_station_info.dart';
+import 'package:radio_stations/features/radio/presentation/widgets/organisms/audio_player_controls.dart';
 import 'package:radio_stations/features/shared/domain/entitites/radio_station.dart';
 
 /// A widget that displays the player information and controls

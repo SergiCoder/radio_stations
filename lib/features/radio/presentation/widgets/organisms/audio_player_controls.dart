@@ -55,13 +55,21 @@ class AudioPlayerControls extends StatelessWidget {
   }
 
   /// Builds the volume controls row
-  Widget _buildVolumeControls(BuildContext context, ThemeData theme) {
+  Widget _buildVolumeControls(
+    BuildContext context,
+    ThemeData theme,
+    double volume,
+    RadioPageBloc bloc,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const AudioVolumeButton(volume: -0.1),
+          AudioVolumeButton(
+            volume: -0.1,
+            onPressed: () => bloc.add(const VolumeChanged(-0.1)),
+          ),
           const SizedBox(width: AppSpacing.md),
           Expanded(
             child: Theme(
@@ -72,11 +80,17 @@ class AudioPlayerControls extends StatelessWidget {
                   thumbColor: theme.colorScheme.primary,
                 ),
               ),
-              child: const AudioVolumeIndicator(),
+              child: AudioVolumeIndicator(
+                value: volume,
+                onChanged: (newValue) => bloc.add(VolumeChanged(newValue - volume)),
+              ),
             ),
           ),
           const SizedBox(width: AppSpacing.md),
-          const AudioVolumeButton(volume: 0.1),
+          AudioVolumeButton(
+            volume: 0.1,
+            onPressed: () => bloc.add(const VolumeChanged(0.1)),
+          ),
         ],
       ),
     );
@@ -89,6 +103,12 @@ class AudioPlayerControls extends StatelessWidget {
           bloc.state is RadioPageLoaded &&
           (bloc.state as RadioPageLoaded).isPlaying,
     );
+    final volume = context.select<RadioPageBloc, double>(
+      (bloc) =>
+          bloc.state is RadioPageLoaded
+              ? (bloc.state as RadioPageLoaded).volume
+              : 0.0,
+    );
     final bloc = context.read<RadioPageBloc>();
     final theme = Theme.of(context);
 
@@ -96,7 +116,7 @@ class AudioPlayerControls extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         _buildPlaybackControls(context, isPlaying, bloc, theme),
-        _buildVolumeControls(context, theme),
+        _buildVolumeControls(context, theme, volume, bloc),
       ],
     );
   }

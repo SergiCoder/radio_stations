@@ -38,7 +38,10 @@ class SyncProgressColumn extends StatelessWidget {
             style: Theme.of(context).textTheme.headlineMedium,
           ),
           const Spacer(flex: 3),
-          SyncProgressIndicator(progressPercentage: progressPercentage),
+          SyncProgressIndicator(
+            progressPercentage: progressPercentage,
+            width: MediaQuery.sizeOf(context).width * 0.6,
+          ),
           const Spacer(flex: 20),
         ],
       ),
