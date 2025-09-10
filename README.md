@@ -12,7 +12,6 @@ A Flutter application for streaming online radio stations with a clean, modern U
 - Mark stations as favorites for quick access
 - Automatic handling of broken station links
 - Dark theme with Material 3 design
-- Full offline support with local storage
 
 ## Architecture
 
@@ -153,10 +152,10 @@ The app uses BLoC for state management with:
 ## Performance Optimizations
 
 - Debouncing for search inputs
+- High-frequency UI actions are protected with a droppable event transformer
 - Lazy loading of radio stations
-- Efficient state management with BLoC selectors
+- Efficient state management with BLoC 
 - Background audio processing with audio_service
-- Local caching for offline support
 
 ## Development
 
